@@ -1,7 +1,13 @@
-from PyQt5.QtCore import QUrl, pyqtSignal, QObject, Qt
+import pprint
+import time
+import urllib.parse
+from PyQt5.QtCore import QUrl, pyqtSignal, QObject, Qt, QUrlQuery
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from .httpclient import HttpClient
 from .auth import bitmex
+
+secret = '0LC7T3jzS9M9Dk0Ce1sbUmKmg5rZ_sd352gYeLtCUtu6apzb'
+key = 'hImUSySfSitmsaSrYv4IKecu'
 
 
 class Announcement:
@@ -35,16 +41,82 @@ class ApiKey:
         c = self.client
         qurl = QUrl(self.url)
         qurl.setQuery('reverse={}'.format(str(reverse).lower()))
+        query = qurl.query(QUrl.FullyEncoded)
+
+        verb = 'GET'
+        url = qurl.path() + '?' + query
+        expires = int(round(time.time()) + 5)
+        data = ''
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
         c.request.setUrl(qurl)
         c.network_manager.get(c.request)
 
-    def get_urgent(self):
+    def post(self, name, cidr=None, permissions=None, enabled=False, token=None):
         c = self.client
-        url = self.url + '/urgent'
-        qurl = QUrl(url)
+        qurl = QUrl(self.url)
+        data = {
+            "name": name,
+            "cidr": cidr or '',
+            "permissions": permissions,
+            "enabled": str(enabled).lower(),
+            "token": token or '',
+        }
+
+        verb = 'POST'
+        url = qurl.path()
+        expires = int(round(time.time()) + 5)
+        data = "".join(str(data).split())
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'content-type': 'application/x-www-form-urlencoded',
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
 
         c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        c.network_manager.post(c.request, data.encode())
+
+
+class Chat:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/apiKey'
+
+    def post(self, message, channelID=1):
+        c = self.client
+        qurl = QUrl(self.url)
+        data = {
+            'message': message,
+            'channelID': channelID
+        }
+
+        verb = 'POST'
+        url = qurl.path()
+        expires = int(round(time.time()) + 5)
+        data = "".join(str(data).split()).encode()
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'content-type': 'application/x-www-form-urlencoded',
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
+
+        c.request.setUrl(qurl)
+        c.network_manager.post(c.request, data)
+
 
 
 class BitmexHttpClient(HttpClient):
@@ -57,6 +129,7 @@ class BitmexHttpClient(HttpClient):
         self.api_secret = api_secret
         self.Announcement = Announcement(self)
         self.ApiKey = ApiKey(self)
+        self.Chat = Chat(self)
 
     def get_base_uri(self):
         url = self.base_uri

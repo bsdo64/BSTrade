@@ -42,6 +42,7 @@ class HttpClient(QObject):
         self.network_manager.finished.connect(self.slot_reply_finished)
 
     def slot_reply_finished(self, data: QNetworkReply):
+        print(data.attribute(QNetworkRequest.HttpStatusCodeAttribute))
         s = data.readAll()
         d = bytes(s).decode()
         self.sig_reply.emit(d)

@@ -1,4 +1,6 @@
 import json
+import pprint
+
 from pytestqt.plugin import qtbot
 from BSTrade.source_clients.bitmexhttpclient import BitmexHttpClient
 
@@ -61,6 +63,30 @@ class TestBitmexHttp(object):
 
         msg = blocking.args[0]
         j = json.loads(msg)
+
+        assert blocking.signal_triggered
+        assert type(msg) == str
+        assert type(j) == list
+
+    # def test_post_apikey(self, qtbot):
+    #     with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
+    #         client.ApiKey.post("Hello", permissions=['order'])
+    #
+    #     msg = blocking.args[0]
+    #     j = json.loads(msg)
+    #     pprint.pprint(j)
+    #
+    #     assert blocking.signal_triggered
+    #     assert type(msg) == str
+    #     assert type(j) == list
+
+    def test_post_chat(self, qtbot):
+        with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
+            client.Chat.post("Hm,,")
+
+        msg = blocking.args[0]
+        j = json.loads(msg)
+        pprint.pprint(j)
 
         assert blocking.signal_triggered
         assert type(msg) == str
