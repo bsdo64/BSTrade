@@ -2,12 +2,17 @@ import json
 import pprint
 
 from pytestqt.plugin import qtbot
+from BSTrade.source_clients.httpclient import HttpClient
 from BSTrade.source_clients.bitmexhttpclient import BitmexHttpClient
 
 client = BitmexHttpClient()
+tmp_api_key_id = None
 
 
 class TestBitmexHttp(object):
+    def test_http_instance(self):
+        assert issubclass(BitmexHttpClient, HttpClient)
+
     def test_client_instance(self):
         assert isinstance(client, BitmexHttpClient)
         assert client.test is False
@@ -68,26 +73,32 @@ class TestBitmexHttp(object):
         assert type(msg) == str
         assert type(j) == list
 
-    # def test_post_apikey(self, qtbot):
-    #     with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
-    #         client.ApiKey.post("Hello", permissions=['order'])
-    #
-    #     msg = blocking.args[0]
-    #     j = json.loads(msg)
-    #     pprint.pprint(j)
-    #
-    #     assert blocking.signal_triggered
-    #     assert type(msg) == str
-    #     assert type(j) == list
-
-    def test_post_chat(self, qtbot):
+    def test_get_chat(self, qtbot):
         with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
-            client.Chat.post("Hm,,")
+            client.Chat.get()
 
         msg = blocking.args[0]
         j = json.loads(msg)
-        pprint.pprint(j)
 
         assert blocking.signal_triggered
         assert type(msg) == str
         assert type(j) == list
+
+    def test_post_chat(self, qtbot):
+
+        with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
+            client.Chat.post("캬", channelID=4.0)
+
+        msg = blocking.args[0]
+        j = json.loads(msg)
+
+        assert blocking.signal_triggered
+        assert type(msg) == str
+        assert type(j) == dict
+        assert 'channelID' in j
+        assert 'date' in j
+        assert 'fromBot' in j
+        assert 'html' in j
+        assert 'id' in j
+        assert 'message' in j
+        assert 'user' in j

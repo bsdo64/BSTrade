@@ -18,8 +18,12 @@ class Announcement:
     def get(self, columns=None):
         c = self.client
         qurl = QUrl(self.url)
-        if columns:
-            qurl.setQuery('columns={}'.format(columns))
+        q = QUrlQuery()
+        q.setQueryItems([
+            ('columns', columns)
+        ])
+        qurl.setQuery(q)
+
         c.request.setUrl(qurl)
         c.network_manager.get(c.request)
 
@@ -40,11 +44,14 @@ class ApiKey:
     def get(self, reverse=False):
         c = self.client
         qurl = QUrl(self.url)
-        qurl.setQuery('reverse={}'.format(str(reverse).lower()))
-        query = qurl.query(QUrl.FullyEncoded)
+        q = QUrlQuery()
+        q.setQueryItems([
+            ('reverse', str(reverse))
+        ])
+        qurl.setQuery(q)
 
         verb = 'GET'
-        url = qurl.path() + '?' + query
+        url = qurl.path() + '?' + q.query()
         expires = int(round(time.time()) + 5)
         data = ''
 
@@ -58,52 +65,52 @@ class ApiKey:
         c.request.setUrl(qurl)
         c.network_manager.get(c.request)
 
-    def post(self, name, cidr=None, permissions=None, enabled=False, token=None):
-        c = self.client
-        qurl = QUrl(self.url)
-        data = {
-            "name": name,
-            "cidr": cidr or '',
-            "permissions": permissions,
-            "enabled": str(enabled).lower(),
-            "token": token or '',
-        }
-
-        verb = 'POST'
-        url = qurl.path()
-        expires = int(round(time.time()) + 5)
-        data = "".join(str(data).split())
-
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'content-type': 'application/x-www-form-urlencoded',
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-
-        c.request.setUrl(qurl)
-        c.network_manager.post(c.request, data.encode())
-
 
 class Chat:
     def __init__(self, client):
         self.client = client
-        self.url = self.client.base_uri + '/apiKey'
+        self.url = self.client.base_uri + '/chat'
 
-    def post(self, message, channelID=1):
+    def get(self, count: float=None, start: float=None, reverse: bool=True, channelID: float=None):
         c = self.client
         qurl = QUrl(self.url)
-        data = {
-            'message': message,
-            'channelID': channelID
-        }
+        q = QUrlQuery()
+        q.setQueryItems([
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('channelID', channelID)
+        ])
+        qurl.setQuery(q)
+
+        verb = 'GET'
+        url = qurl.path() + '?' + q.query()
+        expires = int(round(time.time()) + 5)
+        data = ''
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
+        c.request.setUrl(qurl)
+        c.network_manager.get(c.request)
+
+    def post(self, message, channelID: float=1.0):
+        c = self.client
+        qurl = QUrl(self.url)
+        query = QUrlQuery()
+        query.setQueryItems([
+            ('message', message),
+            ('channelID', str(channelID))
+        ])
 
         verb = 'POST'
         url = qurl.path()
         expires = int(round(time.time()) + 5)
-        data = "".join(str(data).split()).encode()
+        data = query.query().encode()
 
         sign = bitmex.generate_signature(secret, verb, url, expires, data)
 
@@ -118,7 +125,6 @@ class Chat:
         c.network_manager.post(c.request, data)
 
 
-
 class BitmexHttpClient(HttpClient):
 
     def __init__(self, test=False, api_key=None, api_secret=None):
@@ -127,6 +133,8 @@ class BitmexHttpClient(HttpClient):
         self.test = test
         self.api_key = api_key
         self.api_secret = api_secret
+
+        # api - endpoints
         self.Announcement = Announcement(self)
         self.ApiKey = ApiKey(self)
         self.Chat = Chat(self)
