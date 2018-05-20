@@ -1,8 +1,5 @@
-import pprint
 import time
-import urllib.parse
-from PyQt5.QtCore import QUrl, pyqtSignal, QObject, Qt, QUrlQuery
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt5.QtCore import QUrl, QUrlQuery
 from .httpclient import HttpClient
 from .auth import bitmex
 
@@ -123,6 +120,80 @@ class Chat:
 
         c.request.setUrl(qurl)
         c.network_manager.post(c.request, data)
+
+    def get_channels(self):
+        c = self.client
+        qurl = QUrl(self.url + '/channels')
+        q = QUrlQuery()
+
+        verb = 'GET'
+        url = qurl.path() + '?' + q.query()
+        expires = int(round(time.time()) + 5)
+        data = ''
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
+        c.request.setUrl(qurl)
+        c.network_manager.get(c.request)
+
+    def get_connected(self):
+        c = self.client
+        qurl = QUrl(self.url + '/connected')
+        q = QUrlQuery()
+
+        verb = 'GET'
+        url = qurl.path(QUrl.FullyDecoded) + '?' + q.query(QUrl.FullyDecoded)
+        expires = int(round(time.time()) + 5)
+        data = ''
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
+        c.request.setUrl(qurl)
+        c.network_manager.get(c.request)
+
+class Execution:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/chat'
+
+    def get(self, symbol: str, json_filter: str=None, columns: str=None,
+            count: float=None, start: float=None, reverse: bool=False,
+            startTime=None, endTime=None):
+        c = self.client
+        qurl = QUrl(self.url)
+        q = QUrlQuery()
+        q.setQueryItems([
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('channelID', channelID)
+        ])
+        qurl.setQuery(q)
+
+        verb = 'GET'
+        url = qurl.path() + '?' + q.query()
+        expires = int(round(time.time()) + 5)
+        data = ''
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+
+        c.set_header({
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        })
+        c.request.setUrl(qurl)
+        c.network_manager.get(c.request)
 
 
 class BitmexHttpClient(HttpClient):

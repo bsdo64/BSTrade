@@ -85,7 +85,6 @@ class TestBitmexHttp(object):
         assert type(j) == list
 
     def test_post_chat(self, qtbot):
-
         with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
             client.Chat.post("캬", channelID=4.0)
 
@@ -102,3 +101,28 @@ class TestBitmexHttp(object):
         assert 'id' in j
         assert 'message' in j
         assert 'user' in j
+
+    def test_get_chat_channels(self, qtbot):
+        with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
+            client.Chat.get_channels()
+
+        msg = blocking.args[0]
+        j = json.loads(msg)
+
+        assert blocking.signal_triggered
+        assert type(msg) == str
+        assert type(j) == list
+        assert len(j) == 7
+
+    def test_get_chat_connected(self, qtbot):
+        with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
+            client.Chat.get_connected()
+
+        msg = blocking.args[0]
+        j = json.loads(msg)
+
+        assert blocking.signal_triggered
+        assert type(msg) == str
+        assert type(j) == dict
+        assert 'users' in j
+        assert 'bots' in j
