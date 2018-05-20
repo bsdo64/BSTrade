@@ -21,7 +21,7 @@ def generate_signature(secret, verb, url, expires, data):
     if isinstance(data, (bytes, bytearray)):
         data = data.decode('utf8')
 
-    # print("Computing HMAC: %s" % verb + path + str(expires) + data)
+    print("Computing HMAC: %s" % verb + path + str(expires) + data)
     message = verb + path + str(expires) + data
 
     signature = hmac.new(bytes(secret, 'utf8'), bytes(message, 'utf8'), digestmod=hashlib.sha256).hexdigest()

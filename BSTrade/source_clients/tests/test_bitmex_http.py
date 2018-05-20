@@ -86,7 +86,7 @@ class TestBitmexHttp(object):
 
     def test_post_chat(self, qtbot):
         with qtbot.waitSignal(client.sig_reply, timeout=10000) as blocking:
-            client.Chat.post("캬", channelID=4.0)
+            client.Chat.post("ㅎㅎ", channel_id=4.0)
 
         msg = blocking.args[0]
         j = json.loads(msg)

@@ -38,6 +38,11 @@ class HttpClient(QObject):
         self.set_header(header)
         self.network_manager.get(self.request)
 
+    def post(self, url: str, header=None, data=None):
+        self.request.setUrl(QUrl(url))
+        self.set_header(header)
+        self.network_manager.post(self.request, data)
+
     def _connect_to_slot(self):
         self.network_manager.finished.connect(self.slot_reply_finished)
 

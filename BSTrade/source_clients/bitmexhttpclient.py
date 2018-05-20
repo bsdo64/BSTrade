@@ -10,57 +10,38 @@ key = 'hImUSySfSitmsaSrYv4IKecu'
 class Announcement:
     def __init__(self, client):
         self.client = client
-        self.url = self.client.base_uri + '/announcement'
+        self.endpoint = self.client.base_uri + '/announcement'
 
     def get(self, columns=None):
         c = self.client
-        qurl = QUrl(self.url)
-        q = QUrlQuery()
-        q.setQueryItems([
+        qurl = c.make_q_url(self.endpoint, query=[
             ('columns', columns)
         ])
-        qurl.setQuery(q)
 
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
     def get_urgent(self):
         c = self.client
-        url = self.url + '/urgent'
-        qurl = QUrl(url)
+        qurl = c.make_q_url(self.endpoint + '/urgent')
+        header = c.make_auth_header(qurl)
 
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
 
 class ApiKey:
     def __init__(self, client):
         self.client = client
-        self.url = self.client.base_uri + '/apiKey'
+        self.endpoint = self.client.base_uri + '/apiKey'
 
     def get(self, reverse=False):
         c = self.client
-        qurl = QUrl(self.url)
-        q = QUrlQuery()
-        q.setQueryItems([
+        qurl = c.make_q_url(self.endpoint, query=[
             ('reverse', str(reverse))
         ])
-        qurl.setQuery(q)
 
-        verb = 'GET'
-        url = qurl.path() + '?' + q.query()
-        expires = int(round(time.time()) + 5)
-        data = ''
-
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
 
 class Chat:
@@ -68,132 +49,433 @@ class Chat:
         self.client = client
         self.url = self.client.base_uri + '/chat'
 
-    def get(self, count: float=None, start: float=None, reverse: bool=True, channelID: float=None):
+    def get(self, count: float = None, start: float = None,
+            reverse: bool = True, channel_id: float = None):
         c = self.client
-        qurl = QUrl(self.url)
-        q = QUrlQuery()
-        q.setQueryItems([
+        qurl = c.make_q_url(self.url, query=[
             ('count', count),
             ('start', start),
             ('reverse', str(reverse)),
-            ('channelID', channelID)
+            ('channelID', channel_id)
         ])
-        qurl.setQuery(q)
 
-        verb = 'GET'
-        url = qurl.path() + '?' + q.query()
-        expires = int(round(time.time()) + 5)
-        data = ''
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
-
-    def post(self, message, channelID: float=1.0):
+    def post(self, message, channel_id: float = 1.0):
         c = self.client
-        qurl = QUrl(self.url)
-        query = QUrlQuery()
-        query.setQueryItems([
+        qurl, post_data = c.make_q_url(self.url, data=[
             ('message', message),
-            ('channelID', str(channelID))
+            ('channelID', str(channel_id))
         ])
 
-        verb = 'POST'
-        url = qurl.path()
-        expires = int(round(time.time()) + 5)
-        data = query.query().encode()
-
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'content-type': 'application/x-www-form-urlencoded',
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-
-        c.request.setUrl(qurl)
-        c.network_manager.post(c.request, data)
+        data = post_data.query().encode()
+        header = c.make_auth_header(qurl, data=data)
+        c.post(qurl.toString(QUrl.FullyEncoded), header, data)
 
     def get_channels(self):
         c = self.client
-        qurl = QUrl(self.url + '/channels')
-        q = QUrlQuery()
+        qurl = c.make_q_url(self.url + '/channels')
 
-        verb = 'GET'
-        url = qurl.path() + '?' + q.query()
-        expires = int(round(time.time()) + 5)
-        data = ''
-
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
     def get_connected(self):
         c = self.client
-        qurl = QUrl(self.url + '/connected')
-        q = QUrlQuery()
+        qurl = c.make_q_url(self.url + '/connected')
 
-        verb = 'GET'
-        url = qurl.path(QUrl.FullyDecoded) + '?' + q.query(QUrl.FullyDecoded)
-        expires = int(round(time.time()) + 5)
-        data = ''
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
-
-        c.set_header({
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
 
 class Execution:
     def __init__(self, client):
         self.client = client
-        self.url = self.client.base_uri + '/chat'
+        self.url = self.client.base_uri + '/execution'
 
-    def get(self, symbol: str, json_filter: str=None, columns: str=None,
-            count: float=None, start: float=None, reverse: bool=False,
-            startTime=None, endTime=None):
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
         c = self.client
-        qurl = QUrl(self.url)
-        q = QUrlQuery()
-        q.setQueryItems([
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
             ('count', count),
             ('start', start),
             ('reverse', str(reverse)),
-            ('channelID', channelID)
+            ('startTime', start_time),
+            ('endTime', end_time),
         ])
-        qurl.setQuery(q)
 
-        verb = 'GET'
-        url = qurl.path() + '?' + q.query()
-        expires = int(round(time.time()) + 5)
-        data = ''
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+    def get_trade_history(self, symbol: str, json_filter: str = None, columns: str = None,
+                          count: float = None, start: float = None, reverse: bool = False,
+                          start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url + '/tradeHistory', query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
 
-        c.set_header({
-            'api-expires': str(expires),
-            'api-key': key,
-            'api-signature': sign
-        })
-        c.request.setUrl(qurl)
-        c.network_manager.get(c.request)
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Funding:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/funding'
+
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Instrument:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/instrument'
+
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+    def get_active(self):
+        pass
+
+    def get_active_and_indices(self):
+        pass
+
+    def get_active_intervals(self):
+        pass
+
+    def get_composite_index(self):
+        pass
+
+    def get_indices(self):
+        pass
+
+
+class Insurance:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/insurance'
+
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Leaderboard:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/leaderboard'
+
+    def get(self, method='notional'):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('method', method),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+    def get_name(self):
+        c = self.client
+        qurl = c.make_q_url(self.url)
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Liquidation:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/liquidation'
+
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Notification:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+
+class Order:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/order'
+
+    def get(self, symbol: str, json_filter: str = None, columns: str = None,
+            count: float = None, start: float = None, reverse: bool = False,
+            start_time=None, end_time=None):
+        c = self.client
+        qurl = c.make_q_url(self.url, query=[
+            ('symbol', symbol),
+            ('filter', json_filter),
+            ('columns', columns),
+            ('count', count),
+            ('start', start),
+            ('reverse', str(reverse)),
+            ('startTime', start_time),
+            ('endTime', end_time),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+    def put(self):
+        pass
+
+    def post(self):
+        pass
+
+    def delete(self):
+        pass
+
+    def delete_all(self):
+        pass
+
+    def put_bulk(self):
+        pass
+
+    def post_bulk(self):
+        pass
+
+    def post_cancel_all_after(self):
+        pass
+
+    def post_close_position(self):
+        pass
+
+
+class OrderBook:
+    def __init__(self, client):
+        self.client = client
+        self.url = self.client.base_uri + '/orderBook'
+
+    def get_l2(self, symbol: str, depth: float= 25.0):
+        c = self.client
+        qurl = c.make_q_url(self.url + '/L2', query=[
+            ('symbol', symbol),
+            ('depth', depth),
+        ])
+
+        header = c.make_auth_header(qurl)
+        c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+class Position:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def post_isolate(self):
+        pass
+
+    def post_leverage(self):
+        pass
+
+    def post_risk_limit(self):
+        pass
+
+    def post_transfer_margin(self):
+        pass
+
+
+class Quote:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def get_bucketed(self):
+        pass
+
+
+class Schema:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def get_websocket_help(self):
+        pass
+
+
+class Settlement:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+
+class Stats:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def get_history(self):
+        pass
+
+    def get_history_usd(self):
+        pass
+
+
+class Trade:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def get_bucketed(self):
+        pass
+
+
+class User:
+    def __init__(self):
+        pass
+
+    def get(self):
+        pass
+
+    def put(self):
+        pass
+
+    def get_affiliate_status(self):
+        pass
+
+    def post_cancel_withdrawal(self):
+        pass
+
+    def get_check_referral_code(self):
+        pass
+
+    def get_commission(self):
+        pass
+
+    def post_confirm_email(self):
+        pass
+
+    def post_confirm_enable_tfa(self):
+        pass
+
+    def post_confirm_withdrawal(self):
+        pass
+
+    def get_deposit_address(self):
+        pass
+
+    def post_disable_tfa(self):
+        pass
+
+    def post_logout(self):
+        pass
+
+    def post_logout_all(self):
+        pass
+
+    def get_margin(self):
+        pass
+
+    def get_min_withdrawal_fee(self):
+        pass
+
+    def post_preference(self):
+        pass
+
+    def post_request_enable_tfa(self):
+        pass
+
+    def post_request_withdrawal(self):
+        pass
+
+    def get_wallet(self):
+        pass
+
+    def get_wallet_history(self):
+        pass
+
+    def get_wallet_summary(self):
+        pass
 
 
 class BitmexHttpClient(HttpClient):
@@ -209,6 +491,40 @@ class BitmexHttpClient(HttpClient):
         self.Announcement = Announcement(self)
         self.ApiKey = ApiKey(self)
         self.Chat = Chat(self)
+
+    def make_q_url(self, endpoint, query=None, data=None):
+        if query is None:
+            query = []
+
+        qurl = QUrl(endpoint)
+        q = QUrlQuery()
+        q.setQueryItems(query)
+        qurl.setQuery(q)
+
+        if data:
+            post_data = QUrlQuery()
+            post_data.setQueryItems(data)
+
+            return qurl, post_data
+        else:
+            return qurl
+
+    def make_auth_header(self, qurl, data=''):
+        if data:
+            verb = 'POST'
+        else:
+            verb = 'GET'
+
+        url = qurl.path() + '?' + qurl.query(QUrl.FullyDecoded)
+        expires = int(round(time.time()) + 5)
+
+        sign = bitmex.generate_signature(secret, verb, url, expires, data)
+        header = {
+            'api-expires': str(expires),
+            'api-key': key,
+            'api-signature': sign
+        }
+        return header
 
     def get_base_uri(self):
         url = self.base_uri
