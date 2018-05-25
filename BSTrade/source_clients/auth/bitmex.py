@@ -2,8 +2,30 @@ import hashlib
 import hmac
 from urllib.parse import urlparse
 
-secret = '0LC7T3jzS9M9Dk0Ce1sbUmKmg5rZ_sd352gYeLtCUtu6apzb'
-key = 'hImUSySfSitmsaSrYv4IKecu'
+
+api_keys = {
+    'test': {
+        'order': {
+            'key': 'l7_plzAf_ra-FgSfSyH8qfrF',
+            'secret': '4aIzQCBQHyShkqMFzuUuNVE91BBsag_V4eFFb0H1rArGswSY'
+        },
+        'cancel': {
+            'key': 'X1tFxx4CNvlnzPqCIvPzB-RT',
+            'secret': 'YNlDtadyvBpMMc9DL_kmiQiVEVmjjEGq21C5QKlUNt7zYFbC'
+        }
+    },
+
+    'real': {
+        'order': {
+            'key': 'FET28WgQOItvUlOqfgOEBGIG',
+            'secret': 'Fq7kxxLhrIWoxIyMi6sZ-GsQ7mKQlW1f98FDVIJ5BP8BqdOI'
+        },
+        'cancel': {
+            'key': 'NzhkOFTTVp2oTJk0oyyutwCt',
+            'secret': '-1mK7vfPQCHEU_40MK4kj2arsTHoMycb_-MvrfbmDn_C29R3'
+        }
+    }
+}
 
 
 # Generates an API signature.
