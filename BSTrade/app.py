@@ -16,12 +16,4 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
 
-    def hello(msg):
-        print(msg)
-
-    client = BitmexWsClient(test=True)
-
-    client.sig_message.connect(hello)
-    client.start()
-
     app.exec()
