@@ -4,6 +4,8 @@ from BSTrade.source_clients.bitmexhttpclient import BitmexHttpClient
 
 api_key = api_keys['test']['order']['key']
 api_secret = api_keys['test']['order']['secret']
+isWithdraw = api_keys['test']['order']['withdraw']
+
 client = BitmexHttpClient(test=True,
                           api_key=api_key,
                           api_secret=api_secret, )
@@ -318,9 +320,46 @@ class TestBitmexOrder(object):
         assert client.status() == 200
         assert type(j) == list
 
+    def test_put(self, qtbot):
+        # Set position cross
+        with qtbot.waitSignal(client.sig_ended, timeout=10000):
+            client.Position.post_isolate('XBTUSD', enabled=False)
+
+        # Post order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.post('XBTUSD', order_qty=3, price=1000)
+
+        ordered = client.json()
+        assert blocking.signal_triggered
+        assert client.status() == 200
+
+        order_id = ordered['orderID']
+
+        # Put(amend) order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.put(order_id=order_id, order_qty=3, price=1100)
+
+        j = client.json()
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert j['orderID'] == order_id
+        assert j['orderQty'] == 3
+        assert j['price'] == 1100
+
+        # delete order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000):
+            client.Order.delete(order_id=order_id)
+
+        deleted = client.json()
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert deleted[0]['orderID'] == order_id
+        assert deleted[0]['orderQty'] == 3
+        assert deleted[0]['price'] == 1100
+
     def test_post(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Order.post('XBTUSD', order_qty=1, price=1000)
+            client.Order.post('XBTUSD', order_qty=3, price=1000)
 
         j = client.json()
 
@@ -331,7 +370,7 @@ class TestBitmexOrder(object):
     def test_delete(self, qtbot):
         # pre-order
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Order.post('XBTUSD', order_qty=1, price=1000)
+            client.Order.post('XBTUSD', order_qty=3, price=1000)
 
         ordered = client.json()
 
@@ -360,6 +399,56 @@ class TestBitmexOrder(object):
         assert blocking.signal_triggered
         assert client.status() == 200
         assert type(j) == list
+
+    def test_put_bulk(self, qtbot):
+        # Post bulk order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.post_bulk(orders=[{"symbol":"XBTUSD","price": 1000,"orderQty": 3}])
+
+        ordered = client.json()
+        ordered_id = ordered[0]['orderID']
+
+        # Put bulk order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.put_bulk(orders=[{"orderID": ordered_id, "price": 1000, "orderQty": 4}])
+
+        j = client.json()
+
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert type(j) == list
+        assert j[0]['orderID'] == ordered_id
+
+        # delete order
+        with qtbot.waitSignal(client.sig_ended, timeout=10000):
+            client.Order.delete(order_id=ordered_id)
+
+        deleted = client.json()
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert deleted[0]['orderID'] == ordered_id
+        assert deleted[0]['orderQty'] == 4
+        assert deleted[0]['price'] == 1000
+
+    def test_post_bulk(self, qtbot):
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.post_bulk(orders=[{"symbol":"XBTUSD","price": 1000,"orderQty": 3}])
+
+        j = client.json()
+
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert type(j) == list
+
+    def test_post_cancel_all_after(self, qtbot):
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            client.Order.post_cancel_all_after(0)
+
+        j = client.json()
+
+        assert blocking.signal_triggered
+        assert client.status() == 200
+        assert type(j) == dict
 
 
 class TestBitmexOrderBook(object):
@@ -465,8 +554,12 @@ class TestBitmexPosition(object):
         assert j['riskLimit'] == 200 * 100000000
 
     def test_post_transfer_margin(self, qtbot):
+        # Set leverage x1
+        with qtbot.waitSignal(client.sig_ended, timeout=10000):
+            client.Position.post_leverage('XBTUSD', 1)
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Position.post_transfer_margin('XBTUSD', 1 * 100000000)
+            client.Position.post_transfer_margin('XBTUSD', 10000)
 
         j = client.json()
 
@@ -475,12 +568,12 @@ class TestBitmexPosition(object):
         assert type(j) == dict
 
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Position.post_transfer_margin('XBTUSD', -(1 * 100000000 - 1))
+            client.Position.post_transfer_margin('XBTUSD', -9000)
 
         j = client.json()
 
         assert blocking.signal_triggered
-        assert client.status() == 200
+        assert 200 == client.status()
         assert type(j) == dict
 
 
@@ -607,11 +700,15 @@ class TestBitmexUser(object):
 
         j = client.json()
 
-        print(j)
-
         assert blocking.signal_triggered
         assert client.status() == 200
         assert type(j) == dict
+        assert 'id' in j
+        assert 'ownerId' in j
+        assert 'firstname' in j
+        assert 'lastname' in j
+        assert 'username' in j
+        assert 'email' in j
 
     def test_put(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
@@ -641,6 +738,10 @@ class TestBitmexUser(object):
         assert type(j) == dict
 
     def test_post_cancel_withdrawal(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_cancel_withdrawal('token')
 
@@ -657,7 +758,7 @@ class TestBitmexUser(object):
         j = client.json()
 
         assert blocking.signal_triggered
-        assert client.status() == 200
+        assert client.status() == 404
         assert type(j) == dict
 
     def test_get_commission(self, qtbot):
@@ -671,6 +772,10 @@ class TestBitmexUser(object):
         assert type(j) == dict
 
     def test_post_confirm_email(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_confirm_email('token')
 
@@ -681,6 +786,10 @@ class TestBitmexUser(object):
         assert type(j) == dict
 
     def test_post_confirm_enable_tfa(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_confirm_enable_tfa('token')
 
@@ -691,6 +800,10 @@ class TestBitmexUser(object):
         assert type(j) == dict
 
     def test_post_confirm_withdrawal(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_confirm_withdrawal('token')
 
@@ -708,9 +821,13 @@ class TestBitmexUser(object):
 
         assert blocking.signal_triggered
         assert client.status() == 200
-        assert type(j) == dict
+        assert type(j) == str
 
     def test_post_disable_tfa(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_disable_tfa('token')
 
@@ -763,32 +880,39 @@ class TestBitmexUser(object):
 
     def test_post_preference(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.User.post_preference()
+            client.User.post_preferences(prefs='{"hello": "world"}', overwrite=True)
 
         j = client.json()
-        print(j)
 
         assert blocking.signal_triggered
         assert client.status() == 200
         assert type(j) == dict
+        assert 'hello' in j['preferences']
+        assert 'world' == j['preferences']['hello']
 
     def test_post_request_enable_tfa(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_request_enable_tfa()
 
         j = client.json()
-        print(j)
 
         assert blocking.signal_triggered
         assert client.status() == 200
         assert type(j) == dict
 
     def test_post_request_withdrawal(self, qtbot):
+        if not isWithdraw:
+            assert True
+            return
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.User.post_request_withdrawal('XBt', 1, 'abcde')
 
         j = client.json()
-        print(j)
 
         assert blocking.signal_triggered
         assert client.status() == 200

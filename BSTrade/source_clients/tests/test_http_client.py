@@ -7,15 +7,38 @@ client = HttpClient()
 
 class TestHttpClient(object):
 
-    def test_http_request(self, qtbot):
+    def test_get(self, qtbot):
 
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.get('https://www.bitmex.com/api/v1/trade?count=1.0&reverse=false')
+            client.get('https://jsonplaceholder.typicode.com/posts')
 
         j = client.json()
 
         assert blocking.signal_triggered
         assert type(j) == list
+
+    def test_post(self, qtbot):
+
+        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
+            header = {
+                "content-type":"application/json; charset=UTF-8"
+            }
+            data = {
+                "title": "hello",
+                "body": "world",
+                "userId": 1
+            }
+
+            data_bytes = json.dumps(data).encode()
+
+            client.set_header(header)
+            client.post('https://jsonplaceholder.typicode.com/posts/1', data_bytes)
+
+        j = client.json()
+        print(j)
+
+        assert blocking.signal_triggered
+        assert type(j) == dict
 
     def test_set_header(self):
 

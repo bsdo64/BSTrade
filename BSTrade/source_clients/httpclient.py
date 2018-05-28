@@ -41,10 +41,19 @@ class HttpClient(QObject):
     def headers(self):
         return self._headers
 
+    def content_type(self):
+        content_type = self._headers['content-type']
+        if 'text/html' in content_type:
+            return 'html'
+        elif 'test/plain' in content_type:
+            return 'text'
+        elif 'application/json' in content_type:
+            return 'json'
+
     def _save_header(self, raw_headers):
         h = {}
         for t in raw_headers:
-            h.update({bytes(t[0]).decode(): bytes(t[1]).decode()})
+            h.update({str.lower(bytes(t[0]).decode()): bytes(t[1]).decode()})
 
         self._headers = h
 
@@ -93,11 +102,16 @@ class HttpClient(QObject):
         self._text = data.readAll()
         self._string = bytes(self._text).decode()
         self._status_code = data.attribute(QNetworkRequest.HttpStatusCodeAttribute)
-
-        if not self._status_code == 204:
-            self._json = json.loads(self._string)
-
         self._save_header(data.rawHeaderPairs())
+
+        if self.content_type() == 'json':
+            if len(self._string):
+                self._json = json.loads(self._string)
+        else:
+            self._json = None
+
+        if self._status_code >= 400:
+            print(self._string)
 
         self.sig_ended.emit(True)
         data.deleteLater()

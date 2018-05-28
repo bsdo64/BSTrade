@@ -1,3 +1,4 @@
+import json
 import time
 from PyQt5.QtCore import QUrl, QUrlQuery
 from .httpclient import HttpClient
@@ -46,11 +47,17 @@ class BitmexHttpClient(HttpClient):
         else:
             return str(obj)
 
+    def clean_tuple(self, l):
+        return [t for t in l if t[1]]
+
     def make_q_url(self, endpoint, query=None, data=None):
         if query is None:
             query = []
         if data is None:
             data = []
+
+        query = self.clean_tuple(query)
+        data = self.clean_tuple(data)
 
         qurl = QUrl(endpoint)
         query_url = QUrlQuery()
@@ -71,8 +78,8 @@ class BitmexHttpClient(HttpClient):
         if method:
             verb = method
 
-            # if method == 'POST':
-            #     header.update({'content-type': 'application/x-www-form-urlencoded'})
+            if method == 'PUT':
+                header.update({'content-type': 'application/x-www-form-urlencoded'})
         else:
             verb = 'GET'
 
@@ -425,7 +432,7 @@ class Order:
             peg_offset_value: float = None, text: str = None):
         c = self.client
         qurl, data = c.make_q_url(self.endpoint, data=[
-            ('orderId', c.xstr(order_id)),
+            ('orderID', c.xstr(order_id)),
             ('origClOrdID', c.xstr(orig_cl_ord_id)),
             ('clOrdID', c.xstr(cl_ord_id)),
             ('simpleOrderQty', c.xstr(simple_order_qty)),
@@ -439,7 +446,7 @@ class Order:
         ])
 
         data = data.query().encode()
-        header = c.make_auth_header(qurl, method='PUT')
+        header = c.make_auth_header(qurl, method='PUT', data=data)
         c.put(qurl.toString(QUrl.FullyEncoded), header, data)
 
     def post(self, symbol, side: str = None, simple_order_qty: float = None,
@@ -494,17 +501,51 @@ class Order:
         header = c.make_auth_header(qurl, method='DELETE')
         c.delete(qurl.toString(QUrl.FullyEncoded), header)
 
-    def put_bulk(self):
-        pass
+    def put_bulk(self, orders: list):
+        """
+        :param orders:
 
-    def post_bulk(self):
-        pass
+        json.dumps([
+            {"orderID":order_id","price":2433.5,"orderQty":147,"side":"Sell"},
+            {"orderID":order_id","price":2433.5,"orderQty":147,"side":"Sell"},
+        ])
+        """
+        c = self.client
+        qurl, data = c.make_q_url(self.endpoint + '/bulk', data=[
+            ('orders', c.xstr(json.dumps(orders))),
+        ])
 
-    def post_cancel_all_after(self):
-        pass
+        data = data.query().encode()
+        header = c.make_auth_header(qurl, method='PUT', data=data)
+        c.put(qurl.toString(QUrl.FullyEncoded), header, data)
 
-    def post_close_position(self):
-        pass
+    def post_bulk(self, orders: list):
+        """
+        :param orders:
+
+        json.dumps([
+            {"symbol":"XBTUSD","price":2433.5,"orderQty":147,"side":"Sell"},
+            {"symbol":"XBTUSD","price":2433.5,"orderQty":147,"side":"Sell"},
+        ])
+        """
+        c = self.client
+        qurl, data = c.make_q_url(self.endpoint + '/bulk', data=[
+            ('orders', c.xstr(json.dumps(orders))),
+        ])
+
+        data = data.query().encode()
+        header = c.make_auth_header(qurl, method='POST', data=data)
+        c.post(qurl.toString(QUrl.FullyEncoded), header, data)
+
+    def post_cancel_all_after(self, timeout):
+        c = self.client
+        qurl, data = c.make_q_url(self.endpoint + '/cancelAllAfter', data=[
+            ('timeout', c.xstr(timeout)),
+        ])
+
+        data = data.query().encode()
+        header = c.make_auth_header(qurl, method='POST', data=data)
+        c.post(qurl.toString(QUrl.FullyEncoded), header, data)
 
 
 class OrderBook:
@@ -773,7 +814,7 @@ class User:
         ])
 
         data = data.query().encode()
-        header = c.make_auth_header(qurl, method='PUT')
+        header = c.make_auth_header(qurl, method='PUT', data=data)
         c.put(qurl.toString(QUrl.FullyEncoded), header, data)
 
     def get_affiliate_status(self):
@@ -892,9 +933,9 @@ class User:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def post_preference(self, prefs: str, overwrite: bool = None):
+    def post_preferences(self, prefs: str, overwrite: bool = None):
         c = self.client
-        qurl, data = c.make_q_url(self.endpoint + '/preference', data=[
+        qurl, data = c.make_q_url(self.endpoint + '/preferences', data=[
             ('prefs', c.xstr(prefs)),
             ('overwrite', c.xstr(overwrite))
         ])
