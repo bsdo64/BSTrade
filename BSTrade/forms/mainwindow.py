@@ -1,13 +1,55 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget
+import json
+
+from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QTableView
 
 from source_clients.bitmexwsclient import BitmexWsClient
+from queue import Queue
+
+
+class OrderBookModel(QAbstractTableModel):
+    def __init__(self, parent=None, ws_source=None):
+        super(OrderBookModel, self).__init__(parent)
+        self.ws = ws_source
+        self.ws.sig_connected.connect(self.slot_ws_connected)
+        self.ws.sig_message.connect(self.slot_ws_append_text)
+        self.ws.start()
+
+        self.data = []
+
+    def rowCount(self, parent=None, *args, **kwargs):
+        return len(self.data)
+
+    def columnCount(self, parent=None, *args, **kwargs):
+        return 2
+
+    def data(self, index, role=None):
+        if role == Qt.DisplayRole:
+            return self.data[index].get('table')
+
+        return None
+
+    def slot_ws_connected(self):
+        self.ws.subscribe("orderBookL2:XBTUSD")
+
+    def slot_ws_append_text(self, msg):
+        j = json.loads(msg)
+
+        is_table = j.get('table')
+        if is_table == 'orderBookL2':
+            print(msg)
+            self.data.append(msg)
+
+
+class OrderBookTableView(QTableView):
+    pass
 
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.ws = BitmexWsClient(test=True)
+
 
         self.setup_ui()
 
@@ -20,13 +62,19 @@ class MainWindow(QMainWindow):
         center.setMinimumSize(200, 480)
         self.setCentralWidget(center)
 
-        self.setupDockWidgets()
+        self.setup_dock_widgets()
 
-    def setupDockWidgets(self):
+    def setup_dock_widgets(self):
         dock1 = QDockWidget()
         dock1.setMinimumWidth(200)
         dock1.setMinimumHeight(100)
         dock1.setWindowTitle("Right dock")
+
+        orderbook = OrderBookTableView()
+        orderbook_model = OrderBookModel(ws_source=self.ws)
+        orderbook.setModel(orderbook_model)
+        dock1.setWidget(orderbook)
+
         self.addDockWidget(Qt.RightDockWidgetArea, dock1)
 
         dock2 = QDockWidget()

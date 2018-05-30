@@ -12,6 +12,7 @@ class BitmexWsClient(WsClient):
         self.test = test
         self.api_key = api_key
         self.api_secret = api_secret
+        self.subscribes = []
 
         if test:
             self.endpoint = "wss://testnet.bitmex.com/realtime"
@@ -30,6 +31,12 @@ class BitmexWsClient(WsClient):
     def start(self):
         self.open(self.endpoint)
         return self
+
+    def subscribe(self, *argv):
+        list_args = list(argv)
+        self.subscribes.append(list_args)
+        data = {"op": "subscribe", "args": list_args}
+        self.send(data)
 
     def slot_message(self, msg: str):
         self.timer.start(5000)

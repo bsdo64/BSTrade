@@ -10,12 +10,14 @@ name = "kakao"
 
 [packages]
 numpy = "*"
-"pyqt5" = "*"
-pandas = "*"
+"pyqt5" = "==5.10.1"
+pandas = "==0.23.0"
+numexpr = "==2.6.5"
+bottleneck = "==1.2.1"
 
 [dev-packages]
-pytest = "*"
-pytest-qt = "*"
+pytest = "==3.6.0"
+pytest-qt = "==2.4.0"
 
 [requires]
 python_version = "3.6"

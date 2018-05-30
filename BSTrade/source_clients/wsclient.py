@@ -7,6 +7,7 @@ from PyQt5.QtWebSockets import QWebSocket
 
 class WsClient(QObject):
     sig_message = pyqtSignal(str)
+    sig_connected = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -53,6 +54,7 @@ class WsClient(QObject):
 
     def slot_connected(self):
         self._connected = True
+        self.sig_connected.emit()
 
     def slot_disconnected(self):
         self._connected = False
