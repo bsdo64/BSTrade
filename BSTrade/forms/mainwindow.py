@@ -13,6 +13,7 @@ class OrderBookModel(QAbstractTableModel):
         self.ws = ws_source
         self.ws.sig_connected.connect(self.slot_ws_connected)
         self.ws.sig_message.connect(self.slot_ws_append_text)
+        self.ws.sig_subscribed.connect(self.slot_ws_subscribed)
         self.ws.start()
 
         self.data = []
@@ -30,13 +31,16 @@ class OrderBookModel(QAbstractTableModel):
         return None
 
     def slot_ws_connected(self):
-        self.ws.subscribe("orderBookL2:XBTUSD")
+        self.ws.subscribe("trade:XBTUSD")
+
+    def slot_ws_subscribed(self, types):
+        print(types)
 
     def slot_ws_append_text(self, msg):
         j = json.loads(msg)
 
         is_table = j.get('table')
-        if is_table == 'orderBookL2':
+        if is_table == 'trade':
             print(msg)
             self.data.append(msg)
 
@@ -48,7 +52,7 @@ class OrderBookTableView(QTableView):
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.ws = BitmexWsClient(test=True)
+        self.ws = BitmexWsClient(test=False)
 
 
         self.setup_ui()

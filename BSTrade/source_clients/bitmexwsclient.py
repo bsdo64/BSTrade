@@ -5,6 +5,7 @@ from PyQt5.QtCore import QObject, QUrl, pyqtSignal
 
 
 class BitmexWsClient(WsClient):
+    sig_subscribed = pyqtSignal(dict)
 
     def __init__(self, test = False, api_key = None, api_secret = None):
         super().__init__()
@@ -41,6 +42,10 @@ class BitmexWsClient(WsClient):
     def slot_message(self, msg: str):
         self.timer.start(5000)
         self.set_data(msg)
+
+        j = self.json()
+        if j.get('types'):
+            self.sig_subscribed.emit(j.get('types'))
 
     def slot_timer_timeout(self):
         self.a = 'timeout'
