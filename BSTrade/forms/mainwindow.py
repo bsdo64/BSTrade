@@ -33,8 +33,8 @@ class OrderBookModel(QAbstractTableModel):
     def slot_ws_connected(self):
         self.ws.subscribe("trade:XBTUSD")
 
-    def slot_ws_subscribed(self, types):
-        print(types)
+    def slot_ws_subscribed(self, schema):
+        print(schema)
 
     def slot_ws_append_text(self, msg):
         j = json.loads(msg)

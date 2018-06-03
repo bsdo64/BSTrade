@@ -43,9 +43,9 @@ class BitmexWsClient(WsClient):
         self.timer.start(5000)
         self.set_data(msg)
 
-        j = self.json()
-        if j.get('types'):
-            self.sig_subscribed.emit(j.get('types'))
+        schema = self.json()
+        if schema.get('types'):
+            self.sig_subscribed.emit(schema)
 
     def slot_timer_timeout(self):
         self.a = 'timeout'
