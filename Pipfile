@@ -9,7 +9,7 @@ verify_ssl = false
 name = "kakao"
 
 [packages]
-numpy = "*"
+numpy = "==1.14.4"
 "pyqt5" = "==5.10.1"
 pandas = "==0.23.0"
 numexpr = "==2.6.5"

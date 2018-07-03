@@ -1,19 +1,29 @@
+from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QApplication
 import sys
-from forms import MainWindow
-from source_clients.bitmexwsclient import BitmexWsClient
+from widgets import MainWindow
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
+import resources
 
-    app.setStyleSheet("""
-            QLabel {
-                background: black;
-                color: white;
-            }
-        """)
 
-    window = MainWindow()
-    window.show()
+class App:
+    def __init__(self):
+        self.app = QApplication(sys.argv)
+        self.app.setStyle('Fusion')
 
-    app.exec()
+        self.app.setStyleSheet("""
+                    QTextEdit {
+                        background: #191d26;
+                        color: #D8D8D8;
+                    }
+                """)
+
+        self.window = MainWindow()
+        self.window.show()
+
+        self.start()
+
+    def start(self):
+        sys.exit(self.app.exec_())
+
