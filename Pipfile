@@ -18,6 +18,7 @@ pandas = "==0.23.3"
 [dev-packages]
 pytest = "==3.6.0"
 pytest-qt = "==2.4.0"
+colorama = "*"
 
 [requires]
 python_version = "3.6"

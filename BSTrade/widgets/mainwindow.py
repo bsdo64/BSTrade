@@ -1,11 +1,11 @@
 import json
 
 from PyQt5.QtCore import Qt, QAbstractTableModel, QSize, QRect
-from PyQt5.QtGui import QIcon, QFont, QFontMetrics, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QTableView, QAction, QTabWidget, QTabBar, QPushButton, \
-    QLabel
+from PyQt5.QtGui import QIcon, QFontMetrics
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QTableView, QAction, QTabWidget, QTabBar
 
 from source_clients.bitmexwsclient import BitmexWsClient
+from .BSChart import BSChartWidget
 
 
 class OrderBookModel(QAbstractTableModel):
@@ -64,7 +64,7 @@ class TabBar(QTabBar):
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        QMainWindow.__init__(self, parent)
         self.ws = BitmexWsClient(test=False)
 
         self.setup_ui()
@@ -107,16 +107,7 @@ class MainWindow(QMainWindow):
             
         """)
 
-        button = QPushButton()
-        font = QFont()
-        font.setFamily('fontawesome')
-        font.setPixelSize(32)
-
-        button.setFont(font)
-        button.setText('haahaahha')
-        button.setIcon(QIcon(QPixmap(":/svg/regular/home.svg")))
-
-        self.tabs.addTab(button, 'Big with test title')
+        self.tabs.addTab(BSChartWidget(), 'Big with test title')
 
         for i in range(10):
             self.tabs.addTab(QTextEdit(), 'text{}'.format(i))
