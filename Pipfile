@@ -1,7 +1,7 @@
-#[[source]]
-#url = "https://pypi.python.org/simple"
-#verify_ssl = true
-#name = "pypi"
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
 
 [[source]]
 url = "http://mirror.kakao.com/pypi/simple/"
@@ -9,15 +9,17 @@ verify_ssl = false
 name = "kakao"
 
 [packages]
-numpy = "*"
-"pyqt5" = "==5.10.1"
-pandas = "==0.23.0"
 numexpr = "==2.6.5"
 bottleneck = "==1.2.1"
+"pyqt5" = "==5.11.2"
+numpy = "==1.14.5"
+pandas = "==0.23.3"
+numba = "*"
 
 [dev-packages]
 pytest = "==3.6.0"
 pytest-qt = "==2.4.0"
+colorama = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"

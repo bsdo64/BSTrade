@@ -44,6 +44,8 @@ class BitmexHttpClient(HttpClient):
     def xstr(self, obj):
         if obj is None:
             return None
+        elif isinstance(obj, bool):
+            return str(obj).lower()
         else:
             return str(obj)
 

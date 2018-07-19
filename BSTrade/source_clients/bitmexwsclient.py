@@ -1,10 +1,9 @@
-import json
 from .wsclient import WsClient
-from PyQt5.QtCore import QTimer
-from PyQt5.QtCore import QObject, QUrl, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 
 
 class BitmexWsClient(WsClient):
+    sig_subscribed = pyqtSignal(dict)
 
     def __init__(self, test = False, api_key = None, api_secret = None):
         super().__init__()
@@ -21,10 +20,6 @@ class BitmexWsClient(WsClient):
 
         self.sig_message.connect(self.slot_message)
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.slot_timer_timeout)
-        self.a = None
-
     def ping(self):
         self.send('ping')
 
@@ -39,8 +34,8 @@ class BitmexWsClient(WsClient):
         self.send(data)
 
     def slot_message(self, msg: str):
-        self.timer.start(5000)
         self.set_data(msg)
 
-    def slot_timer_timeout(self):
-        self.a = 'timeout'
+        schema = self.json()
+        if schema.get('types'):
+            self.sig_subscribed.emit(schema)

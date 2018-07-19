@@ -1,0 +1,2 @@
+bitmex_1m_2018.pkl filter=lfs diff=lfs merge=lfs -text
+bitmex_1m_2017.pkl filter=lfs diff=lfs merge=lfs -text
