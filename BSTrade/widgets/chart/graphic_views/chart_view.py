@@ -28,7 +28,7 @@ class ChartView(QGraphicsView):
         # self.setFrameStyle(QFrame.NoFrame)
 
         self.thread = Thread()
-        w = self.thread.make_worker(self.open_file, 'data/bitmex_1m_2018.pkl')
+        w = self.thread.make_worker(self.open_file, 'BSTrade/data/bitmex_1m_2018.pkl')
         w.sig.finished.connect(self.set_scene)
         self.thread.start(w)
 

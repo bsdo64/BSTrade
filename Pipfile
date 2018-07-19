@@ -21,4 +21,4 @@ pytest-qt = "==2.4.0"
 colorama = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
