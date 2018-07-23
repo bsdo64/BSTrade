@@ -13,7 +13,7 @@ pd.set_option('display.precision', 20)
 class Model:
     _DEFAULT_X_RANGE = 100
     _DEFAULT_NEXT_X_RANGE = 500
-    INT_MAX = sys.maxsize // 10 ** 6
+    INT_MAX = sys.maxsize // 10 ** 10
 
     def __init__(self,
                  data: pd.DataFrame,
@@ -22,6 +22,7 @@ class Model:
         self.series = data
         self.view = view
 
+        self.x_pos = 0
         self.x_range = self._DEFAULT_X_RANGE
         self.next_x_len = self._DEFAULT_NEXT_X_RANGE
 
@@ -48,7 +49,16 @@ class Model:
         return self.next_x_len
 
     def current_x_range(self) -> int:
-        return self.x_range // self.marker_gap  # 100 // 50 = 2
+        return (self.x_pos + self.x_range) // self.marker_gap  # 100 // 50 = 2
+
+    def current_x_pos(self) -> int:
+        return max(self.x_pos, 1) // self.marker_gap
+
+    def change_x_pos(self, factor):
+        if self.current_x_range() > self.x_pos + factor:
+            self.x_pos += factor
+
+            self.fit_view()
 
     def change_x_range(self, factor):
         # Time axis range must be positive.
@@ -56,27 +66,25 @@ class Model:
             self.x_range += factor
             self.next_x_len = min(self.x_range // 15, 2000)  # 15% of x_range
 
-            # Scale view after change x-range to fit view
-            trans = QTransform()
-            trans.scale(*self.scale())
-            self.view.setTransform(trans)
-
-            # Change scene rect to fit view
-            scene = self.view.scene()
-            scene.setSceneRect(self.make_scene_rect())  # update scene rect
+            self.fit_view()
 
     def make_scene_rect(self):
         data = self.current_data()
 
         return QRectF(
-            data['time_axis_scaled'].max() - self.x_range,
+            data['time_axis_scaled'].max() - self.x_range - self.x_pos,
             data['r_high'].min(),
             self.x_range,
             data['high'].max() - data['low'].min()
         )
 
     def current_data(self, add=0) -> pd.DataFrame:
-        return self.series[-(self.current_x_range()+add):]
+        # print(-(self.current_x_range()+add), -(self.current_x_pos()))
+
+        return self.series[
+               -(self.current_x_range()+add):
+               -(self.current_x_pos())
+               ]
 
     def next_data(self, data_range=None) -> pd.DataFrame:
         next_data_size = data_range or self.next_x_len  # 500
@@ -88,14 +96,24 @@ class Model:
         ]
 
     def scale(self) -> (float, float):
-        model_data = self.current_data(add=0)
+        current_data = self.current_data(add=0)
         scale_x = self.view.width() / self.x_range
-        scale_y = self.view.height() / (model_data['r_low'].max() -
-                                        model_data['r_high'].min())
+        scale_y = self.view.height() / (current_data['high'].max() -
+                                        current_data['low'].min())
         return scale_x, scale_y
 
     def scale_x(self):
         return self.view.width() / self.x_range
+
+    def fit_view(self):
+        # Scale view after change x-range to fit view
+        trans = QTransform()
+        trans.scale(*self.scale())
+        self.view.setTransform(trans)
+
+        # Change scene rect to fit view
+        scene = self.view.scene()
+        scene.setSceneRect(self.make_scene_rect())  # update scene rect
 
 
 attach_timer(Model)

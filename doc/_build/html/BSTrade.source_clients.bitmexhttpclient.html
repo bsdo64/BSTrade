@@ -1,0 +1,590 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>BSTrade.source_clients.bitmexhttpclient module &#8212; BSTrade  documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BSTrade  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-BSTrade.source_clients.bitmexhttpclient">
+<span id="bstrade-source-clients-bitmexhttpclient-module"></span><h1>BSTrade.source_clients.bitmexhttpclient module<a class="headerlink" href="#module-BSTrade.source_clients.bitmexhttpclient" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Announcement">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Announcement</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Announcement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Announcement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Announcement.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>columns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Announcement.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Announcement.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Announcement.get_urgent">
+<code class="descname">get_urgent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Announcement.get_urgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Announcement.get_urgent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.ApiKey">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">ApiKey</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#ApiKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.ApiKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.ApiKey.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#ApiKey.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.ApiKey.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">BitmexHttpClient</code><span class="sig-paren">(</span><em>test=False</em>, <em>api_key=None</em>, <em>api_secret=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="BSTrade.source_clients.httpclient.html#BSTrade.source_clients.httpclient.HttpClient" title="BSTrade.source_clients.httpclient.HttpClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BSTrade.source_clients.httpclient.HttpClient</span></code></a></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.clean_tuple">
+<code class="descname">clean_tuple</code><span class="sig-paren">(</span><em>l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient.clean_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.clean_tuple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.get_base_uri">
+<code class="descname">get_base_uri</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient.get_base_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.get_base_uri" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.make_auth_header">
+<code class="descname">make_auth_header</code><span class="sig-paren">(</span><em>qurl</em>, <em>data=''</em>, <em>method=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient.make_auth_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.make_auth_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.make_q_url">
+<code class="descname">make_q_url</code><span class="sig-paren">(</span><em>endpoint</em>, <em>query=None</em>, <em>data=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient.make_q_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.make_q_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.xstr">
+<code class="descname">xstr</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#BitmexHttpClient.xstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient.xstr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Chat">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Chat</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Chat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Chat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Chat.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>count: int = 100</em>, <em>start: int = 0</em>, <em>reverse: bool = True</em>, <em>channel_id: float = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Chat.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Chat.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Chat.get_channels">
+<code class="descname">get_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Chat.get_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Chat.get_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Chat.get_connected">
+<code class="descname">get_connected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Chat.get_connected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Chat.get_connected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Chat.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>message</em>, <em>channel_id: float = 1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Chat.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Chat.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Execution">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Execution</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Execution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Execution.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Execution.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Execution.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Execution.get_trade_history">
+<code class="descname">get_trade_history</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Execution.get_trade_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Execution.get_trade_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Funding">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Funding</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Funding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Funding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Funding.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Funding.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Funding.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Instrument</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get_active">
+<code class="descname">get_active</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get_active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get_active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get_active_and_indices">
+<code class="descname">get_active_and_indices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get_active_and_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get_active_and_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get_active_intervals">
+<code class="descname">get_active_intervals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get_active_intervals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get_active_intervals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get_composite_index">
+<code class="descname">get_composite_index</code><span class="sig-paren">(</span><em>symbol: str = '.XBT'</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em>, <em>account: int = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get_composite_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get_composite_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Instrument.get_indices">
+<code class="descname">get_indices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Instrument.get_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Instrument.get_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Insurance">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Insurance</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Insurance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Insurance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Insurance.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str = ''</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Insurance.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Insurance.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Leaderboard">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Leaderboard</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Leaderboard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Leaderboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Leaderboard.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>method='notional'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Leaderboard.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Leaderboard.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Leaderboard.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Leaderboard.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Leaderboard.get_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Liquidation">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Liquidation</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Liquidation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Liquidation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Liquidation.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Liquidation.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Liquidation.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Notification">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Notification</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Notification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Notification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Notification.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Notification.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Notification.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Order</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>order_id: str = None</em>, <em>cl_ord_id: str = None</em>, <em>text: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.delete_all">
+<code class="descname">delete_all</code><span class="sig-paren">(</span><em>symbol=None</em>, <em>json_filter=None</em>, <em>text=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.delete_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.delete_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>symbol</em>, <em>side: str = None</em>, <em>simple_order_qty: float = None</em>, <em>order_qty: float = None</em>, <em>price: float = None</em>, <em>display_qty: float = None</em>, <em>stop_px: float = None</em>, <em>cl_ord_id: str = None</em>, <em>cl_ord_link_id: str = None</em>, <em>peg_offset_value: float = None</em>, <em>peg_price_type: str = None</em>, <em>ord_type: str = None</em>, <em>time_in_force: str = None</em>, <em>exe_inst: str = None</em>, <em>contingency_type: str = None</em>, <em>text: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.post_bulk">
+<code class="descname">post_bulk</code><span class="sig-paren">(</span><em>orders: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.post_bulk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.post_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>orders</strong> – </td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>json.dumps([</dt>
+<dd>{“symbol”:”XBTUSD”,”price”:2433.5,”orderQty”:147,”side”:”Sell”},
+{“symbol”:”XBTUSD”,”price”:2433.5,”orderQty”:147,”side”:”Sell”},</dd>
+</dl>
+<p>])</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.post_cancel_all_after">
+<code class="descname">post_cancel_all_after</code><span class="sig-paren">(</span><em>timeout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.post_cancel_all_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.post_cancel_all_after" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>order_id: str = None</em>, <em>orig_cl_ord_id: str = None</em>, <em>cl_ord_id: str = None</em>, <em>simple_order_qty: float = None</em>, <em>order_qty: float = None</em>, <em>simple_leaves_qty: float = None</em>, <em>leaves_qty: float = None</em>, <em>price: float = None</em>, <em>stop_px: float = None</em>, <em>peg_offset_value: float = None</em>, <em>text: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Order.put_bulk">
+<code class="descname">put_bulk</code><span class="sig-paren">(</span><em>orders: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Order.put_bulk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Order.put_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>orders</strong> – </td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>json.dumps([</dt>
+<dd>{“orderID”:order_id”,”price”:2433.5,”orderQty”:147,”side”:”Sell”},
+{“orderID”:order_id”,”price”:2433.5,”orderQty”:147,”side”:”Sell”},</dd>
+</dl>
+<p>])</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.OrderBook">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">OrderBook</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#OrderBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.OrderBook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.OrderBook.get_l2">
+<code class="descname">get_l2</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>depth: float = 25.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#OrderBook.get_l2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.OrderBook.get_l2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Position</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>json_filter=None</em>, <em>columns=None</em>, <em>count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position.post_isolate">
+<code class="descname">post_isolate</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>enabled: bool = True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position.post_isolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position.post_isolate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position.post_leverage">
+<code class="descname">post_leverage</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>leverage: float</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position.post_leverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position.post_leverage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position.post_risk_limit">
+<code class="descname">post_risk_limit</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>risk_limit: float</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position.post_risk_limit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position.post_risk_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Position.post_transfer_margin">
+<code class="descname">post_transfer_margin</code><span class="sig-paren">(</span><em>symbol</em>, <em>amount</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Position.post_transfer_margin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Position.post_transfer_margin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Quote">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Quote</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Quote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Quote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Quote.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Quote.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Quote.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Quote.get_bucketed">
+<code class="descname">get_bucketed</code><span class="sig-paren">(</span><em>bin_size: str</em>, <em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Quote.get_bucketed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Quote.get_bucketed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Schema">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Schema</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Schema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Schema.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>model: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Schema.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Schema.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Schema.get_websocket_help">
+<code class="descname">get_websocket_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Schema.get_websocket_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Schema.get_websocket_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Settlement">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Settlement</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Settlement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Settlement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Settlement.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Settlement.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Settlement.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Stats">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Stats</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Stats.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Stats.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Stats.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Stats.get_history">
+<code class="descname">get_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Stats.get_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Stats.get_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Stats.get_history_usd">
+<code class="descname">get_history_usd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Stats.get_history_usd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Stats.get_history_usd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Trade">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">Trade</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Trade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Trade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Trade.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>symbol: str</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Trade.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Trade.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.Trade.get_bucketed">
+<code class="descname">get_bucketed</code><span class="sig-paren">(</span><em>bin_size: str</em>, <em>partial: bool = False</em>, <em>symbol: str = None</em>, <em>json_filter: str = None</em>, <em>columns: str = None</em>, <em>count: int = None</em>, <em>start: int = None</em>, <em>reverse: bool = False</em>, <em>start_time=None</em>, <em>end_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#Trade.get_bucketed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.Trade.get_bucketed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User">
+<em class="property">class </em><code class="descclassname">BSTrade.source_clients.bitmexhttpclient.</code><code class="descname">User</code><span class="sig-paren">(</span><em>client: BSTrade.source_clients.bitmexhttpclient.BitmexHttpClient</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get">
+<code class="descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_affiliate_status">
+<code class="descname">get_affiliate_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_affiliate_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_affiliate_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_check_referral_code">
+<code class="descname">get_check_referral_code</code><span class="sig-paren">(</span><em>referral_code: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_check_referral_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_check_referral_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_commission">
+<code class="descname">get_commission</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_commission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_commission" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_deposit_address">
+<code class="descname">get_deposit_address</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_deposit_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_deposit_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_margin">
+<code class="descname">get_margin</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_margin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_margin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_min_withdrawal_fee">
+<code class="descname">get_min_withdrawal_fee</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_min_withdrawal_fee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_min_withdrawal_fee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_wallet">
+<code class="descname">get_wallet</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_wallet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_wallet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_wallet_history">
+<code class="descname">get_wallet_history</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_wallet_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_wallet_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.get_wallet_summary">
+<code class="descname">get_wallet_summary</code><span class="sig-paren">(</span><em>currency: str = 'XBt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.get_wallet_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.get_wallet_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_cancel_withdrawal">
+<code class="descname">post_cancel_withdrawal</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_cancel_withdrawal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_cancel_withdrawal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_confirm_email">
+<code class="descname">post_confirm_email</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_confirm_email"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_confirm_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_confirm_enable_tfa">
+<code class="descname">post_confirm_enable_tfa</code><span class="sig-paren">(</span><em>token</em>, <em>auth_type: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_confirm_enable_tfa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_confirm_enable_tfa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_confirm_withdrawal">
+<code class="descname">post_confirm_withdrawal</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_confirm_withdrawal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_confirm_withdrawal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_disable_tfa">
+<code class="descname">post_disable_tfa</code><span class="sig-paren">(</span><em>token</em>, <em>auth_type: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_disable_tfa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_disable_tfa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_logout">
+<code class="descname">post_logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_logout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_logout_all">
+<code class="descname">post_logout_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_logout_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_logout_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_preferences">
+<code class="descname">post_preferences</code><span class="sig-paren">(</span><em>prefs: str</em>, <em>overwrite: bool = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_preferences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_preferences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_request_enable_tfa">
+<code class="descname">post_request_enable_tfa</code><span class="sig-paren">(</span><em>auth_type: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_request_enable_tfa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_request_enable_tfa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.post_request_withdrawal">
+<code class="descname">post_request_withdrawal</code><span class="sig-paren">(</span><em>currency</em>, <em>amount</em>, <em>address</em>, <em>fee: float = None</em>, <em>otp_token: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.post_request_withdrawal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.post_request_withdrawal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="BSTrade.source_clients.bitmexhttpclient.User.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>firstname: str = None</em>, <em>lastname: str = None</em>, <em>old_password: str = None</em>, <em>new_password: str = None</em>, <em>new_password_confirm: str = None</em>, <em>username: str = None</em>, <em>country: str = None</em>, <em>pgp_pub_key: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/BSTrade/source_clients/bitmexhttpclient.html#User.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#BSTrade.source_clients.bitmexhttpclient.User.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/BSTrade.source_clients.bitmexhttpclient.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BSTrade  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, bsdo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

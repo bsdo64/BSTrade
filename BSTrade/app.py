@@ -1,7 +1,5 @@
 import sys
 from BSTrade.widgets import MainWindow
-import BSTrade.resources
-
 from PyQt5.QtWidgets import QApplication
 
 

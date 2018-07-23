@@ -1,0 +1,1029 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>BSTrade.source_clients.tests.test_bitmex_http &#8212; BSTrade  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BSTrade  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for BSTrade.source_clients.tests.test_bitmex_http</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">BSTrade.source_clients.auth.bitmex</span> <span class="k">import</span> <span class="n">api_keys</span>
+<span class="kn">from</span> <span class="nn">BSTrade.source_clients.httpclient</span> <span class="k">import</span> <span class="n">HttpClient</span>
+<span class="kn">from</span> <span class="nn">BSTrade.source_clients.bitmexhttpclient</span> <span class="k">import</span> <span class="n">BitmexHttpClient</span>
+
+<span class="n">api_key</span> <span class="o">=</span> <span class="n">api_keys</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;order&#39;</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+<span class="n">api_secret</span> <span class="o">=</span> <span class="n">api_keys</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;order&#39;</span><span class="p">][</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span>
+<span class="n">isWithdraw</span> <span class="o">=</span> <span class="n">api_keys</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">][</span><span class="s1">&#39;order&#39;</span><span class="p">][</span><span class="s1">&#39;withdraw&#39;</span><span class="p">]</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">BitmexHttpClient</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                          <span class="n">api_secret</span><span class="o">=</span><span class="n">api_secret</span><span class="p">,</span> <span class="p">)</span>
+
+
+<div class="viewcode-block" id="TestBitmexHttpClient"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexHttpClient">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexHttpClient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexHttpClient.test_is_http_instance"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexHttpClient.test_is_http_instance">[docs]</a>    <span class="k">def</span> <span class="nf">test_is_http_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">BitmexHttpClient</span><span class="p">,</span> <span class="n">HttpClient</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBitmexHttpClient.test_instance"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexHttpClient.test_instance">[docs]</a>    <span class="k">def</span> <span class="nf">test_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">BitmexHttpClient</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">test</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">is</span> <span class="n">api_key</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">api_secret</span> <span class="ow">is</span> <span class="n">api_secret</span></div>
+
+<div class="viewcode-block" id="TestBitmexHttpClient.test_instance_by_api_key"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexHttpClient.test_instance_by_api_key">[docs]</a>    <span class="k">def</span> <span class="nf">test_instance_by_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">client1</span> <span class="o">=</span> <span class="n">BitmexHttpClient</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="n">api_secret</span><span class="o">=</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">client1</span><span class="p">,</span> <span class="n">BitmexHttpClient</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">client1</span><span class="o">.</span><span class="n">test</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">client1</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">is</span> <span class="s1">&#39;abc&#39;</span>
+        <span class="k">assert</span> <span class="n">client1</span><span class="o">.</span><span class="n">api_secret</span> <span class="ow">is</span> <span class="s1">&#39;abc&#39;</span></div>
+
+<div class="viewcode-block" id="TestBitmexHttpClient.test_base_uri"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexHttpClient.test_base_uri">[docs]</a>    <span class="k">def</span> <span class="nf">test_base_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">get_base_uri</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">())</span> <span class="o">==</span> <span class="nb">dict</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;version&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;timestamp&#39;</span> <span class="ow">in</span> <span class="n">j</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexAnnouncement"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexAnnouncement">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexAnnouncement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexAnnouncement.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexAnnouncement.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Announcement</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexAnnouncement.test_get_urgent"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexAnnouncement.test_get_urgent">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_urgent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Announcement</span><span class="o">.</span><span class="n">get_urgent</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexApiKey"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexApiKey">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexApiKey</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexApiKey.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexApiKey.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">ApiKey</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexChat"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexChat</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexChat.test_get_1"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat.test_get_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Chat</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexChat.test_get_2"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat.test_get_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Chat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="TestBitmexChat.test_post"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat.test_post">[docs]</a>    <span class="k">def</span> <span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Chat</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">channel_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="c1"># assert &#39;channelID&#39; in j</span>
+        <span class="c1"># assert &#39;date&#39; in j</span>
+        <span class="c1"># assert &#39;fromBot&#39; in j</span>
+        <span class="c1"># assert &#39;html&#39; in j</span>
+        <span class="c1"># assert &#39;id&#39; in j</span>
+        <span class="c1"># assert &#39;message&#39; in j</span>
+        <span class="c1"># assert &#39;user&#39; in j</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;message&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBitmexChat.test_get_channels"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat.test_get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Chat</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span></div>
+
+<div class="viewcode-block" id="TestBitmexChat.test_get_connected"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexChat.test_get_connected">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Chat</span><span class="o">.</span><span class="n">get_connected</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="s1">&#39;users&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;bots&#39;</span> <span class="ow">in</span> <span class="n">j</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexExecution"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexExecution">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexExecution</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexExecution.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexExecution.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Execution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexExecution.test_get_trade_history"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexExecution.test_get_trade_history">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_trade_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Execution</span><span class="o">.</span><span class="n">get_trade_history</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexFunding"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexFunding">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexFunding</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexFunding.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexFunding.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Funding</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexInstrument"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexInstrument</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexInstrument.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexInstrument.test_get_active"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get_active">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexInstrument.test_get_active_and_indices"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get_active_and_indices">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_active_and_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get_active_and_indices</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexInstrument.test_get_active_intervals"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get_active_intervals">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_active_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get_active_intervals</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexInstrument.test_get_composite_index"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get_composite_index">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_composite_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get_composite_index</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexInstrument.test_get_indices"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInstrument.test_get_indices">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Instrument</span><span class="o">.</span><span class="n">get_indices</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexInsurance"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInsurance">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexInsurance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexInsurance.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexInsurance.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Insurance</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexLeaderboard"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexLeaderboard">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexLeaderboard</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexLeaderboard.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexLeaderboard.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Leaderboard</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexLeaderboard.test_get_name"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexLeaderboard.test_get_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Leaderboard</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexLiquidation"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexLiquidation">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexLiquidation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexLiquidation.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexLiquidation.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Liquidation</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexNotification"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexNotification">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexNotification</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        /notification</span>
+
+<span class="sd">        Not supported yet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestBitmexNotification.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexNotification.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Notification</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">403</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;message&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexOrder"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexOrder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexOrder.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_put"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_put">[docs]</a>    <span class="k">def</span> <span class="nf">test_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="c1"># Set position cross</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_isolate</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Post order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">order_qty</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+        <span class="n">ordered</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+
+        <span class="n">order_id</span> <span class="o">=</span> <span class="n">ordered</span><span class="p">[</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Put(amend) order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">order_id</span><span class="o">=</span><span class="n">order_id</span><span class="p">,</span> <span class="n">order_qty</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">1100</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">order_id</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;orderQty&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1100</span>
+
+        <span class="c1"># delete order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">order_id</span><span class="o">=</span><span class="n">order_id</span><span class="p">)</span>
+
+        <span class="n">deleted</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">order_id</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderQty&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1100</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_post"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_post">[docs]</a>    <span class="k">def</span> <span class="nf">test_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">order_qty</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_delete"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_delete">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="c1"># pre-order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">order_qty</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+        <span class="n">ordered</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">ordered</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+
+        <span class="c1"># test_delete</span>
+        <span class="n">order_id</span> <span class="o">=</span> <span class="n">ordered</span><span class="p">[</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">order_id</span><span class="o">=</span><span class="n">order_id</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">order_id</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_delete_all"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_delete_all">[docs]</a>    <span class="k">def</span> <span class="nf">test_delete_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">delete_all</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_put_bulk"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_put_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">test_put_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="c1"># Post bulk order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post_bulk</span><span class="p">(</span><span class="n">orders</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;symbol&quot;</span><span class="p">:</span><span class="s2">&quot;XBTUSD&quot;</span><span class="p">,</span><span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span><span class="s2">&quot;orderQty&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}])</span>
+
+        <span class="n">ordered</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">ordered_id</span> <span class="o">=</span> <span class="n">ordered</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Put bulk order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">put_bulk</span><span class="p">(</span><span class="n">orders</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;orderID&quot;</span><span class="p">:</span> <span class="n">ordered_id</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;orderQty&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}])</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ordered_id</span>
+
+        <span class="c1"># delete order</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">order_id</span><span class="o">=</span><span class="n">ordered_id</span><span class="p">)</span>
+
+        <span class="n">deleted</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ordered_id</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;orderQty&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
+        <span class="k">assert</span> <span class="n">deleted</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;price&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1000</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_post_bulk"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_post_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post_bulk</span><span class="p">(</span><span class="n">orders</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;symbol&quot;</span><span class="p">:</span><span class="s2">&quot;XBTUSD&quot;</span><span class="p">,</span><span class="s2">&quot;price&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span><span class="s2">&quot;orderQty&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}])</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexOrder.test_post_cancel_all_after"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrder.test_post_cancel_all_after">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_cancel_all_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Order</span><span class="o">.</span><span class="n">post_cancel_all_after</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexOrderBook"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrderBook">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexOrderBook</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexOrderBook.test_get_l2"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexOrderBook.test_get_l2">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_l2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">OrderBook</span><span class="o">.</span><span class="n">get_l2</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexPosition"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexPosition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexPosition.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_isolate_1"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_isolate_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_isolate_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_isolate</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_isolate_2"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_isolate_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_isolate_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_isolate</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_leverage_1"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_leverage_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_leverage_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_leverage</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_leverage_2"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_leverage_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_leverage_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_leverage</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;leverage&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.01</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_leverage_3"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_leverage_3">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_leverage_3</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_leverage</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;leverage&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">100</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_risk_limit"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_risk_limit">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_risk_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_risk_limit</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">500</span> <span class="o">*</span> <span class="mi">100000000</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;riskLimit&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">500</span> <span class="o">*</span> <span class="mi">100000000</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_risk_limit</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">200</span> <span class="o">*</span> <span class="mi">100000000</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;crossMargin&#39;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;riskLimit&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">200</span> <span class="o">*</span> <span class="mi">100000000</span></div>
+
+<div class="viewcode-block" id="TestBitmexPosition.test_post_transfer_margin"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexPosition.test_post_transfer_margin">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_transfer_margin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="c1"># Set leverage x1</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_leverage</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_transfer_margin</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Position</span><span class="o">.</span><span class="n">post_transfer_margin</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">9000</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="mi">200</span> <span class="o">==</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexQuote"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexQuote">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexQuote</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexQuote.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexQuote.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Quote</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="TestBitmexQuote.test_get_bucketed"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexQuote.test_get_bucketed">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_bucketed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Quote</span><span class="o">.</span><span class="n">get_bucketed</span><span class="p">(</span><span class="s1">&#39;1m&#39;</span><span class="p">,</span> <span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexSchema"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexSchema">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexSchema</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexSchema.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexSchema.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Schema</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexSchema.test_get_websocket_help"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexSchema.test_get_websocket_help">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_websocket_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Schema</span><span class="o">.</span><span class="n">get_websocket_help</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexSettlement"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexSettlement">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexSettlement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexSettlement.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexSettlement.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Settlement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexStats"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexStats">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexStats</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexStats.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexStats.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Stats</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexStats.test_get_history"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexStats.test_get_history">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Stats</span><span class="o">.</span><span class="n">get_history</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexStats.test_get_history_usd"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexStats.test_get_history_usd">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_history_usd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Stats</span><span class="o">.</span><span class="n">get_history_usd</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexTrade"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexTrade">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexTrade</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TestBitmexTrade.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexTrade.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Trade</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="TestBitmexTrade.test_get_bucketed"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexTrade.test_get_bucketed">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_bucketed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">Trade</span><span class="o">.</span><span class="n">get_bucketed</span><span class="p">(</span><span class="s1">&#39;1m&#39;</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;XBTUSD&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span></div></div>
+
+
+<div class="viewcode-block" id="TestBitmexUser"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser">[docs]</a><span class="k">class</span> <span class="nc">TestBitmexUser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">tmp_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get">[docs]</a>    <span class="k">def</span> <span class="nf">test_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;ownerId&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;firstname&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;lastname&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;username&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;email&#39;</span> <span class="ow">in</span> <span class="n">j</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_put"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_put">[docs]</a>    <span class="k">def</span> <span class="nf">test_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">firstname</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">403</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;error&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+        <span class="k">assert</span> <span class="s1">&#39;message&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Access Denied&#39;</span>
+        <span class="k">assert</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;HTTPError&#39;</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_affiliate_status"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_affiliate_status">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_affiliate_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_affiliate_status</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_cancel_withdrawal"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_cancel_withdrawal">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_cancel_withdrawal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_cancel_withdrawal</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_check_referral_code"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_check_referral_code">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_check_referral_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_check_referral_code</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">404</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_commission"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_commission">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_commission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_commission</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_confirm_email"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_confirm_email">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_confirm_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_confirm_email</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_confirm_enable_tfa"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_confirm_enable_tfa">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_confirm_enable_tfa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_confirm_enable_tfa</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_confirm_withdrawal"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_confirm_withdrawal">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_confirm_withdrawal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_confirm_withdrawal</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_deposit_address"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_deposit_address">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_deposit_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_deposit_address</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_disable_tfa"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_disable_tfa">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_disable_tfa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_disable_tfa</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_logout"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_logout">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_logout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_logout</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">204</span>  <span class="c1"># No content</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_logout_all"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_logout_all">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_logout_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_logout_all</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="s1">&#39;count&#39;</span> <span class="ow">in</span> <span class="n">j</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">j</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">],</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">dict</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_min_withdrawal_fee"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_min_withdrawal_fee">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_min_withdrawal_fee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_min_withdrawal_fee</span><span class="p">(</span><span class="s1">&#39;XBt&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_margin"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_margin">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_margin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_margin</span><span class="p">(</span><span class="s1">&#39;XBt&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_preference"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_preference">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_preference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_preferences</span><span class="p">(</span><span class="n">prefs</span><span class="o">=</span><span class="s1">&#39;{&quot;hello&quot;: &quot;world&quot;}&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span>
+        <span class="k">assert</span> <span class="s1">&#39;hello&#39;</span> <span class="ow">in</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;preferences&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s1">&#39;world&#39;</span> <span class="o">==</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;preferences&#39;</span><span class="p">][</span><span class="s1">&#39;hello&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_request_enable_tfa"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_request_enable_tfa">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_request_enable_tfa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_request_enable_tfa</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_post_request_withdrawal"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_post_request_withdrawal">[docs]</a>    <span class="k">def</span> <span class="nf">test_post_request_withdrawal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isWithdraw</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">post_request_withdrawal</span><span class="p">(</span><span class="s1">&#39;XBt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;abcde&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_wallet"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_wallet">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_wallet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_wallet</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_wallet_history"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_wallet_history">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_wallet_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_wallet_history</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="TestBitmexUser.test_get_wallet_summary"><a class="viewcode-back" href="../../../../BSTrade.source_clients.tests.test_bitmex_http.html#BSTrade.source_clients.tests.test_bitmex_http.TestBitmexUser.test_get_wallet_summary">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_wallet_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qtbot</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">qtbot</span><span class="o">.</span><span class="n">waitSignal</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">sig_ended</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span> <span class="k">as</span> <span class="n">blocking</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_wallet_summary</span><span class="p">()</span>
+
+        <span class="n">j</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">blocking</span><span class="o">.</span><span class="n">signal_triggered</span>
+        <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BSTrade  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, bsdo.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

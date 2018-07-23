@@ -4,7 +4,7 @@ import pandas
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsView
 
 from BSTrade.data.model import Model
@@ -75,16 +75,36 @@ class ChartView(QGraphicsView):
 
         """
         if self.open_file_finished:
-            if platform == "darwin":
-                delta_x = event.pixelDelta().x()
-                delta_y = event.pixelDelta().y()
-            else:
-                delta_x = event.angleDelta().x()
-                delta_y = event.angleDelta().y()
+            # if platform == "darwin":
+            #     delta_x = event.pixelDelta().x()
+            #     delta_y = event.pixelDelta().y()
+            #     print(delta_x, delta_y)
+            # else:
+            delta_x = event.angleDelta().x()
+            delta_y = event.angleDelta().y()
 
             self.model.change_x_range(delta_y)
+            self.model.change_x_pos(delta_x)
 
         super().wheelEvent(event)
+
+    def keyPressEvent(self, event: QKeyEvent):
+        press = event.key()
+
+        if press == Qt.Key_Left:
+            self.model.change_x_pos(1)
+            self.chart_item.keyPressEvent(event)
+        elif press == Qt.Key_Right:
+            self.model.change_x_pos(-1)
+            self.chart_item.keyPressEvent(event)
+        elif press == Qt.Key_Up:
+            self.model.change_x_range(10)
+            self.chart_item.keyPressEvent(event)
+        elif press == Qt.Key_Down:
+            self.model.change_x_range(-10)
+            self.chart_item.keyPressEvent(event)
+
+        super().keyPressEvent(event)
 
 
 attach_timer(ChartView)

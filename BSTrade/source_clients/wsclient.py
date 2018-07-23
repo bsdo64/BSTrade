@@ -4,13 +4,15 @@ from json import JSONDecodeError
 from PyQt5.QtCore import QObject, QUrl, pyqtSignal
 from PyQt5.QtWebSockets import QWebSocket
 
+from BSTrade.util.fn import attach_timer
+
 
 class WsClient(QObject):
     sig_message = pyqtSignal(str)
     sig_connected = pyqtSignal()
 
     def __init__(self):
-        super().__init__()
+        QObject.__init__(self)
         self.websocket = QWebSocket()
 
         self._connected = False
@@ -66,3 +68,6 @@ class WsClient(QObject):
     def slot_error(self, error_code):
         print("error code: {}".format(error_code))
         print(self.websocket.errorString())
+
+
+attach_timer(WsClient)

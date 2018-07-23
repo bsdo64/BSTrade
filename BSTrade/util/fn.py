@@ -36,7 +36,7 @@ def perf_timer(argument, debug=True, limit=1):
     return real_decorator
 
 
-def attach_timer(cls: type, limit=10) -> list:
+def attach_timer(cls: type, limit=20) -> list:
 
     """ Attach performance timer to class
 
@@ -72,6 +72,7 @@ def attach_timer(cls: type, limit=10) -> list:
     method_list = [
         (getattr(cls, func), func) for func in dir(cls) if
         callable(getattr(cls, func)) and
+        not func.startswith("sig") and
         (func in sub_methods or
             (hasattr(parent, func) and
              getattr(parent, func) != getattr(cls, func)))

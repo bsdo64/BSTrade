@@ -3,7 +3,7 @@ import numba as nb
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QRectF, QThreadPool, QObject, pyqtSignal
-from PyQt5.QtGui import QPen, QPainterPath, QColor
+from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
 
@@ -109,6 +109,11 @@ class CandleStickItem(QGraphicsItem):
             paint_fn(getattr(self, name), *args)  # draw non-cache
 
     def wheelEvent(self, event: 'QGraphicsSceneWheelEvent'):
+        super().wheelEvent(event)
+        self.make_path()
+
+    def keyPressEvent(self, event: QKeyEvent):
+        super().keyPressEvent(event)
         self.make_path()
 
     def make_path(self):
@@ -135,7 +140,6 @@ class CandleStickItem(QGraphicsItem):
                                   self.minus_bar_path)
 
         else:
-            print(self.model.scale_x())
             if len(df) > self.max_x_range:  # 3 > 2
                 self.max_x_range += self.model.next_x_range()  # 2 += 500
 
@@ -149,6 +153,7 @@ class CandleStickItem(QGraphicsItem):
                 self.create_in_thread(self.draw_path,
                                       minus_df,
                                       self.minus_line_path)
+
                 self.create_in_thread(self.draw_rect,
                                       plus_df,
                                       self.plus_bar_path)
@@ -171,4 +176,4 @@ class CandleStickItem(QGraphicsItem):
         return self.model.make_scene_rect()
 
 
-attach_timer(CandleStickItem)
+attach_timer(CandleStickItem, limit=10)
