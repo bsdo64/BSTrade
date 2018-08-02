@@ -1,119 +1,117 @@
 import sys
+import time
 import pandas as pd
+import numpy as np
 
 from PyQt5.QtCore import QRectF
-from PyQt5.QtGui import QTransform
-from PyQt5.QtWidgets import QGraphicsView
 
 from BSTrade.util.fn import attach_timer
-
-pd.set_option('display.precision', 20)
+from BSTrade.optimize.vec import to_time_axis, to_time_scale, make_r_data
+from BSTrade.optimize.math import cache_x_range, cache_x_pos
 
 
 class Model:
-    _DEFAULT_X_RANGE = 100
-    _DEFAULT_NEXT_X_RANGE = 500
+    _DEFAULT_X_RANGE = 1000
+    _DEFAULT_NEXT_X_RANGE = 1000
     INT_MAX = sys.maxsize // 10 ** 10
+    X_TIME = time.time() // 60 * 50
 
-    def __init__(self,
-                 data: pd.DataFrame,
-                 view: QGraphicsView):
-
+    def __init__(self, data: pd.DataFrame):
         self.series = data
-        self.view = view
 
         self.x_pos = 0
         self.x_range = self._DEFAULT_X_RANGE
-        self.next_x_len = self._DEFAULT_NEXT_X_RANGE
+        self.x_range_next = self._DEFAULT_NEXT_X_RANGE
+        self.rect = QRectF(0, 0, 0, 0)
 
         self.marker_gap = 50
-        self.max_x_range = 100_000
+
+        self.c_data = {}
+        self.np_data = {}
 
         self._init_printing_data()
 
     def _init_printing_data(self):
-        self.series['time_axis'] = (
-            self.series['timestamp'].astype('int64') // 10 ** 9 // 60
-        )  # timestamp by minute
-        self.series['time_axis_scaled'] = (
-            self.series['time_axis'] * self.marker_gap
-        )  # 1262304000 ~ 1276503350
+        self.series['timestamp'] = self.series['timestamp']\
+            .astype('datetime64')
+        ts = self.series['timestamp'].values.astype(np.int64)
+        self.series['time_axis'] = pd.Series(to_time_axis(ts, 60))
+
+        self.np_data['time_axis'] = self.series['time_axis'].values
+        self.np_data['time_axis_scaled'] = to_time_scale(
+            self.np_data['time_axis'], self.marker_gap
+        )
+        self.series['time_axis_scaled'] = pd.Series(
+            self.np_data['time_axis_scaled'])
 
         for i in ['close', 'open', 'low', 'high']:
-            self.series['r_' + i] = self.INT_MAX - self.series[i]
+            self.np_data['r_' + i] = make_r_data(self.INT_MAX,
+                                                 self.series[i].values)
+            self.np_data[i] = self.series[i].values
 
-    def default_x_range(self) -> int:
-        return self._DEFAULT_X_RANGE
+        self.DATA_LEN = self.np_data['time_axis_scaled'].shape[0]
 
-    def next_x_range(self) -> int:
-        return self.next_x_len
+        self.c_data = self.current_data()
+
+    def change_x(self, x, y):
+        self.x_pos += x
+
+        if self.x_range + y > self._DEFAULT_X_RANGE:
+            self.x_range += y
+
+            # self.fit_view()
 
     def current_x_range(self) -> int:
-        return (self.x_pos + self.x_range) // self.marker_gap  # 100 // 50 = 2
+        return cache_x_range(self.x_pos,
+                             self.x_range,
+                             self.marker_gap)  # 100 // 50 = 2
 
     def current_x_pos(self) -> int:
-        return max(self.x_pos, 1) // self.marker_gap
+        return cache_x_pos(self.x_pos, self.marker_gap)
 
-    def change_x_pos(self, factor):
-        if self.current_x_range() > self.x_pos + factor:
-            self.x_pos += factor
+    def current_data(self):
 
-            self.fit_view()
+        if hasattr(self, 'np_data'):
+            s = -self.current_x_range()
+            p = self.current_x_pos()
+            e = -p if 0 < p else None
 
-    def change_x_range(self, factor):
-        # Time axis range must be positive.
-        if self.x_range + factor > self._DEFAULT_X_RANGE:
-            self.x_range += factor
-            self.next_x_len = min(self.x_range // 15, 2000)  # 15% of x_range
+            if 0 < -s < self.DATA_LEN:
+                self.c_data = {
+                    'time_axis_scaled': self.np_data['time_axis_scaled'][s: e],
+                    'time_axis': self.np_data['time_axis'][s: e],
+                    'high': self.np_data['high'][s: e],
+                    'r_high': self.np_data['r_high'][s: e],
+                    'low': self.np_data['low'][s: e],
+                    'r_low': self.np_data['r_low'][s: e],
+                    'close': self.np_data['close'][s: e],
+                    'r_close': self.np_data['r_close'][s: e],
+                    'open': self.np_data['open'][s: e],
+                    'r_open': self.np_data['r_open'][s: e],
+                    'len': len(self.np_data['r_open'][s: e])
+                }
 
-            self.fit_view()
+        return self.c_data
 
-    def make_scene_rect(self):
-        data = self.current_data()
+    def rect_x(self):
+        return self.X_TIME - self.x_pos - self.x_range
 
-        return QRectF(
-            data['time_axis_scaled'].max() - self.x_range - self.x_pos,
-            data['r_high'].min(),
-            self.x_range,
-            data['high'].max() - data['low'].min()
-        )
+    def next_data(self, d_s, d_len=1000):
+        s = -(d_s+d_len)
+        e = -d_s or None
 
-    def current_data(self, add=0) -> pd.DataFrame:
-        # print(-(self.current_x_range()+add), -(self.current_x_pos()))
-
-        return self.series[
-               -(self.current_x_range()+add):
-               -(self.current_x_pos())
-               ]
-
-    def next_data(self, data_range=None) -> pd.DataFrame:
-        next_data_size = data_range or self.next_x_len  # 500
-        v = self.current_x_range() // next_data_size  # 2 // 500
-        origin_gap = self._DEFAULT_X_RANGE // self.marker_gap
-        return self.series[
-            -(next_data_size * (v + 1) + origin_gap):  # 500 * 1 + 2 = 500 + 2
-            -(next_data_size * v + origin_gap)  # 500 * 0 + 2 = 2
-        ]
-
-    def scale(self) -> (float, float):
-        current_data = self.current_data(add=0)
-        scale_x = self.view.width() / self.x_range
-        scale_y = self.view.height() / (current_data['high'].max() -
-                                        current_data['low'].min())
-        return scale_x, scale_y
-
-    def scale_x(self):
-        return self.view.width() / self.x_range
-
-    def fit_view(self):
-        # Scale view after change x-range to fit view
-        trans = QTransform()
-        trans.scale(*self.scale())
-        self.view.setTransform(trans)
-
-        # Change scene rect to fit view
-        scene = self.view.scene()
-        scene.setSceneRect(self.make_scene_rect())  # update scene rect
+        return {
+            'time_axis_scaled': self.np_data['time_axis_scaled'][s: e],
+            'high': self.np_data['high'][s: e],
+            'low': self.np_data['low'][s: e],
+            'close': self.np_data['close'][s: e],
+            'open': self.np_data['open'][s: e],
+            'r_high': self.np_data['r_high'][s: e],
+            'r_low': self.np_data['r_low'][s: e],
+            'r_close': self.np_data['r_close'][s: e],
+            'r_open': self.np_data['r_open'][s: e],
+            'len': len(self.np_data['high'][s: e])
+        }
 
 
 attach_timer(Model)

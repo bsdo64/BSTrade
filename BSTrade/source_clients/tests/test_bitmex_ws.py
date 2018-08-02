@@ -1,10 +1,6 @@
-import time
-
-from PyQt5.QtWidgets import QApplication
-
 from BSTrade.source_clients.auth.bitmex import api_keys
-from BSTrade.source_clients.wsclient import WsClient
 from BSTrade.source_clients.bitmexwsclient import BitmexWsClient
+from BSTrade.source_clients.wsclient import WsClient
 
 api_key = api_keys['test']['order']['key']
 api_secret = api_keys['test']['order']['secret']
@@ -13,14 +9,18 @@ isWithdraw = api_keys['test']['order']['withdraw']
 
 class TestBitmexWsClient(object):
     def test_is_http_instance(self):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret, )
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret)
 
         assert issubclass(BitmexWsClient, WsClient)
 
         client.close()
 
     def test_instance(self):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret, )
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret, )
         assert isinstance(client, BitmexWsClient)
         assert client.test is True
         assert client.api_key is api_key
@@ -28,7 +28,9 @@ class TestBitmexWsClient(object):
         client.close()
 
     def test_instance_by_api_key(self):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret)
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret)
 
         assert isinstance(client, BitmexWsClient)
         assert client.test is True
@@ -38,9 +40,12 @@ class TestBitmexWsClient(object):
         client.close()
 
     def test_connect(self, qtbot):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret)
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret)
 
-        with qtbot.waitSignals([client.sig_message], order="strict", timeout=10000) as blocking:
+        with qtbot.waitSignals([client.sig_message], order="strict",
+                               timeout=10000) as blocking:
             client.start()
 
         assert blocking.signal_triggered
@@ -58,7 +63,9 @@ class TestBitmexWsClient(object):
         client.close()
 
     def test_pong(self, qtbot):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret)
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret)
         with qtbot.waitSignal(client.sig_message, timeout=10000) as blocking:
             client.start()
 
@@ -79,8 +86,12 @@ class TestBitmexWsClient(object):
         assert type(client.data()) == str
         assert client.data() == 'pong'
 
+        client.close()
+
     def test_data(self, qtbot):
-        client = BitmexWsClient(test=True, api_key=api_key, api_secret=api_secret)
+        client = BitmexWsClient(test=True,
+                                api_key=api_key,
+                                api_secret=api_secret)
         with qtbot.waitSignal(client.sig_message, timeout=10000) as blocking:
             client.start()
 
@@ -94,9 +105,9 @@ class TestBitmexWsClient(object):
         assert 'docs' in connected
         assert 'limit' in connected
 
-        with qtbot.waitSignal(client.sig_message, timeout=10000) as blocking:
+        with qtbot.waitSignal(client.sig_subscribed, timeout=10000) as blocking:
             client.send({"op": "subscribe", "args": ["trade:XBTUSD"]})
 
         assert blocking.signal_triggered
 
-        print(client.data())
+        client.close()

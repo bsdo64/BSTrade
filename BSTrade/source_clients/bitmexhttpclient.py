@@ -1,6 +1,8 @@
 import json
 import time
 from PyQt5.QtCore import QUrl, QUrlQuery
+
+from BSTrade.util.fn import attach_timer
 from .httpclient import HttpClient
 from .auth import bitmex
 
@@ -81,14 +83,16 @@ class BitmexHttpClient(HttpClient):
             verb = method
 
             if method == 'PUT':
-                header.update({'content-type': 'application/x-www-form-urlencoded'})
+                header.update(
+                    {'content-type': 'application/x-www-form-urlencoded'})
         else:
             verb = 'GET'
 
         url = qurl.path() + '?' + qurl.query(QUrl.FullyDecoded)
         expires = int(round(time.time()) + 5)
 
-        sign = bitmex.generate_signature(self.api_secret, verb, url, expires, data)
+        sign = bitmex.generate_signature(self.api_secret, verb, url, expires,
+                                         data)
         header.update({
             'api-expires': str(expires),
             'api-key': self.api_key,
@@ -190,9 +194,15 @@ class Execution:
         self.client = client
         self.endpoint = self.client.base_uri + '/execution'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -208,9 +218,15 @@ class Execution:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def get_trade_history(self, symbol: str, json_filter: str = None, columns: str = None,
-                          count: int = None, start: int = None, reverse: bool = False,
-                          start_time=None, end_time=None):
+    def get_trade_history(self,
+                          symbol: str,
+                          json_filter: str = None,
+                          columns: str = None,
+                          count: int = None,
+                          start: int = None,
+                          reverse: bool = False,
+                          start_time=None,
+                          end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint + '/tradeHistory', query=[
             ('symbol', c.xstr(symbol)),
@@ -232,9 +248,15 @@ class Funding:
         self.client = client
         self.endpoint = self.client.base_uri + '/funding'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -256,9 +278,15 @@ class Instrument:
         self.client = client
         self.endpoint = self.client.base_uri + '/instrument'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -295,9 +323,16 @@ class Instrument:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def get_composite_index(self, symbol: str = '.XBT', json_filter: str = None, columns: str = None,
-                            count: int = None, start: int = None, reverse: bool = False,
-                            start_time=None, end_time=None, account: int = None):
+    def get_composite_index(self,
+                            symbol: str = '.XBT',
+                            json_filter: str = None,
+                            columns: str = None,
+                            count: int = None,
+                            start: int = None,
+                            reverse: bool = False,
+                            start_time=None,
+                            end_time=None,
+                            account: int = None):
         c = self.client
         qurl = c.make_q_url(self.endpoint + '/compositeIndex', query=[
             ('symbol', c.xstr(symbol)),
@@ -327,9 +362,15 @@ class Insurance:
         self.client = client
         self.endpoint = self.client.base_uri + '/insurance'
 
-    def get(self, symbol: str = '', json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str = '',
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -373,9 +414,15 @@ class Liquidation:
         self.client = client
         self.endpoint = self.client.base_uri + '/liquidation'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -410,9 +457,14 @@ class Order:
         self.client = client
         self.endpoint = self.client.base_uri + '/order'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self, symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -428,10 +480,18 @@ class Order:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def put(self, order_id: str = None, orig_cl_ord_id: str = None, cl_ord_id: str = None,
-            simple_order_qty: float = None, order_qty: float = None, simple_leaves_qty: float = None,
-            leaves_qty: float = None, price: float = None, stop_px: float = None,
-            peg_offset_value: float = None, text: str = None):
+    def put(self,
+            order_id: str = None,
+            orig_cl_ord_id: str = None,
+            cl_ord_id: str = None,
+            simple_order_qty: float = None,
+            order_qty: float = None,
+            simple_leaves_qty: float = None,
+            leaves_qty: float = None,
+            price: float = None,
+            stop_px: float = None,
+            peg_offset_value: float = None,
+            text: str = None):
         c = self.client
         qurl, data = c.make_q_url(self.endpoint, data=[
             ('orderID', c.xstr(order_id)),
@@ -451,11 +511,22 @@ class Order:
         header = c.make_auth_header(qurl, method='PUT', data=data)
         c.put(qurl.toString(QUrl.FullyEncoded), header, data)
 
-    def post(self, symbol, side: str = None, simple_order_qty: float = None,
-             order_qty: float = None, price: float = None, display_qty: float = None,
-             stop_px: float = None, cl_ord_id: str = None, cl_ord_link_id: str = None,
-             peg_offset_value: float = None, peg_price_type: str = None, ord_type: str = None,
-             time_in_force: str = None, exe_inst: str = None, contingency_type: str = None,
+    def post(self,
+             symbol,
+             side: str = None,
+             simple_order_qty: float = None,
+             order_qty: float = None,
+             price: float = None,
+             display_qty: float = None,
+             stop_px: float = None,
+             cl_ord_id: str = None,
+             cl_ord_link_id: str = None,
+             peg_offset_value: float = None,
+             peg_price_type: str = None,
+             ord_type: str = None,
+             time_in_force: str = None,
+             exe_inst: str = None,
+             contingency_type: str = None,
              text: str = None):
         c = self.client
         qurl, data = c.make_q_url(self.endpoint, data=[
@@ -481,7 +552,10 @@ class Order:
         header = c.make_auth_header(qurl, method='POST', data=data)
         c.post(qurl.toString(QUrl.FullyEncoded), header, data)
 
-    def delete(self, order_id: str = None, cl_ord_id: str = None, text: str = None):
+    def delete(self,
+               order_id: str = None,
+               cl_ord_id: str = None,
+               text: str = None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('orderID', c.xstr(order_id)),
@@ -492,7 +566,10 @@ class Order:
         header = c.make_auth_header(qurl, method='DELETE')
         c.delete(qurl.toString(QUrl.FullyEncoded), header)
 
-    def delete_all(self, symbol=None, json_filter=None, text=None):
+    def delete_all(self,
+                   symbol=None,
+                   json_filter=None,
+                   text=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint + '/all', query=[
             ('symbol', c.xstr(symbol)),
@@ -632,9 +709,15 @@ class Quote:
         self.client = client
         self.endpoint = self.client.base_uri + '/quote'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -650,9 +733,16 @@ class Quote:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def get_bucketed(self, bin_size: str, symbol: str, json_filter: str = None,
-                     columns: str = None, count: int = None, start: int = None,
-                     reverse: bool = False, start_time=None, end_time=None):
+    def get_bucketed(self,
+                     bin_size: str,
+                     symbol: str,
+                     json_filter: str = None,
+                     columns: str = None,
+                     count: int = None,
+                     start: int = None,
+                     reverse: bool = False,
+                     start_time=None,
+                     end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint + '/bucketed', query=[
             ('binSize', c.xstr(bin_size)),
@@ -697,9 +787,15 @@ class Settlement:
         self.client = client
         self.endpoint = self.client.base_uri + '/settlement'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -748,9 +844,15 @@ class Trade:
         self.client = client
         self.endpoint = self.client.base_uri + '/trade'
 
-    def get(self, symbol: str, json_filter: str = None, columns: str = None,
-            count: int = None, start: int = None, reverse: bool = False,
-            start_time=None, end_time=None):
+    def get(self,
+            symbol: str,
+            json_filter: str = None,
+            columns: str = None,
+            count: int = None,
+            start: int = None,
+            reverse: bool = False,
+            start_time=None,
+            end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint, query=[
             ('symbol', c.xstr(symbol)),
@@ -766,10 +868,17 @@ class Trade:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def get_bucketed(self, bin_size: str, partial: bool = False,
-                     symbol: str = None, json_filter: str = None, columns: str = None,
-                     count: int = None, start: int = None, reverse: bool = False,
-                     start_time=None, end_time=None):
+    def get_bucketed(self,
+                     bin_size: str,
+                     partial: bool = False,
+                     symbol: str = None,
+                     json_filter: str = None,
+                     columns: str = None,
+                     count: int = None,
+                     start: int = None,
+                     reverse: bool = False,
+                     start_time=None,
+                     end_time=None):
         c = self.client
         qurl = c.make_q_url(self.endpoint + '/bucketed', query=[
             ('binSize', c.xstr(bin_size)),
@@ -800,9 +909,15 @@ class User:
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
 
-    def put(self, firstname: str = None, lastname: str = None, old_password: str = None,
-            new_password: str = None, new_password_confirm: str = None, username: str = None,
-            country: str = None, pgp_pub_key: str = None):
+    def put(self,
+            firstname: str = None,
+            lastname: str = None,
+            old_password: str = None,
+            new_password: str = None,
+            new_password_confirm: str = None,
+            username: str = None,
+            country: str = None,
+            pgp_pub_key: str = None):
         c = self.client
         qurl, data = c.make_q_url(self.endpoint, data=[
             ('firstname', c.xstr(firstname)),
@@ -956,8 +1071,12 @@ class User:
         header = c.make_auth_header(qurl, method='POST', data=data)
         c.post(qurl.toString(QUrl.FullyEncoded), header, data)
 
-    def post_request_withdrawal(self, currency, amount, address,
-                                fee: float = None, otp_token: str = None):
+    def post_request_withdrawal(self,
+                                currency,
+                                amount,
+                                address,
+                                fee: float = None,
+                                otp_token: str = None):
         c = self.client
         qurl, data = c.make_q_url(self.endpoint + '/requestWithdrawal', data=[
             ('currency', c.xstr(currency)),
@@ -997,3 +1116,25 @@ class User:
 
         header = c.make_auth_header(qurl)
         c.get(qurl.toString(QUrl.FullyEncoded), header)
+
+
+attach_timer(BitmexHttpClient)
+attach_timer(Announcement)
+attach_timer(ApiKey)
+attach_timer(Chat)
+attach_timer(Execution)
+attach_timer(Funding)
+attach_timer(Instrument)
+attach_timer(Insurance)
+attach_timer(Leaderboard)
+attach_timer(Liquidation)
+attach_timer(Notification)
+attach_timer(Order)
+attach_timer(OrderBook)
+attach_timer(Position)
+attach_timer(Quote)
+attach_timer(Schema)
+attach_timer(Settlement)
+attach_timer(Stats)
+attach_timer(Trade)
+attach_timer(User)

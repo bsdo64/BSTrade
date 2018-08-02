@@ -1,6 +1,7 @@
 from colorama import init, Fore
 import pprint
 import time
+import traceback
 
 init(autoreset=True)
 
@@ -25,6 +26,11 @@ def perf_timer(argument, debug=True, limit=1):
                         print(Fore.LIGHTRED_EX + 'T4' + s)
                     else:
                         print(Fore.RED + 'T5' + s)
+                    #
+                    # a = [line for line in traceback.format_stack()]
+                    # print(fn.__name__, len(a))
+                    # for i in a:
+                    #     print(i)
 
             else:
                 result = fn(*args, **kwargs)
@@ -36,8 +42,7 @@ def perf_timer(argument, debug=True, limit=1):
     return real_decorator
 
 
-def attach_timer(cls: type, limit=20) -> list:
-
+def attach_timer(cls: type, limit=20, parent=False) -> list:
     """ Attach performance timer to class
 
     Find only subclass's or override methods and
@@ -48,6 +53,8 @@ def attach_timer(cls: type, limit=20) -> list:
     cls : class
         Class that we want to add timers.
     limit : int, optional
+        Print limit timer (ms).
+    parent : bool, optional
         Print limit timer (ms).
 
     Returns
@@ -67,16 +74,27 @@ def attach_timer(cls: type, limit=20) -> list:
 
     """
 
-    parent = cls.mro()[1]  # get super class
-    sub_methods = set(dir(cls)) - set(dir(parent))  # child - parent
-    method_list = [
-        (getattr(cls, func), func) for func in dir(cls) if
-        callable(getattr(cls, func)) and
-        not func.startswith("sig") and
-        (func in sub_methods or
-            (hasattr(parent, func) and
-             getattr(parent, func) != getattr(cls, func)))
-    ]
+    parent_attr = cls.mro()[1]  # get super class
+    sub_methods = set(dir(cls)) - set(dir(parent_attr))  # child - parent
+
+    if parent:
+        method_list = [
+            (getattr(cls, func), func) for func in dir(cls) if
+            callable(getattr(cls, func)) and
+            not func.startswith("sig") and
+            not func.startswith("__class") and
+            not func.startswith("__new") and
+            not func.endswith("ed")
+        ]
+    else:
+        method_list = [
+            (getattr(cls, func), func) for func in dir(cls) if
+            callable(getattr(cls, func)) and
+            not func.startswith("sig") and
+            (func in sub_methods or
+             (hasattr(parent_attr, func) and
+              getattr(parent_attr, func) != getattr(cls, func)))
+        ]
 
     # pprint.pprint(method_list)
 

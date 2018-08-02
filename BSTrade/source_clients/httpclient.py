@@ -1,7 +1,11 @@
 import json
+from typing import Dict, Any, Union
 
-from PyQt5.QtCore import QUrl, pyqtSignal, QObject, Qt
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from PyQt5.QtCore import QUrl, pyqtSignal, QObject
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, \
+    QNetworkReply
+
+from util.fn import attach_timer
 
 
 class HttpClient(QObject):
@@ -13,8 +17,10 @@ class HttpClient(QObject):
         self.request = QNetworkRequest()
         self.request.setRawHeader(b"accept", b"application/json")
         self.request.setRawHeader(b'user-agent',
-                                  b'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, '
-                                  b'like Gecko) Chrome/66.0.3359.139 Safari/537.36')
+                                  b'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                  b'10_13_4) AppleWebKit/537.36 (KHTML, '
+                                  b'like Gecko) Chrome/66.0.3359.139 '
+                                  b'Safari/537.36')
 
         self._ended = True
         self._reply = None
@@ -24,7 +30,7 @@ class HttpClient(QObject):
         self._json = None
         self._headers = None
 
-        self._connect_to_slot()
+        self.network_manager.finished.connect(self.slot_reply_finished)
 
     def reply(self):
         return self._reply
@@ -78,30 +84,37 @@ class HttpClient(QObject):
         self.set_header(header)
         self.network_manager.get(self.request)
 
-    def post(self, url: str, header: list(tuple())=None, data: bytes=None):
+    def post(self,
+             url: str,
+             header: Dict[str, Union[str, Any]]=None,
+             data: bytes=None):
         self.request.setUrl(QUrl(url))
         self.set_header(header)
         self.network_manager.post(self.request, data)
 
-    def put(self, url: str, header: list(tuple())=None, data: bytes=None):
+    def put(self,
+            url: str,
+            header: Dict[str, Union[str, Any]]=None,
+            data: bytes=None):
         self.request.setUrl(QUrl(url))
         self.set_header(header)
         self.network_manager.put(self.request, data)
 
-    def delete(self, url: str, header: list(tuple())=None):
+    def delete(self,
+               url: str,
+               header: Dict[str, Union[str, Any]]=None):
         self.request.setUrl(QUrl(url))
         self.set_header(header)
         self.network_manager.deleteResource(self.request)
-
-    def _connect_to_slot(self):
-        self.network_manager.finished.connect(self.slot_reply_finished)
 
     def slot_reply_finished(self, data: QNetworkReply):
 
         self._reply = data
         self._text = data.readAll()
         self._string = bytes(self._text).decode()
-        self._status_code = data.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+        self._status_code = data.attribute(
+            QNetworkRequest.HttpStatusCodeAttribute
+        )
         self._save_header(data.rawHeaderPairs())
 
         if self.content_type() == 'json':
@@ -115,3 +128,6 @@ class HttpClient(QObject):
 
         self.sig_ended.emit(True)
         data.deleteLater()
+
+
+attach_timer(HttpClient)

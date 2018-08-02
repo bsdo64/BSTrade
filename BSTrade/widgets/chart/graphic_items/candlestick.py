@@ -1,8 +1,9 @@
 import typing
 import numba as nb
+import numpy as np
 
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QRectF, QThreadPool, QObject, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
@@ -12,49 +13,44 @@ from BSTrade.util.fn import attach_timer
 from BSTrade.util.thread import Thread
 
 
-@nb.jit(nogil=True)
-def draw_path(data, path):
+@nb.jit(nogil=True, cache=True, fastmath=True)
+def draw_path(data, p_list: list):
     new_path = QPainterPath()
-    for i, row in data.iterrows():
-        new_path.moveTo(row['time_axis_scaled'], row['r_high'])
-        new_path.lineTo(row['time_axis_scaled'], row['r_low'])
+    for i in np.arange(data['close'].shape[0]):
+        new_path.moveTo(data['time_axis_scaled'][i], data['r_high'][i])
+        new_path.lineTo(data['time_axis_scaled'][i], data['r_low'][i])
 
-    path.addPath(new_path)
+    p_list.append(new_path)
 
 
-@nb.jit(nogil=True)
-def draw_rect(data, path: QPainterPath):
+@nb.jit(nogil=True, cache=True, fastmath=True)
+def draw_rect(data, p_list: list):
     new_path = QPainterPath()
-    for i, row in data.iterrows():
+    new_path.setFillRule(Qt.WindingFill)
+    for i in np.arange(data['close'].shape[0]):
         new_path.addRect(
-            row['time_axis_scaled'] - 15,  # x
-            row['r_open'],  # y
+            data['time_axis_scaled'][i] - 15,  # x
+            data['r_open'][i],  # y
             30,  # width
-            row['open'] - row['close'],  # height
+            data['open'][i] - data['close'][i],  # height
         )
 
-    path.addPath(new_path)
+    p_list.append(new_path)
 
 
 class CandleStickItem(QGraphicsItem):
-    def __init__(self, model, parent=None):
+    def __init__(self, model, view, parent=None):
         QGraphicsItem.__init__(self, parent)
         self.model: Model = model
-        self.max_x_range = self.model.current_x_range()  # 2 <
+        self.view = view
+        self.data_x_range = self.model.current_x_range()  # 2 <
+        self.init_draw = False
+        self.init_len = 0
 
-        self.plus_line_path = QPainterPath()
-        self.minus_line_path = QPainterPath()
-        self.plus_bar_path = QPainterPath()
-        self.plus_bar_path.setFillRule(Qt.WindingFill)
-        self.minus_bar_path = QPainterPath()
-        self.minus_bar_path.setFillRule(Qt.WindingFill)
-
-        self.cache = {
-            'plus_line_path': QPainterPath(),
-            'minus_line_path': QPainterPath(),
-            'plus_bar_path': QPainterPath(),
-            'minus_bar_path': QPainterPath()
-        }
+        self.plus_line_path = []
+        self.minus_line_path = []
+        self.plus_bar_path = []
+        self.minus_bar_path = []
 
         self.thread = Thread()
         self.make_path()
@@ -67,46 +63,73 @@ class CandleStickItem(QGraphicsItem):
         # Set level of detail
         # print(option.levelOfDetailFromTransform(painter.worldTransform()))
 
-        # draw plus line
-        painter.save()
-        pen = QPen()
-        pen.setColor(QColor("#496856"))
-        pen.setCosmetic(True)
-        painter.setPen(pen)
-        # painter.setRenderHint(painter.Antialiasing)
-        self.print_cache_path(painter.drawPath,
-                              'plus_line_path', 1000)
-
-        # draw minus line
-        pen.setColor(QColor("#6F3541"))
-        painter.setPen(pen)
-        self.print_cache_path(painter.drawPath,
-                              'minus_line_path', 1000)
-
-        # draw plus bar
-        self.print_cache_path(painter.fillPath,
-                              'plus_bar_path', 1000, QColor('#7BB888'))
-
-        # draw minus bar
-        self.print_cache_path(painter.fillPath,
-                              'minus_bar_path', 1000, QColor('#CC4E5C'))
-        painter.restore()
-
-    def print_cache_path(self, paint_fn, name, cache_len, *args):
         r = self.model.current_x_range()
-        l = self.cache[name].length()
+        p = self.model.current_x_pos()
 
-        if 0 < r <= cache_len:
-            if l > 0:
-                paint_fn(self.cache[name], *args)  # draw cache
-            else:
-                paint_fn(getattr(self, name), *args)
+        if self.init_len > 0:
 
-        else:
-            if l == 0:
-                self.cache[name] = QPainterPath(getattr(self, name))
+            path_len = len(self.plus_bar_path)
+            nxt = self.model.x_range_next
 
-            paint_fn(getattr(self, name), *args)  # draw non-cache
+            s = (p - self.init_len) // nxt + 1 if p > self.init_len else 0
+            e = (r - self.init_len) // nxt + 2
+            e = e - 1 if path_len < e else e  # 1 > 2
+
+            # print("range : [{},{}]".format(s, e))
+
+            if 0 < path_len:
+
+                if e - s < 5:
+                    painter.save()
+                    pen = QPen()
+                    pen.setCosmetic(True)
+                    painter.setPen(pen)
+
+                    path = QPainterPath()
+                    path2 = QPainterPath()
+                    path3 = QPainterPath()
+                    path4 = QPainterPath()
+
+                    for i in range(s, e):
+                        path.addPath(self.plus_line_path[i])
+                        path2.addPath(self.minus_line_path[i])
+                        path3.addPath(self.plus_bar_path[i])
+                        path4.addPath(self.minus_bar_path[i])
+
+                    # draw plus line
+                    pen.setColor(QColor("#496856"))
+                    painter.setPen(pen)
+                    painter.drawPath(path)
+
+                    # draw minus line
+                    pen.setColor(QColor("#6F3541"))
+                    painter.setPen(pen)
+                    painter.drawPath(path2)
+
+                    # draw plus bar
+                    painter.fillPath(path3, QColor('#7BB888'))
+
+                    # draw minus bar
+                    painter.fillPath(path4, QColor('#CC4E5C'))
+
+                    painter.restore()
+                else:
+                    painter.save()
+                    pen = QPen()
+                    pen.setCosmetic(True)
+                    pen.setColor(QColor(Qt.white))
+                    painter.setPen(pen)
+
+                    path = QPainterPath()
+                    path2 = QPainterPath()
+
+                    for i in range(s, e):
+                        path.addPath(self.plus_line_path[i])
+                        path2.addPath(self.minus_line_path[i])
+
+                    painter.drawPath(path)
+                    painter.drawPath(path2)
+                    painter.restore()
 
     def wheelEvent(self, event: 'QGraphicsSceneWheelEvent'):
         super().wheelEvent(event)
@@ -117,55 +140,53 @@ class CandleStickItem(QGraphicsItem):
         self.make_path()
 
     def make_path(self):
-        df = self.model.current_data()
-        plus_cond = 'close > open'
+        if len(self.plus_bar_path) == 0:
+            df = self.model.c_data
+            if 'len' in df:
+                print('draw new initial path')
+                self.init_len = df['len']
+                self.save_path(df)
 
-        if self.plus_bar_path.length() == 0.0:  # path.length == 0.0
-            # draw new initial path
-            print('draw new initial path')
-            plus_df = df[df.eval(plus_cond)]
-            minus_df = df[~df.eval(plus_cond)]
-
-            self.create_in_thread(self.draw_path,
-                                  plus_df,
-                                  self.plus_line_path)
-            self.create_in_thread(self.draw_path,
-                                  minus_df,
-                                  self.minus_line_path)
-            self.create_in_thread(self.draw_rect,
-                                  plus_df,
-                                  self.plus_bar_path)
-            self.create_in_thread(self.draw_rect,
-                                  minus_df,
-                                  self.minus_bar_path)
+                self.init_draw = True
 
         else:
-            if len(df) > self.max_x_range:  # 3 > 2
-                self.max_x_range += self.model.next_x_range()  # 2 += 500
-
-                next_df = self.model.next_data()
-                plus_df = next_df[next_df.eval(plus_cond)]
-                minus_df = next_df[~next_df.eval(plus_cond)]
+            if self.model.current_x_range() > self.data_x_range:  # 3 > 2
                 print('draw next path')
-                self.create_in_thread(self.draw_path,
-                                      plus_df,
-                                      self.plus_line_path)
-                self.create_in_thread(self.draw_path,
-                                      minus_df,
-                                      self.minus_line_path)
 
-                self.create_in_thread(self.draw_rect,
-                                      plus_df,
-                                      self.plus_bar_path)
-                self.create_in_thread(self.draw_rect,
-                                      minus_df,
-                                      self.minus_bar_path)
+                last = self.data_x_range
+                nxt = self.model.x_range_next
+                self.data_x_range += nxt  # 2 += 500
 
-    def draw_rect(self, data, path):
-        draw_rect(data, path)
+                next_df = self.model.next_data(d_s=last, d_len=nxt)
 
-    def draw_path(self, data, path):
-        draw_path(data, path)
+                self.save_path(next_df)
+
+    def save_path(self, df):
+
+        plus_cond = df['close'] > df['open']
+        plus_df = {}
+        for i in df:
+            if i != 'len':
+                plus_df[i] = df[i][plus_cond]
+
+        minus_df = {}
+        for i in df:
+            if i != 'len':
+                minus_df[i] = df[i][np.invert(plus_cond)]
+
+        self.create_in_thread(draw_path,
+                              plus_df,
+                              self.plus_line_path)
+        self.create_in_thread(draw_path,
+                              minus_df,
+                              self.minus_line_path)
+
+        self.create_in_thread(draw_rect,
+                              plus_df,
+                              self.plus_bar_path)
+        self.create_in_thread(draw_rect,
+                              minus_df,
+                              self.minus_bar_path)
 
     def create_in_thread(self, fn, *args):
         w = self.thread.make_worker(fn, *args)
@@ -173,7 +194,7 @@ class CandleStickItem(QGraphicsItem):
         self.thread.start(w)
 
     def boundingRect(self):
-        return self.model.make_scene_rect()
+        return self.view.rect
 
 
 attach_timer(CandleStickItem, limit=10)

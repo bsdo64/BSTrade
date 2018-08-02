@@ -1,23 +1,25 @@
-from sys import platform
-
-import pandas
-
+import numpy as np
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QColor, QKeyEvent
-from PyQt5.QtWidgets import QGraphicsView
+from PyQt5.QtCore import Qt, QSize, pyqtSignal, QRectF
+from PyQt5.QtGui import QColor, QKeyEvent, QTransform
+from PyQt5.QtWidgets import QGraphicsView, QFrame
 
 from BSTrade.data.model import Model
+from BSTrade.optimize.math import cache_scale_x, cache_scale_y, nb_max_min
+from BSTrade.util.fn import attach_timer
 from BSTrade.widgets.chart.graphic_items.candlestick import CandleStickItem
 from BSTrade.widgets.chart.graphic_scenes.chart_scene import ChartScene
-from BSTrade.util.fn import attach_timer
-from BSTrade.util.thread import Thread
 
 
 class ChartView(QGraphicsView):
-    def __init__(self, parent=None):
-        QGraphicsView.__init__(self, parent)
+    sig_chart_wheel = pyqtSignal(object)
+    sig_chart_resize = pyqtSignal(object)
+    sig_chart_mouse_move = pyqtSignal(object)
+    sig_chart_key_press = pyqtSignal(object)
 
+    def __init__(self, model: Model, parent=None):
+        QGraphicsView.__init__(self, parent)
+        self.setFrameStyle(QFrame.NoFrame)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewportMargins(0, 0, 0, 0)
@@ -27,20 +29,13 @@ class ChartView(QGraphicsView):
         # self.setRenderHint(QPainter.Antialiasing)
         # self.setFrameStyle(QFrame.NoFrame)
 
-        self.thread = Thread()
-        w = self.thread.make_worker(self.open_file, 'BSTrade/data/bitmex_1m_2018.pkl')
-        w.sig.finished.connect(self.set_scene)
-        self.thread.start(w)
-
+        self.model = model
         self.open_file_finished = False
-
-    def open_file(self, file_name):
-        self.model = Model(pandas.read_pickle(file_name), self)
+        self.rect = QRectF(0, 0, 0, 0)
+        self.chart_item = CandleStickItem(self.model, self)
+        self.set_scene()
 
     def set_scene(self):
-        print('call set_scene')
-        self.chart_item = CandleStickItem(self.model)
-
         scene = ChartScene()
         scene.addItem(self.chart_item)
 
@@ -51,14 +46,18 @@ class ChartView(QGraphicsView):
         # print(self.scene().itemAt(self.mapToScene(event.pos()), QTransform()))
         print(self.mapToScene(event.pos()))
         print(event.pos())
+
         super().mouseMoveEvent(event)
+        self.sig_chart_mouse_move.emit(event)
 
     def resizeEvent(self, event: QtGui.QResizeEvent):
         delta: QSize = (event.size() - event.oldSize())
 
         if hasattr(self, 'chart_item'):
-            self.model.change_x_range(delta.width())
+            self.model.change_x(delta.width(), 0)
+
         super().resizeEvent(event)
+        self.sig_chart_resize.emit(event)
 
     def wheelEvent(self, event: QtGui.QWheelEvent):
         """ ChartView's wheel event handler
@@ -83,28 +82,59 @@ class ChartView(QGraphicsView):
             delta_x = event.angleDelta().x()
             delta_y = event.angleDelta().y()
 
-            self.model.change_x_range(delta_y)
-            self.model.change_x_pos(delta_x)
+            self.model.change_x(delta_x, delta_y)
+            self.fit_view()
 
         super().wheelEvent(event)
+        self.sig_chart_wheel.emit(event)
+
+    def make_scene_rect(self, data):
+        self.rect = QRectF(
+            self.model.rect_x(),
+            np.min(data['r_high']),
+            self.model.x_range,
+            nb_max_min(data['high'], data['low'])
+        )
+
+        return self.rect
+
+    def fit_view(self):
+        data = self.model.current_data()
+
+        if data['len'] > 0:
+
+            # Scale view after change xrange to fit view
+            trans = QTransform()
+            sc = (cache_scale_x(self.width(),
+                                self.model.x_range),
+                  cache_scale_y(self.height(),
+                                data['high'],
+                                data['low']))
+            trans.scale(*sc)
+            self.setTransform(trans)
+
+            # Change scene rect to fit view
+            scene = self.scene()
+            scene.setSceneRect(self.make_scene_rect(data))  # update scene rect
 
     def keyPressEvent(self, event: QKeyEvent):
         press = event.key()
 
         if press == Qt.Key_Left:
-            self.model.change_x_pos(1)
+            self.model.change_x(1, 0)
             self.chart_item.keyPressEvent(event)
         elif press == Qt.Key_Right:
-            self.model.change_x_pos(-1)
+            self.model.change_x(-1, 0)
             self.chart_item.keyPressEvent(event)
         elif press == Qt.Key_Up:
-            self.model.change_x_range(10)
+            self.model.change_x(10, 0)
             self.chart_item.keyPressEvent(event)
         elif press == Qt.Key_Down:
-            self.model.change_x_range(-10)
+            self.model.change_x(-10, 0)
             self.chart_item.keyPressEvent(event)
 
         super().keyPressEvent(event)
+        self.sig_chart_key_press.emit(event)
 
 
 attach_timer(ChartView)

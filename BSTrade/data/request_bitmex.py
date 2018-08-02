@@ -1,15 +1,21 @@
 import datetime as dt
 import os
+import numpy as np
 
-from PyQt5.QtCore import QTimer, QCoreApplication
+import ciso8601
+from PyQt5.QtCore import QTimer, QCoreApplication, pyqtSignal, QObject
 from BSTrade.source_clients.bitmexhttpclient import BitmexHttpClient
 from BSTrade.source_clients.auth import bitmex
 
 import pandas as pd
 
 
-class Request:
+class Request(QObject):
+    sig_finish = pyqtSignal()
+
     def __init__(self, parent=None, start=0, data=pd.DataFrame()):
+        QObject.__init__(self)
+
         self.parent = parent
         # self.start = 0  # 2017 - 01- 01
         self.start = start
@@ -68,30 +74,63 @@ class Request:
 
         if len(j) > 0:
             new_df = pd.DataFrame(j)
-            new_df['timestamp'] = new_df['timestamp'].astype('datetime64')
-            self.df = self.df.append(new_df, ignore_index=True)
+            self.df = self.df.append(new_df, ignore_index=True, sort=False)
         elif len(j) == 0:
+            self.refine_data()
+
             self.df.to_pickle('bitmex_1m_2018.pkl')
             print('saved !')
             print("Last index : {}".format(self.df.shape[0]))
-            QCoreApplication.quit(self.parent)
+            self.sig_finish.emit()
 
         if s * n >= 525600 * 2:
+            self.refine_data()
+
             self.df.to_pickle('bitmex_1m_2018_end.pkl')
             print('saved to the end of {}!'.format(self.now.year))
-            QCoreApplication.quit(self.parent)
+            self.sig_finish.emit()
+
+    def refine_data(self):
+        self.df = self.df\
+            .sort_values(by=["timestamp"], ascending=True)\
+            .reset_index(drop=True)
+
+        if 'index' in self.df:
+            del self.df['index']
+
+        if 'level_0' in self.df:
+            del self.df['level_0']
+
+        print()
+        print('Checking Data')
+        print('----------------------------------------')
+        ts_date = self.df['timestamp'].astype('datetime64')
+        v = ts_date.diff().astype(np.int64)
+        print('Un sorted : ', v[v != 60000000000][1:])
+
+        rng = pd.date_range('01-01-2018',
+                            periods=len(ts_date),
+                            freq='min')
+        v = rng.difference(ts_date).format()
+        print('Missing data : ', v)
+        print('----------------------------------------')
+        print()
 
 
-class Requester:
-    def __init__(self, parent):
+class Requester(QObject):
+    finished = pyqtSignal(object)
+
+    def __init__(self, parent=None):
+        QObject.__init__(self)
         self.parent = parent
         self.r = Request(self.parent, *self.check_current_data())
+        self.r.sig_finish.connect(self.slt_finish)
 
     def exec(self):
-        timer = QTimer(self.parent)
-        timer.setInterval(1000)
-        timer.timeout.connect(self.r.request_data)
-        timer.start()
+        self.timer = QTimer(self.parent)
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.r.request_data)
+        self.timer.start()
 
     def check_current_data(self):
         now = dt.datetime.now()
@@ -101,7 +140,7 @@ class Requester:
         if os.path.isfile(filename):
             df = pd.read_pickle(filename)
             print(df.dtypes)
-            saved_last_time = df['timestamp'][df.shape[0] - 1]
+            saved_last_time = ciso8601.parse_datetime(df['timestamp'][df.shape[0] - 1])
             expect_last_time = (
                 dt.datetime(now.year, 1, 1, tzinfo=dt.timezone.utc)
                 + dt.timedelta(minutes=df.shape[0] - 1)
@@ -123,6 +162,11 @@ class Requester:
             print()
 
         return start_from, df
+
+    def slt_finish(self):
+        self.timer.stop()
+        del self.timer
+        self.finished.emit(self.r.df)
 
 
 if __name__ == '__main__':

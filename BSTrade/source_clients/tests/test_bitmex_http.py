@@ -29,6 +29,8 @@ class TestBitmexHttpClient(object):
         assert client1.api_key is 'abc'
         assert client1.api_secret is 'abc'
 
+        del client1
+
     def test_base_uri(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.get_base_uri()
@@ -103,23 +105,30 @@ class TestBitmexChat(object):
 
     def test_post(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Chat.post(" ", channel_id=1)
+            client.Chat.post("Hello", channel_id=1)
 
         j = client.json()
 
+        # {
+        #   'id': 55167,
+        #   'date': '2018-08-02T13:51:12.660Z',
+        #   'user': 'dddfefef',
+        #   'message': 'Hello',
+        #   'html': 'Hello\n',
+        #   'fromBot': False,
+        #   'channelID': 1
+        # }
+
         assert blocking.signal_triggered
         assert type(j) == dict
-        # assert 'channelID' in j
-        # assert 'date' in j
-        # assert 'fromBot' in j
-        # assert 'html' in j
-        # assert 'id' in j
-        # assert 'message' in j
-        # assert 'user' in j
 
-        assert 'error' in j
-        assert 'message' in j.get('error')
-        assert 'name' in j.get('error')
+        assert 'id' in j
+        assert 'date' in j
+        assert 'user' in j
+        assert 'message' in j
+        assert 'html' in j
+        assert 'fromBot' in j
+        assert 'channelID' in j
 
     def test_get_channels(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
@@ -151,6 +160,56 @@ class TestBitmexExecution(object):
             client.Execution.get('XBTUSD')
 
         j = client.json()
+
+        # [{
+        #   'execID': '3f8c717e-c932-20a0-55fb-73f482d67e4d',
+        #   'orderID': '97958071-0b27-2bbd-865e-a90699380736',
+        #   'clOrdID': '',
+        #   'clOrdLinkID': '',
+        #   'account': 31637,
+        #   'symbol': 'XBTUSD',
+        #   'side': 'Buy',
+        #   'lastQty': 830,
+        #   'lastPx': 8610.5,
+        #   'underlyingLastPx': None,
+        #   'lastMkt': 'XBME',
+        #   'lastLiquidityInd': 'RemovedLiquidity',
+        #   'simpleOrderQty': None,
+        #   'orderQty': 830,
+        #   'price': 8610.5,
+        #   'displayQty': None,
+        #   'stopPx': None,
+        #   'pegOffsetValue': None,
+        #   'pegPriceType': '',
+        #   'currency': 'USD',
+        #   'settlCurrency': 'XBt',
+        #   'execType': 'Trade',
+        #   'ordType': 'Limit',
+        #   'timeInForce': 'GoodTillCancel',
+        #   'execInst': '',
+        #   'contingencyType': '',
+        #   'exDestination': 'XBME',
+        #   'ordStatus': 'Filled',
+        #   'triggered': '',
+        #   'workingIndicator': False,
+        #   'ordRejReason': '',
+        #   'simpleLeavesQty': 0,
+        #   'leavesQty': 0,
+        #   'simpleCumQty': 0.0963962,
+        #   'cumQty': 830,
+        #   'avgPx': 8610.5,
+        #   'commission': 0.00075,
+        #   'tradePublishIndicator': 'PublishTrade',
+        #   'multiLegReportingType': 'SingleSecurity',
+        #   'text': 'Submission from testnet.bitmex.com',
+        #   'trdMatchID': 'dcfb988b-7ae6-97f4-4ca7-ad900d4fee30',
+        #   'execCost': -9639620,
+        #   'execComm': 7230,
+        #   'homeNotional': 0.0963962,
+        #   'foreignNotional': -830,
+        #   'transactTime': '2018-02-13T18:40:56.573Z',
+        #   'timestamp': '2018-02-13T18:40:56.573Z'},
+        # }]
 
         assert blocking.signal_triggered
         assert client.status() == 200
@@ -402,15 +461,17 @@ class TestBitmexOrder(object):
 
     def test_put_bulk(self, qtbot):
         # Post bulk order
-        with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Order.post_bulk(orders=[{"symbol":"XBTUSD","price": 1000,"orderQty": 3}])
+        with qtbot.waitSignal(client.sig_ended, timeout=10000):
+            client.Order.post_bulk(
+                orders=[{"symbol": "XBTUSD", "price": 1000, "orderQty": 3}])
 
         ordered = client.json()
         ordered_id = ordered[0]['orderID']
 
         # Put bulk order
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Order.put_bulk(orders=[{"orderID": ordered_id, "price": 1000, "orderQty": 4}])
+            client.Order.put_bulk(
+                orders=[{"orderID": ordered_id, "price": 1000, "orderQty": 4}])
 
         j = client.json()
 
@@ -432,7 +493,8 @@ class TestBitmexOrder(object):
 
     def test_post_bulk(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.Order.post_bulk(orders=[{"symbol":"XBTUSD","price": 1000,"orderQty": 3}])
+            client.Order.post_bulk(
+                orders=[{"symbol": "XBTUSD", "price": 1000, "orderQty": 3}])
 
         j = client.json()
 
@@ -558,10 +620,14 @@ class TestBitmexPosition(object):
         with qtbot.waitSignal(client.sig_ended, timeout=10000):
             client.Position.post_leverage('XBTUSD', 1)
 
+        j = client.json()
+        print(j)
+
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
             client.Position.post_transfer_margin('XBTUSD', 10000)
 
         j = client.json()
+        print(j)
 
         assert blocking.signal_triggered
         assert client.status() == 200
@@ -571,6 +637,7 @@ class TestBitmexPosition(object):
             client.Position.post_transfer_margin('XBTUSD', -9000)
 
         j = client.json()
+        print(j)
 
         assert blocking.signal_triggered
         assert 200 == client.status()
@@ -880,7 +947,8 @@ class TestBitmexUser(object):
 
     def test_post_preference(self, qtbot):
         with qtbot.waitSignal(client.sig_ended, timeout=10000) as blocking:
-            client.User.post_preferences(prefs='{"hello": "world"}', overwrite=True)
+            client.User.post_preferences(prefs='{"hello": "world"}',
+                                         overwrite=True)
 
         j = client.json()
 

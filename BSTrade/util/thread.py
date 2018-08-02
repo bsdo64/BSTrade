@@ -47,9 +47,12 @@ class Worker(QRunnable):
 class Thread:
     def __init__(self):
         self.threadpool = QThreadPool()
+        self.threadpool.setMaxThreadCount(10)
+        self.queue = {}
 
     def make_worker(self, fn, *args, **kwargs) -> Worker:
-        return Worker(fn, *args, **kwargs)
+        worker = Worker(fn, *args, **kwargs)
+        return worker
 
     def connect_sig(self, worker: Worker, signal, fn):
         worker.sig[signal].connect(fn)

@@ -1,12 +1,19 @@
+from PyQt5.QtGui import QWheelEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
-from BSTrade.util.fn import attach_timer
 from BSTrade.layouts.manager import ChartLayoutManager
+from BSTrade.util.fn import attach_timer
 
 
 class BSChartWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+
+        self.setStyleSheet("""
+            QWidget {
+                background: white;
+            }
+        """)
 
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -14,9 +21,15 @@ class BSChartWidget(QWidget):
         self.vbox.setSpacing(1)
         self.vbox.setContentsMargins(0, 0, 0, 0)
 
+        # self.data = DataManager(self)
         self.layout = ChartLayoutManager(self)
-        self.vbox.addWidget(self.layout.get_chart_panes())
-        self.vbox.addWidget(self.layout.get_time_axis())
+        self.chart = self.layout.chart_pane()
+        self.time = self.layout.time_pane()
+        self.vbox.addWidget(self.chart)
+        self.vbox.addWidget(self.time)
+
+    def wheelEvent(self, event: QWheelEvent):
+        super().wheelEvent(event)
 
 
 attach_timer(BSChartWidget)

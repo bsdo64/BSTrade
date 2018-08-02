@@ -3,7 +3,7 @@ import json
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QTableView
 
-from source_clients.bitmexwsclient import BitmexWsClient
+from BSTrade.source_clients.bitmexwsclient import BitmexWsClient
 from queue import Queue
 
 
@@ -51,9 +51,8 @@ class OrderBookTableView(QTableView):
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        QMainWindow.__init__(self, parent)
         self.ws = BitmexWsClient(test=False)
-
 
         self.setup_ui()
 
@@ -74,10 +73,10 @@ class MainWindow(QMainWindow):
         dock1.setMinimumHeight(100)
         dock1.setWindowTitle("Right dock")
 
-        orderbook = OrderBookTableView()
-        orderbook_model = OrderBookModel(ws_source=self.ws)
-        orderbook.setModel(orderbook_model)
-        dock1.setWidget(orderbook)
+        order_book = OrderBookTableView()
+        order_book_model = OrderBookModel(ws_source=self.ws)
+        order_book.setModel(order_book_model)
+        dock1.setWidget(order_book)
 
         self.addDockWidget(Qt.RightDockWidgetArea, dock1)
 
