@@ -31,8 +31,8 @@ class TimeAxisView(QGraphicsView):
 
     def slot_wheel_re_model(self, ev: QWheelEvent):
         t = self.model.c_data['time_axis']
-        print()
-        print(ev.pos())
-        print(len(t))
-        print(t[0], t[-1])
-        print(t * 60 % 3600)
+        # print()
+        # print(ev.pos())
+        # print(len(t))
+        # print(t[0], t[-1])
+        # print(t * 60 % 3600)

@@ -5,7 +5,7 @@ from PyQt5.QtCore import QUrl, pyqtSignal, QObject
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, \
     QNetworkReply
 
-from util.fn import attach_timer
+from BSTrade.util.fn import attach_timer
 
 
 class HttpClient(QObject):

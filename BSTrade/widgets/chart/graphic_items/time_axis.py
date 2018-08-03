@@ -28,6 +28,7 @@ class TimeAxisItem(QGraphicsItem):
         painter.save()
         painter.setBrush(Qt.white)
         painter.setPen(Qt.NoPen)
+        painter.setRenderHint(painter.Antialiasing)
 
         painter.drawPath(self.time_path)
 

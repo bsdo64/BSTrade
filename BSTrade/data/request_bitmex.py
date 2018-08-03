@@ -38,9 +38,6 @@ class Request(QObject):
         # 880000 - 525600
         self.now_to_min = (self.now - self.year_first).total_seconds() // 60
         # 880000 - (525600 + 100000)
-        self.now_from_start = (
-            self.now - (self.year_first + dt.timedelta(minutes=self.start))
-        ).total_seconds() // 60
 
         self.client.sig_ended.connect(self.get_data)
 
@@ -68,7 +65,7 @@ class Request(QObject):
         print('now: {}, current: {}, percent: {:.2f}%, rate_limit: {}'.format(
             self.now_to_min,
             current,
-            current/self.now_from_start * 100,
+            current/self.now_to_min * 100,
             self.rate_limit
         ))
 

@@ -90,11 +90,14 @@ class CandleStickItem(QGraphicsItem):
                     path3 = QPainterPath()
                     path4 = QPainterPath()
 
-                    for i in range(s, e):
-                        path.addPath(self.plus_line_path[i])
-                        path2.addPath(self.minus_line_path[i])
-                        path3.addPath(self.plus_bar_path[i])
-                        path4.addPath(self.minus_bar_path[i])
+                    try:
+                        for i in range(s, e):
+                            path.addPath(self.plus_line_path[i])
+                            path2.addPath(self.minus_line_path[i])
+                            path3.addPath(self.plus_bar_path[i])
+                            path4.addPath(self.minus_bar_path[i])
+                    except IndexError as err:
+                        pass
 
                     # draw plus line
                     pen.setColor(QColor("#496856"))
@@ -123,9 +126,12 @@ class CandleStickItem(QGraphicsItem):
                     path = QPainterPath()
                     path2 = QPainterPath()
 
-                    for i in range(s, e):
-                        path.addPath(self.plus_line_path[i])
-                        path2.addPath(self.minus_line_path[i])
+                    try:
+                        for i in range(s, e):
+                            path.addPath(self.plus_line_path[i])
+                            path2.addPath(self.minus_line_path[i])
+                    except IndexError as err:
+                        pass
 
                     painter.drawPath(path)
                     painter.drawPath(path2)
