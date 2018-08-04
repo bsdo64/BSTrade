@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QWheelEvent
+from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtGui import QColor, QWheelEvent, QTransform
 from PyQt5.QtWidgets import QGraphicsView, QFrame
 
 from BSTrade.widgets.chart.graphic_scenes.time_scene import TimeScene
@@ -17,7 +17,8 @@ class TimeAxisView(QGraphicsView):
         self.setBackgroundBrush(QColor('#1B1D27'))
 
         self.model = model
-        self.time_axis = TimeAxisItem(model)
+        self.rect = QRectF(0, 0, 0, 0)
+        self.time_axis = TimeAxisItem(model, self)
         self.set_scene()
 
     def set_scene(self):
@@ -29,10 +30,26 @@ class TimeAxisView(QGraphicsView):
 
         super().wheelEvent(event)
 
+    def make_scene_rect(self):
+        self.rect = QRectF(
+            0, 0,
+            self.width(), self.height()
+        )
+
+        return self.rect
+
     def slot_wheel_re_model(self, ev: QWheelEvent):
-        t = self.model.c_data['time_axis']
-        # print()
-        # print(ev.pos())
-        # print(len(t))
-        # print(t[0], t[-1])
-        # print(t * 60 % 3600)
+
+        self.fit_view()
+
+    def fit_view(self):
+        data = self.model.current_data()
+
+        if data['len'] > 0:
+
+            scene: TimeScene = self.scene()
+            scene.setSceneRect(self.make_scene_rect())
+
+            print(self.make_scene_rect())
+
+            self.update()

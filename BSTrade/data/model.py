@@ -14,7 +14,7 @@ class Model:
     _DEFAULT_X_RANGE = 1000
     _DEFAULT_NEXT_X_RANGE = 1000
     INT_MAX = sys.maxsize // 10 ** 10
-    X_TIME = time.time() // 60 * 50
+    X_TIME = time.time() // 60 * 50  # sec // 60s * marker_gap -> scaled min
 
     def __init__(self, data: pd.DataFrame):
         self.series = data
@@ -59,15 +59,13 @@ class Model:
         if self.x_range + y > self._DEFAULT_X_RANGE:
             self.x_range += y
 
-            # self.fit_view()
-
     def current_x_range(self) -> int:
         return cache_x_range(self.x_pos,
                              self.x_range,
-                             self.marker_gap)  # 100 // 50 = 2
+                             self.marker_gap)  # (num1 + num2) // num3
 
     def current_x_pos(self) -> int:
-        return cache_x_pos(self.x_pos, self.marker_gap)
+        return cache_x_pos(self.x_pos, self.marker_gap)  # num1 // num2
 
     def current_data(self):
 
@@ -77,19 +75,7 @@ class Model:
             e = -p if 0 < p else None
 
             if 0 < -s < self.DATA_LEN:
-                self.c_data = {
-                    'time_axis_scaled': self.np_data['time_axis_scaled'][s: e],
-                    'time_axis': self.np_data['time_axis'][s: e],
-                    'high': self.np_data['high'][s: e],
-                    'r_high': self.np_data['r_high'][s: e],
-                    'low': self.np_data['low'][s: e],
-                    'r_low': self.np_data['r_low'][s: e],
-                    'close': self.np_data['close'][s: e],
-                    'r_close': self.np_data['r_close'][s: e],
-                    'open': self.np_data['open'][s: e],
-                    'r_open': self.np_data['r_open'][s: e],
-                    'len': len(self.np_data['r_open'][s: e])
-                }
+                self.c_data = self._create_data(s, e)
 
         return self.c_data
 
@@ -100,17 +86,21 @@ class Model:
         s = -(d_s+d_len)
         e = -d_s or None
 
+        return self._create_data(s, e)
+
+    def _create_data(self, start, end):
         return {
-            'time_axis_scaled': self.np_data['time_axis_scaled'][s: e],
-            'high': self.np_data['high'][s: e],
-            'low': self.np_data['low'][s: e],
-            'close': self.np_data['close'][s: e],
-            'open': self.np_data['open'][s: e],
-            'r_high': self.np_data['r_high'][s: e],
-            'r_low': self.np_data['r_low'][s: e],
-            'r_close': self.np_data['r_close'][s: e],
-            'r_open': self.np_data['r_open'][s: e],
-            'len': len(self.np_data['high'][s: e])
+            'time_axis_scaled': self.np_data['time_axis_scaled'][start: end],
+            'time_axis': self.np_data['time_axis'][start: end],
+            'high': self.np_data['high'][start: end],
+            'r_high': self.np_data['r_high'][start: end],
+            'low': self.np_data['low'][start: end],
+            'r_low': self.np_data['r_low'][start: end],
+            'close': self.np_data['close'][start: end],
+            'r_close': self.np_data['r_close'][start: end],
+            'open': self.np_data['open'][start: end],
+            'r_open': self.np_data['r_open'][start: end],
+            'len': len(self.np_data['r_open'][start: end])
         }
 
 
