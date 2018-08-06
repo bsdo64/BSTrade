@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QGraphicsView, QFrame
 
 from BSTrade.widgets.chart.graphic_scenes.time_scene import TimeScene
 from BSTrade.widgets.chart.graphic_items.time_axis import TimeAxisItem
+from BSTrade.util.fn import attach_timer
 
 
 class TimeAxisView(QGraphicsView):
@@ -41,15 +42,13 @@ class TimeAxisView(QGraphicsView):
     def slot_wheel_re_model(self, ev: QWheelEvent):
 
         self.fit_view()
+        self.update()
 
     def fit_view(self):
-        data = self.model.current_data()
+        scene: TimeScene = self.scene()
+        scene.setSceneRect(self.make_scene_rect())
 
-        if data['len'] > 0:
+        self.time_axis.make_path()
 
-            scene: TimeScene = self.scene()
-            scene.setSceneRect(self.make_scene_rect())
 
-            print(self.make_scene_rect())
-
-            self.update()
+attach_timer(TimeAxisView)

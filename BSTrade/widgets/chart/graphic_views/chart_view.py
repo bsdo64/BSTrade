@@ -1,13 +1,14 @@
 import numpy as np
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QSize, pyqtSignal, QRectF
-from PyQt5.QtGui import QColor, QKeyEvent, QTransform
+from PyQt5.QtGui import QColor, QTransform
 from PyQt5.QtWidgets import QGraphicsView, QFrame
 
 from BSTrade.data.model import Model
 from BSTrade.optimize.math import cache_scale_x, cache_scale_y, nb_max_min
 from BSTrade.util.fn import attach_timer
-from BSTrade.widgets.chart.graphic_items.candlestick import CandleStickItem
+from BSTrade.widgets.chart.graphic_items import CandleStickItem
+from BSTrade.widgets.chart.graphic_items import GridXItem
 from BSTrade.widgets.chart.graphic_scenes.chart_scene import ChartScene
 
 
@@ -33,10 +34,12 @@ class ChartView(QGraphicsView):
         self.open_file_finished = False
         self.rect = QRectF(0, 0, 0, 0)
         self.chart_item = CandleStickItem(self.model, self)
+        self.chart_line = GridXItem(self.model, self)
         self.set_scene()
 
     def set_scene(self):
         scene = ChartScene()
+        scene.addItem(self.chart_line)
         scene.addItem(self.chart_item)
 
         self.setScene(scene)
@@ -55,6 +58,8 @@ class ChartView(QGraphicsView):
 
         if hasattr(self, 'chart_item'):
             self.model.change_x(delta.width(), 0)
+            self.model.set_view_width(self.width())
+            self.model.set_view_height(self.height())
 
         super().resizeEvent(event)
         self.sig_chart_resize.emit(event)
@@ -116,25 +121,6 @@ class ChartView(QGraphicsView):
             # Change scene rect to fit view
             scene = self.scene()
             scene.setSceneRect(self.make_scene_rect(data))  # update scene rect
-
-    def keyPressEvent(self, event: QKeyEvent):
-        press = event.key()
-
-        if press == Qt.Key_Left:
-            self.model.change_x(1, 0)
-            self.chart_item.keyPressEvent(event)
-        elif press == Qt.Key_Right:
-            self.model.change_x(-1, 0)
-            self.chart_item.keyPressEvent(event)
-        elif press == Qt.Key_Up:
-            self.model.change_x(10, 0)
-            self.chart_item.keyPressEvent(event)
-        elif press == Qt.Key_Down:
-            self.model.change_x(-10, 0)
-            self.chart_item.keyPressEvent(event)
-
-        super().keyPressEvent(event)
-        self.sig_chart_key_press.emit(event)
 
 
 attach_timer(ChartView)

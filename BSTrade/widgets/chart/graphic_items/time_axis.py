@@ -1,11 +1,12 @@
-import numpy as np
 from datetime import datetime, timezone
+import numpy as np
 
-from PyQt5.QtCore import Qt, QPoint, QRectF, QPointF
+from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QPainterPath, QPainter, QFont, QPen
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
 from BSTrade.data.model import Model
+from BSTrade.util.fn import attach_timer
 
 
 class TimeAxisItem(QGraphicsItem):
@@ -14,11 +15,8 @@ class TimeAxisItem(QGraphicsItem):
         self.model: Model = model
         self.view = view
 
-        self.time_path = QPainterPath()
-
-        self.cache = {
-            'time_path': QPainterPath(),
-        }
+        self.time_arr = []
+        self.line_path = QPainterPath()
 
     def paint(self,
               painter: QPainter,
@@ -29,53 +27,52 @@ class TimeAxisItem(QGraphicsItem):
         pen = QPen()
         pen.setColor(Qt.white)
         pen.setCosmetic(True)
-
-        painter.setBrush(Qt.white)
+        font = QFont('Arial')
+        font.setPixelSize(12)
+        painter.setFont(font)
         painter.setPen(pen)
-        painter.setRenderHint(painter.Antialiasing)
 
-        t = self.model.c_data['time_axis']
-        t_s = self.model.c_data['time_axis_scaled']
-        t2 = t_s[t * 60 % 3600 == 0]
-        ratio = self.view.width() / self.model.x_range
-        l = np.linspace(0, self.view.width(), len(t2))
+        for i in self.time_arr:
+            painter.drawText(QRectF(i[0]-50, 3, 100, 17), Qt.AlignCenter, i[1])
 
-        if len(t2) > 0 and (t2[-1] - t2[0] > 0):
-            t3 = (t2 - t2[0]) * self.view.width() / (t2[-1] - t2[0])
-
-            print()
-            print(t3)
-            # print(self.model.rect_x() //)
-            path = QPainterPath()
-            path2 = QPainterPath()
-            for i, v in enumerate(t3):
-                font = QFont('Arial')
-                font.setPixelSize(12)
-
-                print('ratio : ', ratio)
-                print('v * ratio : ', v * ratio)
-                print('t2[i] : ', t2[i])
-                print('v : ', v)
-
-                t = datetime.fromtimestamp(t2[i] * 12 // 10, tz=timezone.utc)
-
-                path.addText(v, 15,
-                             font,
-                             "{:02d}:{:02d}".format(t.hour, t.minute))
-                print("{:02d}:{:02d}".format(t.hour, t.minute))
-
-                painter.drawPoint(v, 10)
-                path2.moveTo(v, 0)
-                path2.lineTo(v, 20)
-
-            if path.length() > 0:
-                print(path.elementAt(0).x, path.elementAt(0).y)
-                print(path2.elementAt(0).x, path2.elementAt(0).y)
-
-            painter.drawPath(path)
-            painter.drawPath(path2)
-
+        painter.drawPath(self.line_path)
         painter.restore()
+
+    def make_path(self):
+        width = self.model.view_width
+        # first time position (min * gap(50)) ex) 1277958000
+        first_time_pos = self.model.x_time_pos
+
+        # time pos -> real time (min * 60s // gap) ex) 1533535200
+        time = first_time_pos * 60 // self.model.marker_gap
+        # first time position ex) 1277958000 - 1277961034.0
+        first = (first_time_pos - self.model.rect_x()) * self.model.x_ratio
+        # time position gap
+        gap = self.model.x_time_gap * self.model.x_ratio
+
+        a = []
+        line_path = QPainterPath()
+        # print(first, width, gap, time, first_time_pos)
+        for v in np.arange(first, width, gap):
+            t = datetime.fromtimestamp(time, tz=timezone.utc)
+
+            if t.day == 1 and t.hour == 0 and t.minute == 0:
+                a.append((v, "{}".format(self.model.get_month(t.month)), 'M'))
+            elif t.hour == 0 and t.minute == 0:
+                a.append((v, "{:02d}".format(t.day), 'd'))
+            else:
+                a.append((v, "{:02d}:{:02d}".format(t.hour, t.minute), 'm'))
+
+            line_path.moveTo(v, 0)
+            line_path.lineTo(v, 3)
+
+            time = time + self.model.get_minute() * 60  # min * 60sec
+
+        self.time_arr = a
+        self.line_path = line_path
 
     def boundingRect(self):
         return self.view.rect
+
+
+attach_timer(TimeAxisItem, limit=1)
