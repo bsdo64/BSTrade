@@ -9,6 +9,8 @@ from BSTrade.source_clients.auth import bitmex
 
 import pandas as pd
 
+from BSTrade.util.fn import attach_timer
+
 
 class Request(QObject):
     sig_finish = pyqtSignal()
@@ -41,6 +43,8 @@ class Request(QObject):
 
         self.client.sig_ended.connect(self.get_data)
 
+        self.timer = QTimer()
+
     def request_data(self):
         start = self.start
         n = self.requested
@@ -54,7 +58,7 @@ class Request(QObject):
         )
         self.requested += 1
 
-    def get_data(self):
+    def get_data(self, ended: bool):
         start = self.start
         n = self.requested
         s = self.count
@@ -72,6 +76,9 @@ class Request(QObject):
         if len(j) > 0:
             new_df = pd.DataFrame(j)
             self.df = self.df.append(new_df, ignore_index=True, sort=False)
+
+            self.timer.singleShot(1000, self.request_data)
+
         elif len(j) == 0:
             self.refine_data()
 
@@ -115,7 +122,7 @@ class Request(QObject):
 
 
 class Requester(QObject):
-    finished = pyqtSignal(object)
+    sig_finished = pyqtSignal(object)
 
     def __init__(self, parent=None):
         QObject.__init__(self)
@@ -123,11 +130,8 @@ class Requester(QObject):
         self.r = Request(self.parent, *self.check_current_data())
         self.r.sig_finish.connect(self.slt_finish)
 
-    def exec(self):
-        self.timer = QTimer(self.parent)
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.r.request_data)
-        self.timer.start()
+    def start(self):
+        self.r.request_data()
 
     def check_current_data(self):
         now = dt.datetime.now()
@@ -161,15 +165,16 @@ class Requester(QObject):
         return start_from, df
 
     def slt_finish(self):
-        self.timer.stop()
-        del self.timer
-        self.finished.emit(self.r.df)
+        self.sig_finished.emit(self.r.df)
 
+
+attach_timer(Request, limit=1)
+attach_timer(Requester, limit=1)
 
 if __name__ == '__main__':
     app = QCoreApplication([])
 
     handler = Requester(app)
-    handler.exec()
+    handler.start()
 
     app.exec()
