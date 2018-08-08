@@ -9,11 +9,7 @@ class BSChartWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        self.setStyleSheet("""
-            QWidget {
-                background: white;
-            }
-        """)
+        # self.ws = parent.ws
 
         self.setContentsMargins(0, 0, 0, 0)
 

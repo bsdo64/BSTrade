@@ -1,7 +1,9 @@
-from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QWheelEvent
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QFrame
+
+from BSTrade.widgets.chart.graphic_items import ChartAxisItem
+from BSTrade.util.fn import attach_timer
 
 
 class ChartAxisView(QGraphicsView):
@@ -14,13 +16,33 @@ class ChartAxisView(QGraphicsView):
         self.setViewportMargins(0, 0, 0, 0)
         self.setBackgroundBrush(QColor('#1B1D27'))
 
-        # self.setFrameStyle(QFrame.NoFrame)
-        # self.setStyleSheet("""
-        #     QGraphicsView { border: 1px solid black }
-        # """)
-
         self.model = model
+        self.rect = QRectF(0, 0, 0, 0)
+        self.chart_axis = ChartAxisItem(model, self)
+        self.set_scene()
 
+    def set_scene(self):
         scene = QGraphicsScene()
-        scene.addText('world')
+        scene.addItem(self.chart_axis)
         self.setScene(scene)
+
+    def slot_wheel_re_model(self, ev: QWheelEvent):
+        self.fit_view()
+        self.viewport().update()
+
+    def fit_view(self):
+        scene: QGraphicsScene = self.scene()
+        scene.setSceneRect(self.make_scene_rect())
+
+        self.chart_axis.make_path()
+
+    def make_scene_rect(self):
+        self.rect = QRectF(
+            0, 0,
+            self.width(), self.height()
+        )
+
+        return self.rect
+
+
+attach_timer(ChartAxisView)

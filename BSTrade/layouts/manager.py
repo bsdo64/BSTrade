@@ -8,6 +8,7 @@ from BSTrade.widgets.chart.graphic_views import ChartView, \
 from BSTrade.layouts.panes import ChartPane, ChartTimePane
 from BSTrade.util.fn import attach_timer
 from BSTrade.data.model import Model
+from BSTrade.source_clients import BitmexWsClient
 
 
 class ChartLayoutManager:
@@ -16,6 +17,8 @@ class ChartLayoutManager:
 
         data = pandas.read_pickle('BSTrade/data/bitmex_1m_2018.pkl')
         self.model = Model(data)
+        # ws: BitmexWsClient = self.parent.ws
+        # ws.sig_message.connect(self.model.slt_ws_message)
 
         # Create default main chart pane
         self._chart_panes = [
@@ -23,11 +26,14 @@ class ChartLayoutManager:
         ]
 
         # Create main time axis pane
-        self._time_pane = ChartTimePane(TimeAxisView(self.model))
+        self._time_pane = ChartTimePane(TimeAxisView(self.model, parent))
 
         for pane in self._chart_panes:
             pane.chart.sig_chart_wheel.connect(
                 self._time_pane.axis.slot_wheel_re_model
+            )
+            pane.chart.sig_chart_wheel.connect(
+                pane.axis.slot_wheel_re_model
             )
 
         # Create chart pane container

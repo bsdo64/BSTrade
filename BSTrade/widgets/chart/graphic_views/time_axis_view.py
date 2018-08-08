@@ -1,10 +1,10 @@
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QColor, QWheelEvent, QTransform
+from PyQt5.QtGui import QColor, QWheelEvent
 from PyQt5.QtWidgets import QGraphicsView, QFrame
 
-from BSTrade.widgets.chart.graphic_scenes.time_scene import TimeScene
-from BSTrade.widgets.chart.graphic_items.time_axis import TimeAxisItem
 from BSTrade.util.fn import attach_timer
+from BSTrade.widgets.chart.graphic_items import TimeAxisItem
+from BSTrade.widgets.chart.graphic_scenes.time_scene import TimeScene
 
 
 class TimeAxisView(QGraphicsView):
@@ -27,9 +27,15 @@ class TimeAxisView(QGraphicsView):
         scene.addItem(self.time_axis)
         self.setScene(scene)
 
-    def wheelEvent(self, event: QWheelEvent):
+    def slot_wheel_re_model(self, ev: QWheelEvent):
+        self.fit_view()
+        self.viewport().update()
 
-        super().wheelEvent(event)
+    def fit_view(self):
+        scene: TimeScene = self.scene()
+        scene.setSceneRect(self.make_scene_rect())
+
+        self.time_axis.make_path()
 
     def make_scene_rect(self):
         self.rect = QRectF(
@@ -38,17 +44,6 @@ class TimeAxisView(QGraphicsView):
         )
 
         return self.rect
-
-    def slot_wheel_re_model(self, ev: QWheelEvent):
-
-        self.fit_view()
-        self.update()
-
-    def fit_view(self):
-        scene: TimeScene = self.scene()
-        scene.setSceneRect(self.make_scene_rect())
-
-        self.time_axis.make_path()
 
 
 attach_timer(TimeAxisView)

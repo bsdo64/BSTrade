@@ -8,7 +8,7 @@ from BSTrade.data.model import Model
 from BSTrade.optimize.math import cache_scale_x, cache_scale_y, nb_max_min
 from BSTrade.util.fn import attach_timer
 from BSTrade.widgets.chart.graphic_items import CandleStickItem
-from BSTrade.widgets.chart.graphic_items import GridXItem
+from BSTrade.widgets.chart.graphic_items import GridXItem, GridYItem
 from BSTrade.widgets.chart.graphic_scenes.chart_scene import ChartScene
 
 
@@ -34,12 +34,14 @@ class ChartView(QGraphicsView):
         self.open_file_finished = False
         self.rect = QRectF(0, 0, 0, 0)
         self.chart_item = CandleStickItem(self.model, self)
-        self.chart_line = GridXItem(self.model, self)
+        self.grid_x = GridXItem(self.model, self)
+        self.grid_y = GridYItem(self.model, self)
         self.set_scene()
 
     def set_scene(self):
         scene = ChartScene()
-        scene.addItem(self.chart_line)
+        scene.addItem(self.grid_x)
+        scene.addItem(self.grid_y)
         scene.addItem(self.chart_item)
 
         self.setScene(scene)

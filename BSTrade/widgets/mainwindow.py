@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
     def slt_ws_connected(self):
         # web socket client connected
 
-        self.ws.subscribe("trade:XBTUSD")
+        self.ws.subscribe("trade:XBTUSD", 'tradeBin1m:XBTUSD')
 
 
 attach_timer(MainWindow)

@@ -163,7 +163,7 @@ class CandleStickItem(QGraphicsItem):
                 nxt = self.model.x_range_next
                 self.data_x_range += nxt  # 2 += 500
 
-                next_df = self.model.next_data(d_s=last, d_len=nxt)
+                next_df = self.model.prev_data(d_s=last, d_len=nxt)
 
                 self.save_path(next_df)
 
