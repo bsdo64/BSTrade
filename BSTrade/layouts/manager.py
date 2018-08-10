@@ -17,8 +17,8 @@ class ChartLayoutManager:
 
         data = pandas.read_pickle('BSTrade/data/bitmex_1m_2018.pkl')
         self.model = Model(data)
-        # ws: BitmexWsClient = self.parent.ws
-        # ws.sig_message.connect(self.model.slt_ws_message)
+        ws: BitmexWsClient = self.parent.ws
+        ws.sig_message.connect(self.model.slt_ws_message)
 
         # Create default main chart pane
         self._chart_panes = [

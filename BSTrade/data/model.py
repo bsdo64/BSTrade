@@ -3,22 +3,28 @@ import sys
 import time
 import pandas as pd
 import numpy as np
+import ciso8601
 
-from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import QRectF, pyqtSignal, QObject
 
 from BSTrade.util.fn import attach_timer
 from BSTrade.optimize.vec import to_time_axis, to_time_scale, make_r_data
 from BSTrade.optimize.math import cache_x_range, cache_x_pos
 
 
-class Model:
+class Model(QObject):
+    sig_add_point = pyqtSignal(dict)
+    sig_update_point = pyqtSignal(dict)
+
     _DEFAULT_X_RANGE = 1000
     _DEFAULT_NEXT_X_RANGE = 1000
     INT_MAX = sys.maxsize // 10 ** 11 * 10
     X_TIME = (time.time() // 60) * 50  # (sec // 60s) * marker_gap -> scaled min
     Y_VAL = 0  # (sec // 60s) * marker_gap -> scaled min
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data: pd.DataFrame, parent=None):
+        QObject.__init__(self, parent)
+
         self.series = data
 
         self.view_width = 640
@@ -26,7 +32,7 @@ class Model:
 
         self.x_pos = 0
         self.x_range = self._DEFAULT_X_RANGE
-        self.x_range_next = self._DEFAULT_NEXT_X_RANGE
+        self.x_range_prev = self._DEFAULT_NEXT_X_RANGE
         self.x_ratio = self.view_width / self.x_range
         self.x_time_pos = self.X_TIME
         self.x_time_gap = 60
@@ -205,12 +211,120 @@ class Model:
         j = json.loads(msg)
 
         table_name = j.get('table')
-        if table_name == 'trade':
-            items = j.get('data')
-            # print(items)
-        elif table_name == 'tradeBin1m':
-            items = j.get('data')
-            print(items)
+        action = j.get('action')
+        if not action == 'partial':
+            if table_name == 'trade':
+                items = j.get('data')
+
+                for data in items:
+                    t = ciso8601.parse_datetime(data['timestamp'])
+                    t_int = np.datetime64(t).astype(np.int64)
+                    t_axis = t_int / 10 ** 6 // 60
+
+                    # print(t_axis, self.np_data['time_axis'][-1])
+                    if int(t_axis) == int(self.np_data['time_axis'][-1]):
+                        # same time -> change price
+
+                        """
+                        {
+                            'timestamp': '2018-08-08T14:51:15.377Z',
+                            'symbol': 'XBTUSD', 
+                            'side': 'Buy', 
+                            'size': 3000,
+                            'price': 6458, 
+                            'tickDirection': 'ZeroPlusTick',
+                            'trdMatchID': 'dc6e6001-3ee5-fddf-d2b5-8b2f967c5d2e',
+                            'grossValue': 46455000, 
+                            'homeNotional': 0.46455,
+                            'foreignNotional': 3000
+                        }
+                        """
+
+                        close = float(data['price'])        # 6430 -> 6458
+                        opn = self.np_data['open'][-1]      # 6410
+                        low = self.np_data['low'][-1]       # 6400
+                        high = self.np_data['high'][-1]     # 6460
+
+                        low = low if close > low else close
+                        high = close if close > high else high
+
+                        d = {
+                            'time_axis': t_axis,
+                            'time_axis_scaled': t_axis * self.marker_gap,
+                            'tick_direction': data['tickDirection'],
+                            'open': opn,
+                            'close': close,
+                            'low': low,
+                            'high': high,
+                            'r_open': self.INT_MAX - opn,
+                            'r_close': self.INT_MAX - close,
+                            'r_low': self.INT_MAX - low,
+                            'r_high': self.INT_MAX - high,
+                            'plus_cond': opn < close,
+                        }
+
+                        for i in ['close', 'open', 'low', 'high']:
+                            self.np_data['r_' + i][-1] = d['r_' + i]
+                            self.np_data[i][-1] = d[i]
+
+                        self.sig_update_point.emit(d)
+
+                    elif int(t_axis) > int(self.np_data['time_axis'][-1]):
+                        # current data > store data
+                        # add new bar
+                        print("# add new bar")
+                        """
+                        {
+                            'timestamp': '2018-08-08T06:18:00.000Z',
+                            'symbol': 'XBTUSD',
+                            'open': 6524,
+                            'high': 6530,
+                            'low': 6524,
+                            'close': 6526,
+                            'trades': 683,
+                            'volume': 3393589,
+                            'vwap': 6527.4151,
+                            'lastSize': 100,
+                            'turnover': 51993086393,
+                            'homeNotional': 519.9308639299999,
+                            'foreignNotional': 3393589
+                        }
+                        """
+                        price = float(data['price'])
+                        r_price = self.INT_MAX - float(data['price'])
+
+                        d = {
+                            'time_axis': t_axis,
+                            'time_axis_scaled': t_axis * self.marker_gap,
+                            'tick_direction': data['tickDirection'],
+                            'open': price,
+                            'close': price,
+                            'low': price,
+                            'high': price,
+                            'r_open': r_price,
+                            'r_close': r_price,
+                            'r_low': r_price,
+                            'r_high': r_price,
+                            'plus_cond': False,  # == 0
+                        }
+
+                        self.np_data['time_axis'] = np.append(
+                            self.np_data['time_axis'], t_axis
+                        )
+                        self.np_data['time_axis_scaled'] = np.append(
+                            self.np_data['time_axis_scaled'],
+                            t_axis * self.marker_gap
+                        )
+
+                        for i in ['close', 'open', 'low', 'high']:
+                            self.np_data['r_' + i] = np.append(
+                                self.np_data['r_' + i], r_price
+                            )
+                            self.np_data[i] = np.append(
+                                self.np_data[i], price
+                            )
+
+                        self.sig_add_point.emit(d)
 
 
 attach_timer(Model, limit=1)

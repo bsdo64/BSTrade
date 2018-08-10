@@ -6,10 +6,10 @@ from BSTrade.util.fn import attach_timer
 
 
 class BSChartWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         QWidget.__init__(self, parent)
 
-        # self.ws = parent.ws
+        self.ws = parent.ws
 
         self.setContentsMargins(0, 0, 0, 0)
 

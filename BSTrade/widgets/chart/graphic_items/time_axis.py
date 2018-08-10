@@ -52,7 +52,11 @@ class TimeAxisItem(QGraphicsItem):
 
         a = []
         line_path = QPainterPath()
-        # print(first, width, gap, time, first_time_pos)
+        # print(first_time_pos,
+        #       self.model.rect_x(),
+        #       self.model.x_ratio,
+        #       first, width, gap, time)
+
         for v in np.arange(first, width, gap):
             t = datetime.fromtimestamp(time, tz=timezone.utc)
 

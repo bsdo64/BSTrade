@@ -3,7 +3,7 @@ import numba as nb
 import numpy as np
 
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
@@ -55,6 +55,9 @@ class CandleStickItem(QGraphicsItem):
         self.thread = Thread()
         self.make_path()
 
+        self.model.sig_add_point.connect(self.slt_add_point)
+        self.model.sig_update_point.connect(self.slt_update_point)
+
     def paint(self,
               painter: QtGui.QPainter,
               option: QStyleOptionGraphicsItem,
@@ -69,10 +72,10 @@ class CandleStickItem(QGraphicsItem):
         if self.init_len > 0:
 
             path_len = len(self.plus_bar_path)
-            nxt = self.model.x_range_next
+            prev = self.model.x_range_prev
 
-            s = (p - self.init_len) // nxt + 1 if p > self.init_len else 0
-            e = (r - self.init_len) // nxt + 2
+            s = (p - self.init_len) // prev + 1 if p > self.init_len else 0
+            e = (r - self.init_len) // prev + 2
             e = e - 1 if path_len < e else e  # 1 > 2
 
             # print("range : [{},{}]".format(s, e))
@@ -97,7 +100,7 @@ class CandleStickItem(QGraphicsItem):
                             path3.addPath(self.plus_bar_path[i])
                             path4.addPath(self.minus_bar_path[i])
                     except IndexError as err:
-                        pass
+                        print(err)
 
                     # draw plus line
                     pen.setColor(QColor("#496856"))
@@ -131,7 +134,7 @@ class CandleStickItem(QGraphicsItem):
                             path.addPath(self.plus_line_path[i])
                             path2.addPath(self.minus_line_path[i])
                     except IndexError as err:
-                        pass
+                        print(err)
 
                     painter.drawPath(path)
                     painter.drawPath(path2)
@@ -160,7 +163,7 @@ class CandleStickItem(QGraphicsItem):
                 print('draw next path')
 
                 last = self.data_x_range
-                nxt = self.model.x_range_next
+                nxt = self.model.x_range_prev
                 self.data_x_range += nxt  # 2 += 500
 
                 next_df = self.model.prev_data(d_s=last, d_len=nxt)
@@ -198,6 +201,220 @@ class CandleStickItem(QGraphicsItem):
         w = self.thread.make_worker(fn, *args)
         w.sig.finished.connect(self.update)
         self.thread.start(w)
+
+    def slt_update_point(self, data):
+
+        if data['plus_cond']:
+            bar = self.plus_bar_path[0]
+            line = self.plus_line_path[0]
+            bar_count = bar.elementCount()
+            """
+            Bar : 
+                p1(p5)         p4
+                  +-----------+
+                  |           |
+                  |           |
+                  +-----------+
+                p2             p3
+                
+                p1 - p4 = close
+                p2 - p3 = open
+            
+            Line :
+                s1
+                 +
+                 |
+                 |
+                 +
+                s2 
+                
+                s1 = high
+                s2 = low
+            """
+            p1 = bar.elementAt(bar_count - 1)
+
+            if p1.x != data['time_axis_scaled'] - 15:
+                bar_count = self.remove_add_point(
+                    self.plus_bar_path[0],
+                    self.plus_line_path[0],
+                    self.minus_bar_path[0],
+                    data
+                )
+
+            bar.setElementPositionAt(bar_count - 1,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_close'])
+            bar.setElementPositionAt(bar_count - 4,
+                                     data['time_axis_scaled'] + 15,
+                                     data['r_close'])
+            bar.setElementPositionAt(bar_count - 2,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_open'])
+            bar.setElementPositionAt(bar_count - 3,
+                                     data['time_axis_scaled'] + 15,
+                                     data['r_open'])
+            bar.setElementPositionAt(bar_count - 5,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_close'])
+            line.moveTo(data['time_axis_scaled'], data['r_low'])
+            line.lineTo(data['time_axis_scaled'], data['r_high'])
+
+        else:
+            bar = self.minus_bar_path[0]
+            line = self.minus_line_path[0]
+            bar_count = bar.elementCount()
+            """
+                Bar : 
+                    p1(p5)         p4
+                      +-----------+
+                      |           |
+                      |           |
+                      +-----------+
+                    p2             p3
+
+                    p1 - p4 = open
+                    p2 - p3 = close
+
+                Line :
+                    s1
+                     +
+                     |
+                     |
+                     +
+                    s2 
+
+                    s1 = high
+                    s2 = low
+            """
+            p1 = bar.elementAt(bar_count - 1)
+
+            if p1.x != data['time_axis_scaled'] - 15:
+                bar_count = self.remove_add_point(
+                    self.minus_bar_path[0],
+                    self.minus_line_path[0],
+                    self.plus_bar_path[0],
+                    data
+                )
+
+            bar.setElementPositionAt(bar_count - 1,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_open'])
+            bar.setElementPositionAt(bar_count - 4,
+                                     data['time_axis_scaled'] + 15,
+                                     data['r_open'])
+            bar.setElementPositionAt(bar_count - 2,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_close'])
+            bar.setElementPositionAt(bar_count - 3,
+                                     data['time_axis_scaled'] + 15,
+                                     data['r_close'])
+            bar.setElementPositionAt(bar_count - 5,
+                                     data['time_axis_scaled'] - 15,
+                                     data['r_open'])
+            line.moveTo(data['time_axis_scaled'], data['r_low'])
+            line.lineTo(data['time_axis_scaled'], data['r_high'])
+
+        # self.check_point(bar)
+        self.update()
+
+    def remove_add_point(self, bar, line, bar2, data):
+        bar2_count = bar2.elementCount()
+
+        """
+        Bar : 
+            m1(m5)         m4
+              +-----------+
+              |           |
+              |           |
+              +-----------+
+            m2             m3
+
+            m1 - m4 = open
+            m2 - m3 = close
+        """
+
+        m1 = bar2.elementAt(bar2_count - 1)
+        m4 = bar2.elementAt(bar2_count - 4)
+        m2 = bar2.elementAt(bar2_count - 2)
+        m3 = bar2.elementAt(bar2_count - 3)
+
+        path = QPainterPath()
+        rect = QRectF(m1.x,
+                      m1.y,
+                      abs(m4.x - m1.x),
+                      abs(m1.y - m2.y))
+
+        print('data["plus_cond"] : ', data['plus_cond'])
+        print('remove rect : ', rect)
+
+        path.addRect(rect)
+        bar2 -= path
+
+        rect = QRectF(
+            data['time_axis_scaled'] - 15,  # x
+            data['r_open'],  # y
+            30,  # width
+            0,
+        )
+        bar.addRect(rect)
+        print('add rect : ', rect)
+
+        line.moveTo(data['time_axis_scaled'], data['r_high'])
+        line.lineTo(data['time_axis_scaled'], data['r_low'])
+
+        return bar.elementCount()
+
+    def slt_add_point(self, data):
+
+        if data['plus_cond']:
+            bar = self.plus_bar_path[0]
+            line = self.plus_line_path[0]
+        else:
+            bar = self.minus_bar_path[0]
+            line = self.minus_line_path[0]
+
+        bar.addRect(
+            data['time_axis_scaled'] - 15,  # x
+            data['r_open'],  # y
+            30,  # width
+            0,  # height
+        )
+
+        line.moveTo(data['time_axis_scaled'], data['r_high'])
+        line.lineTo(data['time_axis_scaled'], data['r_low'])
+
+        self.update()
+
+    def check_point(self, msg, bar):
+        """
+        p1             p4
+          +-----------+
+          |           |
+          |           |
+          +-----------+
+        p2             p3
+
+        """
+        bar_count = bar.elementCount()
+        p1 = bar.elementAt(bar_count - 1)
+        p2 = bar.elementAt(bar_count - 2)
+        p3 = bar.elementAt(bar_count - 3)
+        p4 = bar.elementAt(bar_count - 4)
+        # print('update rect', QRectF(
+        #     p1.x,
+        #     p1.y,
+        #     abs(p4.x - p1.x),
+        #     abs(p1.y - p2.y)
+        # ))
+        print()
+        print(msg, QRectF(p1.x,
+                          p1.y,
+                          abs(p4.x - p1.x),
+                          abs(p1.y - p2.y)))
+        print(p1.x, p1.y)
+        print(p2.x, p2.y)
+        print(p3.x, p3.y)
+        print(p4.x, p4.y)
 
     def boundingRect(self):
         return self.view.rect
