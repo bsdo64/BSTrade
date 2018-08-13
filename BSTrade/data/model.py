@@ -169,9 +169,10 @@ class Model(QObject):
 
     def set_y_gap(self, gap):
         sc = 100  # scale ( * 100) ex) 29.9423 ~ 30.1382
-        g = gap * 100
+        g = gap * sc
+        len_gaps = len(self.y_gaps)
 
-        if 0 < g <= 3000:
+        if 0 < g <= 30 * sc:
             """
                 default = 50, 2.5(2)
                 1. 50   *   2(0)   = 100
@@ -181,9 +182,9 @@ class Model(QObject):
                 5. 1000 *   2(1)   = 2000 
                 ...
             """
-            self.y_gap_pos = (self.y_gap_pos+1) % len(self.y_gaps)  # 1 % 3 -> 1
+            self.y_gap_pos = (self.y_gap_pos+1) % len_gaps  # 1 % 3 -> 1
             self.y_val_gap *= self.y_gaps[self.y_gap_pos]  # 50 * 2 -> 100
-        elif 6000 < g:
+        elif 60 * sc < g:
             """
                 default = 50, 2.5(2)
                 1. 50   / 2.5(2)   = 20
@@ -194,7 +195,7 @@ class Model(QObject):
                 ...
             """
             self.y_val_gap /= self.y_gaps[self.y_gap_pos]  # 50 / 2.5 -> 20.0
-            self.y_gap_pos = (self.y_gap_pos-1) % len(self.y_gaps)  # -1 % 3 -> 2
+            self.y_gap_pos = (self.y_gap_pos-1) % len_gaps  # -1 % 3 -> 2
 
     def set_view_width(self, width):
         self.view_width = width

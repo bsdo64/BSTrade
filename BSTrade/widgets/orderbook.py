@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QWidget, QVBoxLayout
 
 from BSTrade.source_clients import BitmexWsClient
 from BSTrade.util.fn import attach_timer
+from BSTrade.optimize.math import price_from_id
+from BSTrade.data.bitmex.instruments import inst
 
 
 class OrderBookWidget(QWidget):
@@ -18,7 +20,8 @@ class OrderBookWidget(QWidget):
         self.layout.setSpacing(1)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-        self.model = OrderBookModel(ws)
+        inst_item = inst['XBTUSD']
+        self.model = OrderBookModel(ws, inst_item)
 
         self.set_widget()
 
@@ -28,7 +31,8 @@ class OrderBookWidget(QWidget):
 
 
 class OrderBookModel:
-    def __init__(self, ws: BitmexWsClient):
+    def __init__(self, ws: BitmexWsClient, item):
+        self.inst = item
         self.ws = ws
         self.ws.sig_message.connect(self.slt_ws_message)
 
@@ -36,11 +40,18 @@ class OrderBookModel:
         j = json.loads(msg)
 
         table_name = j.get('table')
+        action = j.get('action')
         if table_name == 'orderBookL2':
-            items = j.get('data')
-            print(j.get('action'), items)
-            # model: OrderBookUpModel = self.model()
-            # model.insert_data(items)
+            if action == 'delete':
+                pass
+            else:
+                items = j.get('data')
+                for i in items:
+                    idx = self.inst['idx']
+                    price = price_from_id(idx, i['id'], 0.01)
+                    print(i['id'], i['size'], 'price :', price)
+                # model: OrderBookUpModel = self.model()
+                # model.insert_data(items)
 
 
 class OrderBookViewUp(QTableView):
