@@ -15,13 +15,14 @@ from BSTrade.util.fn import attach_timer
 class Request(QObject):
     sig_finish = pyqtSignal()
 
-    def __init__(self, parent=None, start=0, data=pd.DataFrame()):
+    def __init__(self, parent=None, filename='tmp.pkl', start=0, data=pd.DataFrame()):
         QObject.__init__(self)
 
         self.parent = parent
         # self.start = 0  # 2017 - 01- 01
         self.start = start
         self.df = data
+        self.filename = filename
 
         self.now = dt.datetime.now(tz=dt.timezone.utc)
         self.one_year_min = 525600
@@ -59,6 +60,7 @@ class Request(QObject):
         self.requested += 1
 
     def get_data(self, ended: bool):
+        print('get data')
         start = self.start
         n = self.requested
         s = self.count
@@ -82,7 +84,7 @@ class Request(QObject):
         elif len(j) == 0:
             self.refine_data()
 
-            self.df.to_pickle('bitmex_1m_2018.pkl')
+            self.df.to_pickle(self.filename)
             print('saved !')
             print("Last index : {}".format(self.df.shape[0]))
             self.sig_finish.emit()
@@ -90,7 +92,7 @@ class Request(QObject):
         if s * n >= 525600 * 2:
             self.refine_data()
 
-            self.df.to_pickle('bitmex_1m_2018_end.pkl')
+            self.df.to_pickle(self.filename)
             print('saved to the end of {}!'.format(self.now.year))
             self.sig_finish.emit()
 
@@ -124,23 +126,23 @@ class Request(QObject):
 class Requester(QObject):
     sig_finished = pyqtSignal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, filename, parent=None):
         QObject.__init__(self)
         self.parent = parent
-        self.r = Request(self.parent, *self.check_current_data())
+        self.r = Request(self.parent,
+                         filename,
+                         *self.check_current_data(filename))
         self.r.sig_finish.connect(self.slt_finish)
 
     def start(self):
         self.r.request_data()
 
-    def check_current_data(self):
+    def check_current_data(self, filename):
         now = dt.datetime.now()
         total_min = 525600  # one-year-min
-        filename = 'bitmex_1m_{}.pkl'.format(now.year)
 
         if os.path.isfile(filename):
             df = pd.read_pickle(filename)
-            print(df.dtypes)
             saved_last_time = ciso8601.parse_datetime(df['timestamp'][df.shape[0] - 1])
             expect_last_time = (
                 dt.datetime(now.year, 1, 1, tzinfo=dt.timezone.utc)
@@ -168,13 +170,13 @@ class Requester(QObject):
         self.sig_finished.emit(self.r.df)
 
 
-attach_timer(Request, limit=1)
-attach_timer(Requester, limit=1)
+attach_timer(Request, limit=10)
+attach_timer(Requester, limit=10)
 
 if __name__ == '__main__':
     app = QCoreApplication([])
 
-    handler = Requester(app)
+    handler = Requester('bitmex_1m_2018.pkl', app)
     handler.start()
 
     app.exec()

@@ -16,6 +16,7 @@ numpy = "==1.15.0"
 pandas = "==0.23.3"
 numba = "*"
 "ciso8601" = "==2.0.1"
+ujson = "*"
 
 [dev-packages]
 pytest = "==3.6.0"

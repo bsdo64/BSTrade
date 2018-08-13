@@ -1,4 +1,4 @@
-import json
+import ujson as json
 
 import ciso8601
 from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex
@@ -59,13 +59,13 @@ class RecentTradeTableModel(QAbstractTableModel):
         self.view = view
         self.data = []
 
-    def rowCount(self, parent=None, *args, **kwargs):
+    def rowCount(self, parent: QModelIndex = QModelIndex()):
         return len(self.data)
 
-    def columnCount(self, parent=None, *args, **kwargs):
+    def columnCount(self, parent: QModelIndex = QModelIndex()):
         return 4
 
-    def data(self, index, role=None):
+    def data(self, index, role: int = Qt.DisplayRole):
         row = index.row()
         col = index.column()
         data = self.data[row]
@@ -117,7 +117,9 @@ class RecentTradeTableModel(QAbstractTableModel):
                             len(self.data) - self.max_length,
                             idx)
 
-    def insertRows(self, position: int, rows: int, index=None, *args, **kwargs):
+    def insertRows(self,
+                   position: int, rows: int,
+                   index: QModelIndex = QModelIndex()):
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         for row in range(rows):
             self.data.insert(
@@ -127,14 +129,16 @@ class RecentTradeTableModel(QAbstractTableModel):
         self.endInsertRows()
         return True
 
-    def removeRows(self, position: int, rows: int, index=None, *args, **kwargs):
+    def removeRows(self,
+                   position: int, rows: int,
+                   index: QModelIndex = QModelIndex()):
         self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
         for row in range(rows):
             self.data.pop(position)
         self.endRemoveRows()
         return True
 
-    def setData(self, index, value, role=None):
+    def setData(self, index: QModelIndex, value, role: int = Qt.EditRole):
 
         if index.isValid() and role == Qt.EditRole:
             row = index.row()

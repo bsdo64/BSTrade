@@ -1,5 +1,4 @@
-import json
-from json import JSONDecodeError
+import ujson as json
 
 from PyQt5.QtCore import QObject, QUrl, pyqtSignal
 from PyQt5.QtWebSockets import QWebSocket
@@ -35,7 +34,7 @@ class WsClient(QObject):
     def json(self):
         try:
             j = json.loads(self.data())
-        except JSONDecodeError as e:
+        except ValueError as e:
             j = {}
 
         return j

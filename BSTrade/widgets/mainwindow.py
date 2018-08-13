@@ -5,9 +5,10 @@ from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
 
 from BSTrade.source_clients.bitmexwsclient import BitmexWsClient
 from BSTrade.util.fn import attach_timer
-from BSTrade.widgets.recenttrade import RecentTradeTableView, \
-    RecentTradeTableModel
+
 from .BSChart import BSChartWidget
+from .recenttrade import RecentTradeTableView, RecentTradeTableModel
+from .orderbook import OrderBookWidget
 
 
 class TabBar(QTabBar):
@@ -27,14 +28,14 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.ws = BitmexWsClient(test=False)
 
-        self.setup_ws()
+        self.setup_ws(self.ws)
         self.setup_main_ui()
         self.setup_menus()
         self.setup_docks()
 
-    def setup_ws(self):
-        self.ws.sig_connected.connect(self.slt_ws_connected)
-        self.ws.start()
+    def setup_ws(self, ws):
+        ws.sig_connected.connect(self.slt_ws_connected)
+        ws.start()
 
     def setup_main_ui(self):
         self.resize(1024, 768)
@@ -69,7 +70,7 @@ class MainWindow(QMainWindow):
 
     def setup_docks(self):
         self.create_trade_dock()
-        self.create_left_dock()
+        self.order_book_dock()
         self.create_chart_dock()
 
     def create_trade_dock(self):
@@ -86,11 +87,14 @@ class MainWindow(QMainWindow):
 
         self.addDockWidget(Qt.RightDockWidgetArea, dock1)
 
-    def create_left_dock(self):
+    def order_book_dock(self):
         dock2 = QDockWidget()
         dock2.setMinimumWidth(200)
         dock2.setMinimumHeight(100)
-        dock2.setWindowTitle("Left dock")
+        dock2.setWindowTitle("OrderBook")
+
+        dock2.setWidget(OrderBookWidget(self.ws, self))
+
         self.addDockWidget(Qt.LeftDockWidgetArea, dock2)
 
     def create_chart_dock(self):
@@ -141,7 +145,9 @@ class MainWindow(QMainWindow):
     def slt_ws_connected(self):
         # web socket client connected
 
-        self.ws.subscribe("trade:XBTUSD", 'tradeBin1m:XBTUSD')
+        self.ws.subscribe('trade:XBTUSD',
+                          'tradeBin1m:XBTUSD',
+                          'orderBookL2:XBTUSD')
 
 
 attach_timer(MainWindow)

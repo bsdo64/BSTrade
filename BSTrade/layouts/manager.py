@@ -12,10 +12,9 @@ from BSTrade.source_clients import BitmexWsClient
 
 
 class ChartLayoutManager:
-    def __init__(self, parent=None):
+    def __init__(self, data, parent=None,):
         self.parent = parent
 
-        data = pandas.read_pickle('BSTrade/data/bitmex_1m_2018.pkl')
         self.model = Model(data)
         ws: BitmexWsClient = self.parent.ws
         ws.sig_message.connect(self.model.slt_ws_message)

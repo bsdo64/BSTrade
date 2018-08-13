@@ -1,4 +1,4 @@
-import json
+import ujson as json
 import sys
 import time
 import pandas as pd
@@ -168,6 +168,7 @@ class Model(QObject):
                 self.minute_pos = self.minute_pos - 1
 
     def set_y_gap(self, gap):
+        sc = 100  # scale ( * 100) ex) 29.9423 ~ 30.1382
         g = gap * 100
 
         if 0 < g <= 3000:
@@ -207,124 +208,124 @@ class Model(QObject):
     def get_minute(self):
         return self.minutes[self.minute_pos]
 
+    def is_same_time(self, t_axis):
+        last = int(self.np_data['time_axis'][-1])
+        return 0 if int(t_axis) == last else 1 if int(t_axis) >= last else -1
+
     def slt_ws_message(self, msg):
         j = json.loads(msg)
 
-        table_name = j.get('table')
-        action = j.get('action')
-        if not action == 'partial':
-            if table_name == 'trade':
-                items = j.get('data')
+        if j.get('table') == 'trade':
+            items = j.get('data')
 
-                for data in items:
-                    t = ciso8601.parse_datetime(data['timestamp'])
-                    t_int = np.datetime64(t).astype(np.int64)
-                    t_axis = t_int / 10 ** 6 // 60
+            for data in items:
+                t = ciso8601.parse_datetime(data['timestamp'])
+                t_int = np.datetime64(t).astype(np.int64)
+                t_axis = t_int / 10 ** 6 // 60
+                is_same_time = self.is_same_time(t_axis)
 
-                    # print(t_axis, self.np_data['time_axis'][-1])
-                    if int(t_axis) == int(self.np_data['time_axis'][-1]):
-                        # same time -> change price
+                # print(t_axis, self.np_data['time_axis'][-1])
+                if is_same_time == 0:
+                    # same time -> change price
 
-                        """
-                        {
-                            'timestamp': '2018-08-08T14:51:15.377Z',
-                            'symbol': 'XBTUSD', 
-                            'side': 'Buy', 
-                            'size': 3000,
-                            'price': 6458, 
-                            'tickDirection': 'ZeroPlusTick',
-                            'trdMatchID': 'dc6e6001-3ee5-fddf-d2b5-8b2f967c5d2e',
-                            'grossValue': 46455000, 
-                            'homeNotional': 0.46455,
-                            'foreignNotional': 3000
-                        }
-                        """
+                    """
+                    {
+                        'timestamp': '2018-08-08T14:51:15.377Z',
+                        'symbol': 'XBTUSD', 
+                        'side': 'Buy', 
+                        'size': 3000,
+                        'price': 6458, 
+                        'tickDirection': 'ZeroPlusTick',
+                        'trdMatchID': 
+                            'dc6e6001-3ee5-fddf-d2b5-8b2f967c5d2e',
+                        'grossValue': 46455000, 
+                        'homeNotional': 0.46455,
+                        'foreignNotional': 3000
+                    }
+                    """
 
-                        close = float(data['price'])        # 6430 -> 6458
-                        opn = self.np_data['open'][-1]      # 6410
-                        low = self.np_data['low'][-1]       # 6400
-                        high = self.np_data['high'][-1]     # 6460
+                    close = float(data['price'])  # 6430 -> 6458
+                    opn = self.np_data['open'][-1]  # 6410
+                    low = self.np_data['low'][-1]  # 6400
+                    high = self.np_data['high'][-1]  # 6460
 
-                        low = low if close > low else close
-                        high = close if close > high else high
+                    low = low if close > low else close
+                    high = close if close > high else high
 
-                        d = {
-                            'time_axis': t_axis,
-                            'time_axis_scaled': t_axis * self.marker_gap,
-                            'tick_direction': data['tickDirection'],
-                            'open': opn,
-                            'close': close,
-                            'low': low,
-                            'high': high,
-                            'r_open': self.INT_MAX - opn,
-                            'r_close': self.INT_MAX - close,
-                            'r_low': self.INT_MAX - low,
-                            'r_high': self.INT_MAX - high,
-                            'plus_cond': opn < close,
-                        }
+                    d = {
+                        'time_axis': t_axis,
+                        'time_axis_scaled': t_axis * self.marker_gap,
+                        'open': opn,
+                        'close': close,
+                        'low': low,
+                        'high': high,
+                        'r_open': self.INT_MAX - opn,
+                        'r_close': self.INT_MAX - close,
+                        'r_low': self.INT_MAX - low,
+                        'r_high': self.INT_MAX - high,
+                        'plus_cond': opn < close,
+                    }
 
-                        for i in ['close', 'open', 'low', 'high']:
-                            self.np_data['r_' + i][-1] = d['r_' + i]
-                            self.np_data[i][-1] = d[i]
+                    self.update_np_data(d)
 
-                        self.sig_update_point.emit(d)
+                elif is_same_time > 0:
+                    # current data > store data
+                    # add new bar
+                    print("# add new bar")
 
-                    elif int(t_axis) > int(self.np_data['time_axis'][-1]):
-                        # current data > store data
-                        # add new bar
-                        print("# add new bar")
-                        """
-                        {
-                            'timestamp': '2018-08-08T06:18:00.000Z',
-                            'symbol': 'XBTUSD',
-                            'open': 6524,
-                            'high': 6530,
-                            'low': 6524,
-                            'close': 6526,
-                            'trades': 683,
-                            'volume': 3393589,
-                            'vwap': 6527.4151,
-                            'lastSize': 100,
-                            'turnover': 51993086393,
-                            'homeNotional': 519.9308639299999,
-                            'foreignNotional': 3393589
-                        }
-                        """
-                        price = float(data['price'])
-                        r_price = self.INT_MAX - float(data['price'])
+                    price = float(data['price'])
+                    r_price = self.INT_MAX - float(data['price'])
 
-                        d = {
-                            'time_axis': t_axis,
-                            'time_axis_scaled': t_axis * self.marker_gap,
-                            'tick_direction': data['tickDirection'],
-                            'open': price,
-                            'close': price,
-                            'low': price,
-                            'high': price,
-                            'r_open': r_price,
-                            'r_close': r_price,
-                            'r_low': r_price,
-                            'r_high': r_price,
-                            'plus_cond': False,  # == 0
-                        }
+                    d = {
+                        'time_axis': t_axis,
+                        'time_axis_scaled': t_axis * self.marker_gap,
+                        'open': price,
+                        'close': price,
+                        'low': price,
+                        'high': price,
+                        'r_open': r_price,
+                        'r_close': r_price,
+                        'r_low': r_price,
+                        'r_high': r_price,
+                        'plus_cond': False,  # == 0
+                    }
 
-                        self.np_data['time_axis'] = np.append(
-                            self.np_data['time_axis'], t_axis
-                        )
-                        self.np_data['time_axis_scaled'] = np.append(
-                            self.np_data['time_axis_scaled'],
-                            t_axis * self.marker_gap
-                        )
+                    self.append_np_data(d)
+                    self.update_X_TIME()
 
-                        for i in ['close', 'open', 'low', 'high']:
-                            self.np_data['r_' + i] = np.append(
-                                self.np_data['r_' + i], r_price
-                            )
-                            self.np_data[i] = np.append(
-                                self.np_data[i], price
-                            )
+    def update_X_TIME(self):
+        """
+        Set X_TIME to current time
 
-                        self.sig_add_point.emit(d)
+        """
+        # X_TIME    = (       sec // 60s) * marker_gap -> scaled min
+        self.X_TIME = (time.time() // 60) * self.marker_gap
+
+    def update_np_data(self, data):
+        for i in ['close', 'open', 'low', 'high']:
+            self.np_data['r_' + i][-1] = data['r_' + i]
+            self.np_data[i][-1] = data[i]
+
+        self.sig_update_point.emit(data)
+
+    def append_np_data(self, data):
+        self.np_data['time_axis'] = np.append(
+            self.np_data['time_axis'], data['time_axis']
+        )
+        self.np_data['time_axis_scaled'] = np.append(
+            self.np_data['time_axis_scaled'],
+            data['time_axis'] * self.marker_gap
+        )
+
+        for i in ['close', 'open', 'low', 'high']:
+            self.np_data['r_' + i] = np.append(
+                self.np_data['r_' + i], data['r_open']
+            )
+            self.np_data[i] = np.append(
+                self.np_data[i], data['open']
+            )
+
+        self.sig_add_point.emit(data)
 
 
-attach_timer(Model, limit=1)
+attach_timer(Model, limit=5)

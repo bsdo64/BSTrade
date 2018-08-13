@@ -3,7 +3,8 @@ from numba import vectorize, int64, float64
 
 @vectorize([int64(int64, float64)], fastmath=True, cache=True)
 def to_time_axis(s, v):
-    return s / 10 ** 9 / v
+    # marker = timestamp - 1 min
+    return s / 10 ** 9 / v - 1
 
 
 @vectorize([int64(int64, int64)], fastmath=True, cache=True)
