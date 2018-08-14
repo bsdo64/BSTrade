@@ -5,8 +5,10 @@ import traceback
 
 init(autoreset=True)
 
+DEBUG = False
 
-def perf_timer(argument, debug=True, limit=1):
+
+def perf_timer(argument, debug=DEBUG, limit=1):
     def real_decorator(fn):
         def wrapper(*args, **kwargs):
             if debug:
@@ -74,31 +76,30 @@ def attach_timer(cls: type, limit=20, parent=False) -> list:
 
     """
 
-    parent_attr = cls.mro()[1]  # get super class
-    sub_methods = set(dir(cls)) - set(dir(parent_attr))  # child - parent
+    if DEBUG:
+        parent_attr = cls.mro()[1]  # get super class
+        sub_methods = set(dir(cls)) - set(dir(parent_attr))  # child - parent
 
-    if parent:
-        method_list = [
-            (getattr(cls, func), func) for func in dir(cls) if
-            callable(getattr(cls, func)) and
-            not func.startswith("sig") and
-            not func.startswith("__class") and
-            not func.startswith("__new") and
-            not func.endswith("ed")
-        ]
-    else:
-        method_list = [
-            (getattr(cls, func), func) for func in dir(cls) if
-            callable(getattr(cls, func)) and
-            not func.startswith("sig") and
-            (func in sub_methods or
-             (hasattr(parent_attr, func) and
-              getattr(parent_attr, func) != getattr(cls, func)))
-        ]
+        if parent:
+            method_list = [
+                (getattr(cls, func), func) for func in dir(cls) if
+                callable(getattr(cls, func)) and
+                not func.startswith("sig") and
+                not func.startswith("__class") and
+                not func.startswith("__new") and
+                not func.endswith("ed")
+            ]
+        else:
+            method_list = [
+                (getattr(cls, func), func) for func in dir(cls) if
+                callable(getattr(cls, func)) and
+                not func.startswith("sig") and
+                (func in sub_methods or
+                 (hasattr(parent_attr, func) and
+                  getattr(parent_attr, func) != getattr(cls, func)))
+            ]
 
-    # pprint.pprint(method_list)
+        # pprint.pprint(method_list)
 
-    for f, n in method_list:
-        setattr(cls, n, perf_timer(cls.__name__ + '.' + n, limit=limit)(f))
-
-    return method_list
+        for f, n in method_list:
+            setattr(cls, n, perf_timer(cls.__name__ + '.' + n, limit=limit)(f))
