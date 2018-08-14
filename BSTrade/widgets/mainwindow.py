@@ -3,6 +3,7 @@ from PyQt5.QtGui import QIcon, QFontMetrics
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
     QTabWidget, QTabBar
 
+from BSTrade.source_clients.auth.bitmex import api_keys
 from BSTrade.source_clients.bitmexwsclient import BitmexWsClient
 from BSTrade.util.fn import attach_timer
 
@@ -26,7 +27,9 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.tabs = QTabWidget()
-        self.ws = BitmexWsClient(test=False)
+        self.ws = BitmexWsClient(test=False,
+                                 api_key=api_keys['real']['order']['key'],
+                                 api_secret=api_keys['real']['order']['secret'])
 
         self.setup_ws(self.ws)
         self.setup_main_ui()
@@ -144,6 +147,8 @@ class MainWindow(QMainWindow):
 
     def slt_ws_connected(self):
         # web socket client connected
+
+        self.ws.auth()
 
         self.ws.subscribe('trade:XBTUSD',
                           'tradeBin1m:XBTUSD',

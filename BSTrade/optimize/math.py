@@ -30,3 +30,8 @@ def nb_max_min(s1, s2):
 @jit(float64(int64, int64, float64), cache=True, fastmath=True)
 def price_from_id(idx, id_int, tick_size):
     return (idx * 1e8 - id_int) * tick_size
+
+
+@jit(float64(int64, float64, float64), cache=True, fastmath=True)
+def id_from_price(idx, price, tick_size):
+    return idx * 1e8 - price / tick_size

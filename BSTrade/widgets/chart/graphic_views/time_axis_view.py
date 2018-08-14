@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, QTimer
 from PyQt5.QtGui import QColor, QWheelEvent
 from PyQt5.QtWidgets import QGraphicsView, QFrame
 
@@ -22,6 +22,13 @@ class TimeAxisView(QGraphicsView):
         self.time_axis = TimeAxisItem(model, self)
         self.set_scene()
 
+        self.timer = QTimer()
+        self.timer.setInterval(20)  # 60 fps = 16.666 ms  (60 fps / 2)
+        self.timer.timeout.connect(self.update_view)
+        self.timer.start()
+
+        self.need_update = False
+
     def set_scene(self):
         scene = TimeScene()
         scene.addItem(self.time_axis)
@@ -29,7 +36,7 @@ class TimeAxisView(QGraphicsView):
 
     def slot_wheel_re_model(self, ev: QWheelEvent):
         self.fit_view()
-        self.viewport().update()
+        self.need_update = True
 
     def fit_view(self):
         scene: TimeScene = self.scene()
@@ -44,6 +51,11 @@ class TimeAxisView(QGraphicsView):
         )
 
         return self.rect
+
+    def update_view(self):
+        if self.need_update:
+            self.viewport().update()
+            self.need_update = False
 
 
 attach_timer(TimeAxisView)

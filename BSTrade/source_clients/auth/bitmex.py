@@ -36,7 +36,7 @@ api_keys = {
 # A signature is HMAC_SHA256(secret, verb + path + expires + data), hex encoded.
 # Verb must be uppercased, url is relative, nonce must be an increasing 64-bit integer
 # and the data, if present, must be JSON without whitespace between keys.
-def generate_signature(secret, verb, url, expires, data):
+def generate_signature(secret, verb: str, url: str, expires: int, data: str):
     """Generate a request signature compatible with BitMEX."""
     # Parse the url so we can remove the base and extract just the path.
     parsed_url = urlparse(url)

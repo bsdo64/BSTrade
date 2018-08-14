@@ -42,10 +42,10 @@ class RecentTradeTableView(QTableView):
             model.insert_data(items)
 
     def setup_ui(self):
+        # must call after __init__
         self.setColumnWidth(0, 60)
         self.setColumnWidth(1, 70)
         self.setColumnWidth(2, 90)
-        self.setColumnWidth(3, 5)
 
 
 attach_timer(RecentTradeTableView)
@@ -63,7 +63,7 @@ class RecentTradeTableModel(QAbstractTableModel):
         return len(self.data)
 
     def columnCount(self, parent: QModelIndex = QModelIndex()):
-        return 4
+        return 3
 
     def data(self, index, role: int = Qt.DisplayRole):
         row = index.row()
@@ -103,14 +103,16 @@ class RecentTradeTableModel(QAbstractTableModel):
         idx = QModelIndex()
         self.insertRows(0, len(items), idx)
         for i, v in enumerate(reversed(items)):
-            index = self.index(i, 0, idx)
-            self.setData(index, v['price'], Qt.EditRole)
-            index = self.index(i, 1, idx)
-            self.setData(index, v['size'], Qt.EditRole)
-            index = self.index(i, 2, idx)
-            self.setData(index, v['timestamp'], Qt.EditRole)
-            index = self.index(i, 3, idx)
-            self.setData(index, v['side'], Qt.EditRole)
+            index1 = self.index(i, 0, idx)
+            self.setData(index1, v['price'], Qt.EditRole)
+            index2 = self.index(i, 1, idx)
+            self.setData(index2, v['size'], Qt.EditRole)
+            index3 = self.index(i, 2, idx)
+            self.setData(index3, v['timestamp'], Qt.EditRole)
+
+            self.data[i]['side'] = v['side']
+
+            self.dataChanged.emit(index1, index3)
 
         if len(self.data) > self.max_length:
             self.removeRows(self.max_length,
@@ -153,12 +155,9 @@ class RecentTradeTableModel(QAbstractTableModel):
 
                 d['timestamp'] = "{:02}:{:02}:{:02}:{:03}".format(
                     p.hour, p.minute, p.second, p.microsecond//1000)
-            elif index.column() == 3:
-                d['side'] = str(value)
             else:
                 return False
 
-            self.dataChanged.emit(index, index)
             return True
 
         return True

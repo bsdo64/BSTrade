@@ -87,12 +87,16 @@ class Model(QObject):
 
     def change_x(self, pos, rng):
 
-        # change x_pos
-        self.x_pos += pos
+        if self.c_data['len'] < 10:
+            pos = 0 if pos < 0 else pos
+            rng = 0
 
         # change x_range
         if self.x_range + rng > self._DEFAULT_X_RANGE:
             self.x_range += rng
+
+        # change x_pos
+        self.x_pos += pos
 
         # change ratio
         self.x_ratio = self.view_width / self.x_range

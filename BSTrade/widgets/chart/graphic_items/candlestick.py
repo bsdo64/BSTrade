@@ -226,7 +226,7 @@ class CandleStickItem(QGraphicsItem):
             s1 = high
             s2 = low
         """
-        if not len(self.plus_bar_path):
+        if not len(self.plus_bar_path) and not len(self.minus_bar_path):
             return
 
         if data['plus_cond']:

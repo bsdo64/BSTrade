@@ -1,5 +1,8 @@
+import time
+
 from BSTrade.util.fn import attach_timer
 from .wsclient import WsClient
+from .auth.bitmex import generate_signature
 from PyQt5.QtCore import pyqtSignal
 
 
@@ -27,6 +30,23 @@ class BitmexWsClient(WsClient):
     def start(self):
         self.open(self.endpoint)
         return self
+
+    def auth(self):
+        if self.api_key:
+            expires = int(round(time.time()) + 5)
+            sign = generate_signature(
+                self.api_secret,
+                'GET',
+                '/realtime',
+                expires,
+                ''
+            )
+
+            data = {
+                "op": "authKeyExpires",
+                "args": [self.api_key, expires, sign]
+            }
+            self.send(data)
 
     def subscribe(self, *argv):
         list_args = list(argv)

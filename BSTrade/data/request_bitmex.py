@@ -1,14 +1,12 @@
 import datetime as dt
 import os
 import numpy as np
-
+import pandas as pd
 import ciso8601
+
 from PyQt5.QtCore import QTimer, QCoreApplication, pyqtSignal, QObject
 from BSTrade.source_clients.bitmexhttpclient import BitmexHttpClient
-from BSTrade.source_clients.auth import bitmex
-
-import pandas as pd
-
+from BSTrade.source_clients.auth import bitmex as bm_auth
 from BSTrade.util.fn import attach_timer
 
 
@@ -32,8 +30,8 @@ class Request(QObject):
 
         self.client = BitmexHttpClient(
             test=False,
-            api_key=bitmex.api_keys['real']['order']['key'],
-            api_secret=bitmex.api_keys['real']['order']['secret']
+            api_key=bm_auth.api_keys['real']['order']['key'],
+            api_secret=bm_auth.api_keys['real']['order']['secret']
         )
 
         # 525600
