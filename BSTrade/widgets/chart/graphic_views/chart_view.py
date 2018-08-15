@@ -81,15 +81,10 @@ class ChartView(QGraphicsView):
 
         """
         if self.open_file_finished:
-            # if platform == "darwin":
-            #     delta_x = event.pixelDelta().x()
-            #     delta_y = event.pixelDelta().y()
-            #     print(delta_x, delta_y)
-            # else:
             delta_x = event.angleDelta().x()
             delta_y = event.angleDelta().y()
 
-            self.model.change_x(delta_x, delta_y)
+            self.model.change_x(delta_x, -delta_y)
             self.fit_view()
 
         super().wheelEvent(event)
