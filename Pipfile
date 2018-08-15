@@ -9,20 +9,21 @@ verify_ssl = false
 name = "kakao"
 
 [packages]
-numexpr = "==2.6.6"
+numexpr = "==2.6.7"
 bottleneck = "==1.2.1"
 "pyqt5" = "==5.11.2"
 numpy = "==1.15.0"
-pandas = "==0.23.3"
+pandas = "==0.23.4"
 numba = "*"
 "ciso8601" = "==2.0.1"
 ujson = "*"
+ta-lib = "*"
 
 [dev-packages]
-pytest = "==3.6.0"
-pytest-qt = "==2.4.0"
+pytest = "==3.7.1"
+pytest-qt = "==3.0.0"
 colorama = "*"
-pylint = "*"
+pylint = "==2.1.1"
 
 [requires]
 python_version = "3.7"

@@ -1,11 +1,9 @@
 from colorama import init, Fore
-import pprint
 import time
-import traceback
 
 init(autoreset=True)
 
-DEBUG = False
+DEBUG = True
 
 
 def perf_timer(argument, debug=DEBUG, limit=1):
@@ -44,7 +42,7 @@ def perf_timer(argument, debug=DEBUG, limit=1):
     return real_decorator
 
 
-def attach_timer(cls: type, limit=20, parent=False) -> list:
+def attach_timer(cls: type, limit=20, parent=False) -> None:
     """ Attach performance timer to class
 
     Find only subclass's or override methods and
