@@ -22,7 +22,7 @@ class ChartAxisView(QGraphicsView):
         self.set_scene()
 
         self.timer = QTimer()
-        self.timer.setInterval(32)  # 60 fps = 16.666 ms  (60 fps / 2)
+        self.timer.setInterval(16)  # 60 fps = 16.666 ms  (60 fps / 2)
         self.timer.timeout.connect(self.update_view)
         self.timer.start()
 

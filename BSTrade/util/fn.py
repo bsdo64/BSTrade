@@ -5,7 +5,7 @@ import traceback
 
 init(autoreset=True)
 
-DEBUG = False
+DEBUG = True
 
 
 def perf_timer(argument, debug=DEBUG, limit=1):
