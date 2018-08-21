@@ -5,8 +5,7 @@ from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
     QTabWidget, QTabBar, QToolBar
 
-from BSTrade.Api.auth.bitmex import api_keys
-from BSTrade.Api.bitmexwsclient import BitmexWsClient
+from BSTrade.Data.Models import DataManager
 from BSTrade.util.fn import attach_timer
 
 from BSTrade.Lib.BSChart import Chart
@@ -35,36 +34,9 @@ class Main(QMainWindow):
             'symbol': 'XBTUSD',
         }
         self.tabs = QTabWidget()
-        self.ws: Union[BitmexWsClient] = None
+        self.store = DataManager(self.config, self)
         self.indi_dialog = IndicatorDialog(self)
-
-        self.setup_ws(self.config)
         self.setup_ui()
-
-    def setup_ws(self, config):
-        provider = config.get('provider')
-        if provider == 'bitmex':
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-        else:
-            # default provider == 'bitmex'
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-
-        self.ws.sig_auth_success.connect(self.slt_ws_connected)
-        self.ws.start()
-
-    def slt_ws_connected(self):
-        # web socket client connected with auth
-        self.ws.subscribe('trade:XBTUSD',
-                          'tradeBin1m:XBTUSD',
-                          'orderBookL2:XBTUSD')
 
     def setup_ui(self):
         self.resize(1024, 768)
@@ -201,7 +173,7 @@ class Main(QMainWindow):
         """)
 
         self.tabs.tabCloseRequested.connect(self.close_tab)
-        self.tabs.addTab(Chart(self), 'Bitmex:XBTUSD')
+        self.tabs.addTab(Chart(parent=self), 'Bitmex:XBTUSD')
 
         # self.tabs.addTab(QTextEdit(), 'text{}'.format(i))
 

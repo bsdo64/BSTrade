@@ -4,8 +4,7 @@ from PyQt5.QtWidgets import QSplitter, QWidget, QHBoxLayout
 from BSTrade.Lib.BSChart.Charts import ChartView
 from BSTrade.Lib.BSChart.Axis import YAxis, XAxis
 from BSTrade.util.fn import attach_timer
-from BSTrade.data.model import Model
-from BSTrade.Api import BitmexWsClient
+from BSTrade.Data.Models import ChartModel, DataManager
 
 
 class ChartPane:
@@ -43,20 +42,18 @@ class ChartTimePane:
 
 
 class LayoutManager:
-    def __init__(self, data, parent=None,):
+    def __init__(self, data_manager: DataManager, parent=None,):
         self.parent = parent
+        self.data_mng = data_manager
 
-        self.model = Model(data)
-        ws: BitmexWsClient = self.parent.ws
-        ws.sig_message.connect(self.model.slt_ws_message)
-
+        chart_model = ChartModel(data)
         # Create default main BSChart pane
         self._chart_panes = [
-            ChartPane(ChartView(self.model), YAxis.AxisView(self.model)),
+            ChartPane(ChartView(chart_model), YAxis.AxisView(chart_model)),
         ]
 
         # Create main time axis pane
-        self._time_pane = ChartTimePane(XAxis.TimeAxis(self.model, parent))
+        self._time_pane = ChartTimePane(XAxis.TimeAxis(chart_model, parent))
 
         pane = self._chart_panes[0]
         self.connect_wheel(pane)
@@ -108,9 +105,11 @@ class LayoutManager:
         self.disconnect_wheel(pane)
 
     def add_pane(self, chart_type='candle', indi=None):
+        chart_model = ChartModel(self.data)
+
         pane = ChartPane(
-            ChartView(self.model, chart_typ=chart_type, indi=indi),
-            YAxis.AxisView(self.model)
+            ChartView(chart_model, chart_typ=chart_type, indi=indi),
+            YAxis.AxisView(chart_model)
         )
 
         self.connect_wheel(pane)

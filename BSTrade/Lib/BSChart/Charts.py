@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal, Qt, QRectF, QSize
 from PyQt5.QtGui import QColor, QTransform
 from PyQt5.QtWidgets import QGraphicsView, QFrame, QGraphicsScene
 
-from BSTrade.data.model import Model
+from BSTrade.Data.Models import ChartModel
 from BSTrade.Opt.math import nb_max_min, cache_scale_x, cache_scale_y
 from BSTrade.util.fn import attach_timer
 from .Elements import CandleStick, Line, GridXItem, GridYItem
@@ -17,7 +17,7 @@ class ChartView(QGraphicsView):
     sig_chart_mouse_move = pyqtSignal(object)
     sig_chart_key_press = pyqtSignal(object)
 
-    def __init__(self, model: Model, chart_typ="candle", indi=None, parent=None):
+    def __init__(self, model: ChartModel, chart_typ="candle", indi=None, parent=None):
         QGraphicsView.__init__(self, parent)
         self.setFrameStyle(QFrame.NoFrame)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

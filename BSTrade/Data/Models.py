@@ -4,17 +4,91 @@ import time
 import pandas as pd
 import numpy as np
 import ciso8601
-
 import talib
 import talib.stream
+
 from PyQt5.QtCore import QRectF, pyqtSignal, QObject
 
+from BSTrade.Api.auth.bitmex import api_keys
+from BSTrade.Api import BitmexWsClient
 from BSTrade.util.fn import attach_timer
+from BSTrade.Opt import vec
 from BSTrade.Opt.vec import to_time_axis, to_time_scale, make_r_data
 from BSTrade.Opt.math import cache_x_range, cache_x_pos
+from BSTrade.Data.bitmex.reader import DataReader
 
 
-class Model(QObject):
+class DataManager(QObject):
+    sig_init = pyqtSignal()
+
+    def __init__(self, config, parent=None):
+        QObject.__init__(self, parent)
+
+        self.config = config
+        self.master_data = {}
+        self.models = []
+        self.reader = DataReader(config['provider'], config['symbol'])
+        self.ws: BitmexWsClient = None
+
+        self.setup_ws(config)
+
+    def set_initial_data(self):
+        self.reader.start()
+        self.reader.sig_finished.connect(self.slt_finish_init_data)
+
+    def slt_finish_init_data(self, data: dict):
+        df: pd.DataFrame = data['data']
+        df['timestamp_str'] = df['timestamp']
+        df['timestamp'] = df['timestamp'].astype('datetime64')
+
+        np_data = {key: df[key].values for key in df.keys()}
+
+        self.master_data[data['provider']] = {
+            'price': {
+                data['symbol']: {
+                    data['data_type']: np_data
+                },
+            }
+        }
+
+        self.sig_init.emit()
+
+    def setup_ws(self, config):
+        provider = config.get('provider')
+        if provider == 'bitmex':
+            self.ws = BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']
+            )
+        else:
+            # default provider == 'bitmex'
+            self.ws = BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']
+            )
+
+        self.ws.sig_auth_success.connect(self.slt_ws_connected)
+        self.ws.sig_message.connect(self.slt_ws_message)
+        self.ws.start()
+
+    def slt_ws_connected(self):
+        # web socket client connected with auth
+        self.ws.subscribe('trade:XBTUSD',
+                          'tradeBin1m:XBTUSD',
+                          'orderBookL2:XBTUSD')
+
+    def slt_ws_message(self, msg):
+        j = self.ws.json()
+
+    def get_model(self, option):
+        provider = option['provider']
+        symbol = option['symbol']
+        return self.master_data[provider]['price'][symbol]
+
+
+class ChartModel(QObject):
     sig_add_point = pyqtSignal(dict)
     sig_update_point = pyqtSignal(dict)
 
@@ -67,7 +141,7 @@ class Model(QObject):
         self._init_printing_data()
 
     def _init_printing_data(self):
-        self.series['timestamp'] = self.series['timestamp']\
+        self.series['timestamp'] = self.series['timestamp'] \
             .astype('datetime64')
         ts = self.series['timestamp'].values.astype(np.int64)
         self.series['time_axis'] = pd.Series(to_time_axis(ts, 60))
@@ -130,7 +204,8 @@ class Model(QObject):
                 first_time = ta[0]  # min
                 remain = first_time % self.minutes[self.minute_pos]
                 self.x_time_pos = (first_time - remain) * self.marker_gap
-                self.x_time_gap = self.minutes[self.minute_pos] * self.marker_gap
+                self.x_time_gap = self.minutes[
+                                      self.minute_pos] * self.marker_gap
                 self.set_time_gap(self.x_time_gap * self.x_ratio)
 
                 self.Y_VAL = np.min(rh)  # min value
@@ -146,7 +221,7 @@ class Model(QObject):
         return self.X_TIME - self.x_pos - self.x_range
 
     def prev_data(self, d_s, d_len=1000):
-        s = -(d_s+d_len)
+        s = -(d_s + d_len)
         e = -d_s or None
 
         return self._create_data(s, e)
@@ -189,7 +264,7 @@ class Model(QObject):
                 5. 1000 *   2(1)   = 2000 
                 ...
             """
-            self.y_gap_pos = (self.y_gap_pos+1) % len_gaps  # 1 % 3 -> 1
+            self.y_gap_pos = (self.y_gap_pos + 1) % len_gaps  # 1 % 3 -> 1
             self.y_val_gap *= self.y_gaps[self.y_gap_pos]  # 50 * 2 -> 100
         elif 60 * sc < g:
             """
@@ -202,7 +277,7 @@ class Model(QObject):
                 ...
             """
             self.y_val_gap /= self.y_gaps[self.y_gap_pos]  # 50 / 2.5 -> 20.0
-            self.y_gap_pos = (self.y_gap_pos-1) % len_gaps  # -1 % 3 -> 2
+            self.y_gap_pos = (self.y_gap_pos - 1) % len_gaps  # -1 % 3 -> 2
 
     def set_view_width(self, width):
         self.view_width = width
@@ -358,4 +433,4 @@ class Model(QObject):
             return self.indicators[indi]
 
 
-attach_timer(Model, limit=5)
+attach_timer(ChartModel, limit=5)

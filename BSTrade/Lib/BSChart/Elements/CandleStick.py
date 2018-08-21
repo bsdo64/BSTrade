@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
 
-from BSTrade.data.model import Model
+from BSTrade.Data.Models import ChartModel
 from BSTrade.util.fn import attach_timer
 from BSTrade.util.thread import Thread
 
@@ -41,7 +41,7 @@ def draw_rect(data, p_list: list):
 class CandleStick(QGraphicsItem):
     def __init__(self, model, view, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model: Model = model
+        self.model: ChartModel = model
         self.view = view
         self.data_x_range = self.model.current_x_range()  # 2 <
         self.init_draw = False
@@ -327,37 +327,6 @@ class CandleStick(QGraphicsItem):
         )
 
         line.moveTo(data['time_axis_scaled'], data['r_high'])
-
-    def check_point(self, msg, bar):
-        """
-        p1             p4
-          +-----------+
-          |           |
-          |           |
-          +-----------+
-        p2             p3
-
-        """
-        bar_count = bar.elementCount()
-        p1 = bar.elementAt(bar_count - 1)
-        p2 = bar.elementAt(bar_count - 2)
-        p3 = bar.elementAt(bar_count - 3)
-        p4 = bar.elementAt(bar_count - 4)
-        # print('update rect', QRectF(
-        #     p1.x,
-        #     p1.y,
-        #     abs(p4.x - p1.x),
-        #     abs(p1.y - p2.y)
-        # ))
-        print()
-        print(msg, QRectF(p1.x,
-                          p1.y,
-                          abs(p4.x - p1.x),
-                          abs(p1.y - p2.y)))
-        print(p1.x, p1.y)
-        print(p2.x, p2.y)
-        print(p3.x, p3.y)
-        print(p4.x, p4.y)
 
     def boundingRect(self):
         return self.view.rect

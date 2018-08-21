@@ -8,11 +8,11 @@ import ciso8601
 
 from PyQt5.QtCore import QTimer, QCoreApplication, pyqtSignal, QObject
 
-from BSTrade.data.bitmex.sqls import select_last, get_col_names, ignore_insert
+from BSTrade.Data.bitmex.sqls import select_last, get_col_names, ignore_insert
 from BSTrade.Api.bitmexhttpclient import BitmexHttpClient
 from BSTrade.Api.auth import bitmex as bm_auth
 from BSTrade.util.fn import attach_timer
-from BSTrade.data.bitmex.instruments import inst as bm_inst
+from BSTrade.Data.bitmex.instruments import inst as bm_inst
 
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -155,7 +155,12 @@ class DataReader(QObject):
         return df
 
     def slt_finish(self):
-        self.sig_finished.emit(self.r.df)
+        self.sig_finished.emit({
+            'provider': self.provider,
+            'symbol': self.instrument,
+            'data_type': 'tradebin1m',
+            'data': self.r.df
+        })
 
 
 attach_timer(Request, limit=10)

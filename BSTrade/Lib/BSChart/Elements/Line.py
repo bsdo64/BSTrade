@@ -2,13 +2,13 @@ import numpy as np
 from PyQt5.QtGui import QPainter, QPen, QPainterPath, QColor
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
-from BSTrade.data.model import Model
+from BSTrade.Data.Models import ChartModel
 
 
 class Line(QGraphicsItem):
     def __init__(self, model, view, indi, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model:Model = model
+        self.model:ChartModel = model
         self.view = view
         self.indi = indi
         self.data_x_range = self.model.current_x_range()  # 2 <

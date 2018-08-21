@@ -1,1 +1,1 @@
-from .ChartWidget import ChartWidget as Chart
+from .BSChart import BSChart as Chart

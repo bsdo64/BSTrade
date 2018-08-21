@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QWidget, QVBoxLayout, \
 from BSTrade.Api import BitmexWsClient
 from BSTrade.util.fn import attach_timer
 from BSTrade.Opt.math import price_from_id, id_from_price
-from BSTrade.data.bitmex.instruments import inst
+from BSTrade.Data.bitmex.instruments import inst
 
 
 class OrderBookWidget(QWidget):
