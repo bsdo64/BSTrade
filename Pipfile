@@ -18,6 +18,7 @@ numba = "*"
 "ciso8601" = "==2.0.1"
 ujson = "*"
 ta-lib = "*"
+matplotlib = "*"
 
 [dev-packages]
 pytest = "==3.7.1"

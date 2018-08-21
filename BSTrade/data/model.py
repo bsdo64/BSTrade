@@ -5,11 +5,13 @@ import pandas as pd
 import numpy as np
 import ciso8601
 
+import talib
+import talib.stream
 from PyQt5.QtCore import QRectF, pyqtSignal, QObject
 
 from BSTrade.util.fn import attach_timer
-from BSTrade.optimize.vec import to_time_axis, to_time_scale, make_r_data
-from BSTrade.optimize.math import cache_x_range, cache_x_pos
+from BSTrade.Opt.vec import to_time_axis, to_time_scale, make_r_data
+from BSTrade.Opt.math import cache_x_range, cache_x_pos
 
 
 class Model(QObject):
@@ -48,6 +50,7 @@ class Model(QObject):
 
         self.c_data = {}
         self.np_data = {}
+        self.indicators = {}
         self.minutes = [
             1, 2, 3, 5, 10, 15, 30,  # 1m, 2m, 3m, 5m, 10m, 30m,
             60, 120, 180, 240, 360, 480, 720,  # 1h, 2h, 3h, 4h, 6h, 8h, 12h,
@@ -77,9 +80,9 @@ class Model(QObject):
             self.np_data['time_axis_scaled'])
 
         for i in ['close', 'open', 'low', 'high']:
+            self.np_data[i] = self.series[i].values
             self.np_data['r_' + i] = make_r_data(self.INT_MAX,
                                                  self.series[i].values)
-            self.np_data[i] = self.series[i].values
 
         self.DATA_LEN = self.np_data['time_axis_scaled'].shape[0]
 
@@ -109,9 +112,9 @@ class Model(QObject):
     def current_x_pos(self) -> int:
         return cache_x_pos(self.x_pos, self.marker_gap)  # num1 // num2
 
-    def current_data(self):
+    def current_data(self, indi=None):
 
-        if hasattr(self, 'np_data'):
+        if not indi:
             s = -self.current_x_range()
             p = self.current_x_pos()
             e = -p if 0 < p else None
@@ -249,7 +252,10 @@ class Model(QObject):
                     }
                     """
 
-                    close = float(data['price'])  # 6430 -> 6458
+                    close = data['price']
+                    if self.np_data['close'][-1] == close:
+                        return
+
                     opn = self.np_data['open'][-1]  # 6410
                     low = self.np_data['low'][-1]  # 6400
                     high = self.np_data['high'][-1]  # 6460
@@ -331,6 +337,25 @@ class Model(QObject):
             )
 
         self.sig_add_point.emit(data)
+
+    def create_indicator(self, indi):
+        if hasattr(self, 'np_data'):
+            indi_func = getattr(talib, indi)
+            values = indi_func(self.np_data['close'])
+            values = values[~np.isnan(values)]
+            r_data = self.INT_MAX - values
+            print(r_data)
+            print(r_data.max())
+            print(r_data.min())
+            v = {
+                indi: values,
+                'time_axis': self.np_data['time_axis'],
+                'time_axis_scaled': self.np_data['time_axis_scaled'],
+                'r_' + indi: r_data,
+                'len': len(values)
+            }
+            self.indicators[indi] = v
+            return self.indicators[indi]
 
 
 attach_timer(Model, limit=5)

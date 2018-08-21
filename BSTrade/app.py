@@ -1,6 +1,7 @@
 import sys
-from BSTrade.widgets import MainWindow
+
 from PyQt5.QtWidgets import QApplication
+from BSTrade.Widgets.Main import Main
 
 
 class App:
@@ -15,11 +16,10 @@ class App:
                     }
                 """)
 
-        self.window = MainWindow()
+        self.window = Main()
         self.window.show()
 
         self.start()
 
     def start(self):
         sys.exit(self.app.exec_())
-
