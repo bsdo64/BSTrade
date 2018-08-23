@@ -6,14 +6,14 @@ from PyQt5.QtGui import QColor, QWheelEvent, QPainterPath, QPainter, QPen, QFont
 from PyQt5.QtWidgets import QGraphicsView, QFrame, QGraphicsScene, \
     QGraphicsItem, QStyleOptionGraphicsItem
 
-from BSTrade.Data.Models import ChartModel
+from BSTrade.Data.Models import CandleModel
 from BSTrade.util.fn import attach_timer
 
 
 class TimeItem(QGraphicsItem):
     def __init__(self, model, view, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model: ChartModel = model
+        self.model: CandleModel = model
         self.view = view
 
         self.time_arr = []

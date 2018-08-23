@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
 
-from BSTrade.Data.Models import ChartModel
+from BSTrade.Data.Models import CandleModel
 from BSTrade.util.fn import attach_timer
 from BSTrade.util.thread import Thread
 
@@ -39,9 +39,9 @@ def draw_rect(data, p_list: list):
 
 
 class CandleStick(QGraphicsItem):
-    def __init__(self, model, view, parent=None):
+    def __init__(self, model: CandleModel, view, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model: ChartModel = model
+        self.model = model
         self.view = view
         self.data_x_range = self.model.current_x_range()  # 2 <
         self.init_draw = False

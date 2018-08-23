@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QSplitter, QWidget, QHBoxLayout
 from BSTrade.Lib.BSChart.Charts import ChartView
 from BSTrade.Lib.BSChart.Axis import YAxis, XAxis
 from BSTrade.util.fn import attach_timer
-from BSTrade.Data.Models import ChartModel, DataManager
+from BSTrade.Data.Models import CandleModel, DataManager
 
 
 class ChartPane:
@@ -45,18 +45,22 @@ class LayoutManager:
     def __init__(self, data_manager: DataManager, parent=None,):
         self.parent = parent
         self.data_mng = data_manager
+        self.chart_model = self.data_mng.create_chart_model(
+            'bitmex:XBTUSD',
+            'tradebin1m'
+        )
 
-        chart_model = ChartModel(data)
+        candle_model = self.chart_model.create_model('candle')
+        time_model = self.chart_model.create_time()
+
+        chart_pane = ChartPane(
+            ChartView(candle_model),
+            YAxis.AxisView(candle_model)
+        )
         # Create default main BSChart pane
-        self._chart_panes = [
-            ChartPane(ChartView(chart_model), YAxis.AxisView(chart_model)),
-        ]
-
-        # Create main time axis pane
-        self._time_pane = ChartTimePane(XAxis.TimeAxis(chart_model, parent))
-
-        pane = self._chart_panes[0]
-        self.connect_wheel(pane)
+        self._chart_panes = [chart_pane]
+        self._time_pane = ChartTimePane(XAxis.TimeAxis(time_model, parent))
+        self.connect_wheel(chart_pane)
 
         # Create BSChart pane container
         self._container = QSplitter(parent)
@@ -105,11 +109,11 @@ class LayoutManager:
         self.disconnect_wheel(pane)
 
     def add_pane(self, chart_type='candle', indi=None):
-        chart_model = ChartModel(self.data)
+        line_model = self.chart_model.create_model('line')
+        line_model.set_chart('indi', indi)
 
         pane = ChartPane(
-            ChartView(chart_model, chart_typ=chart_type, indi=indi),
-            YAxis.AxisView(chart_model)
+            ChartView(line_model), YAxis.AxisView(line_model)
         )
 
         self.connect_wheel(pane)

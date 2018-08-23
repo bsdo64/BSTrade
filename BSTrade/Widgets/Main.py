@@ -117,8 +117,8 @@ class Main(QMainWindow):
             layout_manager.add_pane(chart_type='indicator', indi=indi)
 
     def setup_docks(self):
-        self.create_trade_dock()
-        self.order_book_dock()
+        # self.create_trade_dock()
+        # self.order_book_dock()
         self.create_chart_dock()
 
     def create_trade_dock(self):

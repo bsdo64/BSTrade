@@ -8,7 +8,7 @@ import ciso8601
 
 from PyQt5.QtCore import QTimer, QCoreApplication, pyqtSignal, QObject
 
-from BSTrade.Data.bitmex.sqls import select_last, get_col_names, ignore_insert
+from BSTrade.Data.bitmex import sqls as q
 from BSTrade.Api.bitmexhttpclient import BitmexHttpClient
 from BSTrade.Api.auth import bitmex as bm_auth
 from BSTrade.util.fn import attach_timer
@@ -24,14 +24,19 @@ DATA = {
 class Request(QObject):
     sig_finish = pyqtSignal()
 
-    def __init__(self, parent=None, inst=None, data=pd.DataFrame()):
+    def __init__(self, until=None, inst=None, data=pd.DataFrame()):
         QObject.__init__(self)
 
-        self.parent = parent
+        self.until = until
         self.inst = inst
         self.df = data
         self.start_length = len(self.df)
-        self.start_time = data['timestamp'].iloc[-1]
+
+        if self.start_length > 0:
+            self.start_time = self.add_min(data['timestamp'].iloc[-1], 1)
+        else:
+            self.start_time = "2017-01-01T00:00:00.000Z"
+
         self.last_time = self.start_time
 
         self.now = dt.datetime.now(tz=dt.timezone.utc)
@@ -61,7 +66,12 @@ class Request(QObject):
         return ciso8601.parse_datetime(date)
 
     def add_min(self, time, mins):
-        return time + dt.timedelta(minutes=mins)
+        if type(time) == str:
+            time = self.parse_str_iso(time)
+            new_t = time + dt.timedelta(minutes=mins)
+            return self.format_str_iso(new_t)
+        else:
+            return time + dt.timedelta(minutes=mins)
 
     def format_str_iso(self, str_time: dt.datetime) -> str:
         return str_time.isoformat(timespec='milliseconds') \
@@ -76,9 +86,7 @@ class Request(QObject):
             start_time=self.last_time
         )
 
-        time = self.parse_str_iso(self.last_time)
-        new_time = self.add_min(time, 500)
-        self.last_time = self.format_str_iso(new_time)
+        self.last_time = self.add_min(self.last_time, 500)
         self.requested += 1
 
     def get_data(self, ended: bool):
@@ -97,10 +105,11 @@ class Request(QObject):
         if len(j) > 0:
             new_df = pd.DataFrame(j)
             self.df = self.df.append(new_df, ignore_index=True, sort=False)
-
             self.timer.singleShot(1000, self.request_data)
 
-        else:
+        elif (self.count < len(j)) or \
+                (len(j) == 0) or \
+                (self.until < self.count * self.requested if self.until else False):
             self.save_to_sql()
 
             print('saved !')
@@ -114,7 +123,10 @@ class Request(QObject):
         new_data = self.df[self.start_length:]
         new_rows = [tuple(s) for s in new_data.values]
 
-        c.executemany(ignore_insert('tradebin1m', 13), new_rows)
+        c.executemany(
+            q.ignore_insert('tradebin1m', list(self.df.keys())),
+            new_rows
+        )
 
         conn.commit()
         conn.close()
@@ -123,15 +135,13 @@ class Request(QObject):
 class DataReader(QObject):
     sig_finished = pyqtSignal(object)
 
-    def __init__(self, provider, instrument, parent=None):
+    def __init__(self, provider, instrument, data_len=100000, parent=None):
         QObject.__init__(self)
         self.parent = parent
         self.provider = provider
         self.instrument = instrument
         inst = DATA[provider][instrument]
-        self.r = Request(self.parent,
-                         inst,
-                         self.read_store_data(10000))
+        self.r = Request(inst=inst, data=self.read_store_data(data_len))
 
         self.r.sig_finish.connect(self.slt_finish)
 
@@ -143,16 +153,28 @@ class DataReader(QObject):
         with sqlite3.connect(PATH + '/bitmex.db') as conn:
             c = conn.cursor()
 
-            c.execute(select_last('tradebin1m', length))
+            self.check_tables(c)
+
+            c.execute(q.select_last('tradebin1m', length))
             data = c.fetchall()
 
-            c.execute(get_col_names('tradebin1m'))
+            c.execute(q.get_col_names('tradebin1m'))
             col_data = c.fetchall()
 
             cols = [x[1] for x in col_data]
             df = pd.DataFrame(data, columns=cols)
 
         return df
+
+    def check_tables(self, cursor: sqlite3.Cursor):
+        query = q.create_table('tradebin1m')
+        cursor.execute(query)
+
+        query = q.create_index('tradebin1m', 'timestamp', uniq=False)
+        cursor.execute(query)
+
+        query = q.create_index('tradebin1m', 'id', uniq=True)
+        cursor.execute(query)
 
     def slt_finish(self):
         self.sig_finished.emit({

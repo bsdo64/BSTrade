@@ -18,7 +18,6 @@ class BSChart(QWidget):
             }
 
         self.options = options
-        self.ws = parent.ws
         self.store: DataManager = parent.store
 
         self.setContentsMargins(0, 0, 0, 0)

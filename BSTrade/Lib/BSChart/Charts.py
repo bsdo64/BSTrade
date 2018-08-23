@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal, Qt, QRectF, QSize
 from PyQt5.QtGui import QColor, QTransform
 from PyQt5.QtWidgets import QGraphicsView, QFrame, QGraphicsScene
 
-from BSTrade.Data.Models import ChartModel
+from BSTrade.Data.Models import CandleModel
 from BSTrade.Opt.math import nb_max_min, cache_scale_x, cache_scale_y
 from BSTrade.util.fn import attach_timer
 from .Elements import CandleStick, Line, GridXItem, GridYItem
@@ -17,7 +17,7 @@ class ChartView(QGraphicsView):
     sig_chart_mouse_move = pyqtSignal(object)
     sig_chart_key_press = pyqtSignal(object)
 
-    def __init__(self, model: ChartModel, chart_typ="candle", indi=None, parent=None):
+    def __init__(self, model, parent=None):
         QGraphicsView.__init__(self, parent)
         self.setFrameStyle(QFrame.NoFrame)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -29,10 +29,10 @@ class ChartView(QGraphicsView):
         self.open_file_finished = False
         self.rect = QRectF(0, 0, 0, 0)
 
-        if chart_typ == 'candle':
+        if model.CHART_TYPE == 'candle':
             self.chart_item = CandleStick(self.model, self)
-        elif chart_typ == 'indicator' and indi:
-            self.chart_item = Line(self.model, self, indi=indi)
+        elif model.CHART_TYPE == 'indicator':
+            self.chart_item = Line(self.model, self)
 
         self.set_scene()
 
@@ -66,8 +66,7 @@ class ChartView(QGraphicsView):
 
         if hasattr(self, 'chart_item'):
             self.model.change_x(delta.width(), 0)
-            self.model.set_view_width(self.width())
-            self.model.set_view_height(self.height())
+            self.model.set_size(self.size())
 
         super().resizeEvent(event)
         self.sig_chart_resize.emit(event)
