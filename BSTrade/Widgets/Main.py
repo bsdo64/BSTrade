@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
     QTabWidget, QTabBar, QToolBar
 
-from BSTrade.Data.Models import DataManager
+from BSTrade.Data.Models import Store
 from BSTrade.util.fn import attach_timer
 
 from BSTrade.Lib.BSChart import Chart
@@ -34,7 +34,7 @@ class Main(QMainWindow):
             'symbol': 'XBTUSD',
         }
         self.tabs = QTabWidget()
-        self.store = DataManager(self.config, self)
+        self.store = Store(self.config, self)
         self.indi_dialog = IndicatorDialog(self)
         self.setup_ui()
 

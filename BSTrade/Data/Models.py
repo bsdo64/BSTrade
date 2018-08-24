@@ -21,7 +21,7 @@ from BSTrade.Opt.math import cache_x_range, cache_x_pos
 from BSTrade.Data.bitmex.reader import DataReader
 
 
-class DataManager(QObject):
+class Store(QObject):
     sig_init = pyqtSignal()
 
     def __init__(self, config, parent=None):
@@ -255,7 +255,7 @@ class TimeAxisModel(QObject):
     AXIS_TYPE = 'time'
     X_TIME = (time.time() // 60) * 50  # (sec // 60s) * marker_gap -> scaled min
 
-    def __init__(self, c_model):
+    def __init__(self, c_model: ChartModel):
         QObject.__init__(self)
 
         self.c_model = c_model
@@ -265,7 +265,7 @@ class TimeAxisModel(QObject):
         self.x_pos = 0
         self.x_range = self.DEFAULT_X_RANGE
         self.x_range_prev = self.DEFAULT_X_RANGE
-        self.x_ratio = self.view_width / self.x_range
+        self.x_ratio = self.c_model.view_width / self.x_range
         self.x_time_pos = self.X_TIME
         self.x_time_gap = 60
 

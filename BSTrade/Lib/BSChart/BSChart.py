@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
-from BSTrade.Data.Models import DataManager
+from BSTrade.Data.Models import Store
 from BSTrade.Lib.BSChart.Layouts import LayoutManager
 from BSTrade.Widgets import Main
 from BSTrade.util.fn import attach_timer
@@ -18,7 +18,7 @@ class BSChart(QWidget):
             }
 
         self.options = options
-        self.store: DataManager = parent.store
+        self.store: Store = parent.store
 
         self.setContentsMargins(0, 0, 0, 0)
 

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QSplitter, QWidget, QHBoxLayout
 from BSTrade.Lib.BSChart.Charts import ChartView
 from BSTrade.Lib.BSChart.Axis import YAxis, XAxis
 from BSTrade.util.fn import attach_timer
-from BSTrade.Data.Models import CandleModel, DataManager
+from BSTrade.Data.Models import CandleModel, Store
 
 
 class ChartPane:
@@ -42,7 +42,7 @@ class ChartTimePane:
 
 
 class LayoutManager:
-    def __init__(self, data_manager: DataManager, parent=None,):
+    def __init__(self, data_manager: Store, parent=None, ):
         self.parent = parent
         self.data_mng = data_manager
         self.chart_model = self.data_mng.create_chart_model(
