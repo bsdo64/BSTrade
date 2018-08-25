@@ -124,10 +124,10 @@ class LayoutManager:
         self._chart_panes.append(pane)
         self._container.addWidget(pane.widget(self.parent))
 
-    def get_chart(self) -> QSplitter:
+    def create_chart_containter(self) -> QSplitter:
         return self._container
 
-    def get_time(self) -> QWidget:
+    def create_time_pane(self) -> QWidget:
         return self._time_pane.widget(self.parent)
 
 

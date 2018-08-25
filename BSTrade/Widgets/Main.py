@@ -90,17 +90,14 @@ class Main(QMainWindow):
 
     def slt_add_chart(self, checked):
         bschart: TradeChart = self.tabs.widget(0)
-
-        if bschart.is_ready():
-            layout_manager = bschart.get_manager()
-            layout_manager.add_pane()
+        pass
+        # if bschart.is_ready():
+        #     layout_manager = bschart.get_manager()
+        #     layout_manager.add_pane()
 
     def slt_del_chart(self, checked):
         bschart: TradeChart = self.tabs.widget(0)
-
-        if bschart.is_ready():
-            layout_manager = bschart.get_manager()
-            layout_manager.del_last_pane()
+        pass
 
     def setup_indicators(self, dialog):
         dialog.sig_open_indicator.connect(self.slt_add_indicator)
@@ -110,10 +107,10 @@ class Main(QMainWindow):
 
     def slt_add_indicator(self, indi):
         bschart: TradeChart = self.tabs.widget(0)
-
-        if bschart.is_ready():
-            layout_manager = bschart.get_manager()
-            layout_manager.add_pane(chart_type='indicator', indi=indi)
+        pass
+        # if bschart.is_ready():
+        #     layout_manager = bschart.get_manager()
+        #     layout_manager.add_pane(chart_type='indicator', indi=indi)
 
     def setup_docks(self):
         # self.create_trade_dock()

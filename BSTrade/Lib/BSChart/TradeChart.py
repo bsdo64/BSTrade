@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
 from BSTrade.util.fn import attach_timer
-from .Layouts import LayoutManager
+from .ChartCreator import TimeSeriesChartCreator as ChartCreator
 
 if TYPE_CHECKING:
     from BSTrade.Data.Models import Store
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class TradeChart(QWidget):
     def __init__(self, options=None, parent: QWidget = None):
-        QWidget.__init__(self, parent)
+        super().__init__(parent)
 
         if options is None:
             options = {
@@ -19,31 +19,37 @@ class TradeChart(QWidget):
                 'symbol': 'XBTUSD'
             }
 
+        # ------ Init Data
         self.options = options
         self.store: 'Store' = parent.store
+        self.chart_creator = ChartCreator(self.store, parent=self)
 
+        # ------ Init UI Components
+        self.vbox = QVBoxLayout(self)
+
+        # ------ Init setup
+        self.setup_ui()
+        self.init_signals()
+
+    def setup_ui(self):
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.vbox = QVBoxLayout(self)
         self.vbox.setSpacing(1)
         self.vbox.setContentsMargins(0, 0, 0, 0)
 
-        self.init_data()
+        chart_cont, x_axis_pane = self.chart_creator.init_layout()
+        self.vbox.addWidget(chart_cont)
+        self.vbox.addWidget(x_axis_pane)
 
-    def init_data(self):
-        self.store.set_initial_data()
+    def init_signals(self):
         self.store.sig_init.connect(self.slt_finish_read_data)
 
-    def is_ready(self):
-        return hasattr(self, 'layout_mng')
-
-    def get_manager(self):
-        return self.layout_mng
+    def request_data(self):
+        self.store.request_initial_data()
 
     def slt_finish_read_data(self):
-        self.layout_mng = LayoutManager(self.store, self)
-        self.vbox.addWidget(self.layout_mng.get_chart())
-        self.vbox.addWidget(self.layout_mng.get_time())
+        chart_cont = self.vbox.itemAt(0).widget()
+        x_axis_pane = self.vbox.itemAt(1).widget()
 
 
 attach_timer(TradeChart)

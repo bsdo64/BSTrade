@@ -25,7 +25,7 @@ class Store(QObject):
 
         self.setup_ws(config)
 
-    def set_initial_data(self):
+    def request_initial_data(self):
         self.reader.start()
         self.reader.sig_finished.connect(self.slt_finish_init_data)
 

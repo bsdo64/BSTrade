@@ -8,7 +8,22 @@ from BSTrade.util.fn import attach_timer
 
 class XAxisView(QGraphicsView):
     def __init__(self, model, parent=None):
-        QGraphicsView.__init__(self, parent)
+        super().__init__(parent)
+
+        # ------ Init Data
+        self.model = model
+        self.rect = QRectF(0, 0, 0, 0)
+        self.item = TimeItem(model, self)
+        self.need_update = False
+        self.timer = QTimer()
+
+        # ------ Init UI Components
+        self.setup_ui()
+
+        # ------ Init setup
+        self.init_signals()
+
+    def setup_ui(self):
         self.setFixedHeight(20)
         self.setFrameStyle(QFrame.NoFrame)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -16,32 +31,24 @@ class XAxisView(QGraphicsView):
         self.setViewportMargins(0, 0, 0, 0)
         self.setBackgroundBrush(QColor('#1B1D27'))
 
-        self.model = model
-        self.rect = QRectF(0, 0, 0, 0)
-        self.time_axis = TimeItem(model, self)
-        self.set_scene()
+        scene = QGraphicsScene()
+        scene.addItem(self.item)
+        self.setScene(scene)
 
-        self.timer = QTimer()
+    def init_signals(self):
         self.timer.setInterval(16)  # 60 fps = 16.666 ms  (60 fps / 2)
         self.timer.timeout.connect(self.update_view)
         self.timer.start()
 
-        self.need_update = False
-
-    def set_scene(self):
-        scene = QGraphicsScene()
-        scene.addItem(self.time_axis)
-        self.setScene(scene)
-
     def wheelEvent(self, ev: QWheelEvent):
-        self.fit_view()
         self.need_update = True
+        self.fit_view()
 
     def fit_view(self):
         scene: QGraphicsScene = self.scene()
         scene.setSceneRect(self.make_scene_rect())
 
-        self.time_axis.make_path()
+        self.item.make_path()
 
     def make_scene_rect(self):
         self.rect = QRectF(

@@ -5,14 +5,14 @@ from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QPainterPath, QPainter, QPen, QFont
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
-from BSTrade.Lib.BSChart.Model.PlotModel import CandleModel
 from BSTrade.util.fn import attach_timer
+from ..Model import TimeAxisModel
 
 
 class TimeItem(QGraphicsItem):
     def __init__(self, model, view, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model: CandleModel = model
+        self.model: TimeAxisModel = model
         self.view = view
 
         self.time_arr = []
@@ -40,14 +40,14 @@ class TimeItem(QGraphicsItem):
         painter.restore()
 
     def make_path(self):
-        width = self.model.view_width
+        width = self.view.width()
         # first time position (min * gap(50)) ex) 1277958000
         first_time_pos = self.model.x_time_pos
 
         # time pos -> real time (min * 60s // gap) ex) 1533535200
         time = first_time_pos * 60 // self.model.marker_gap
         # first time position ex) 1277958000 - 1277961034.0
-        first = (first_time_pos - self.model.rect_x()) * self.model.x_ratio
+        first = (first_time_pos - self.model.get_rectx()) * self.model.x_ratio
         # time position gap
         gap = self.model.x_time_gap * self.model.x_ratio
 

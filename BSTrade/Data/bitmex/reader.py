@@ -135,7 +135,7 @@ class Request(QObject):
 class DataReader(QObject):
     sig_finished = pyqtSignal(object)
 
-    def __init__(self, provider, instrument, data_len=100000, parent=None):
+    def __init__(self, provider, instrument, data_len=300000, parent=None):
         QObject.__init__(self)
         self.parent = parent
         self.provider = provider

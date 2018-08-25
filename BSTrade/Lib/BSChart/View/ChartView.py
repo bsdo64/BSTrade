@@ -17,7 +17,7 @@ class ChartView(QGraphicsView):
     sig_chart_key_press = pyqtSignal(object)
 
     def __init__(self, model, parent=None):
-        QGraphicsView.__init__(self, parent)
+        super().__init__(parent)
         self.setFrameStyle(QFrame.NoFrame)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
