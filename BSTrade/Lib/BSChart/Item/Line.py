@@ -2,7 +2,7 @@ import numpy as np
 from PyQt5.QtGui import QPainter, QPen, QPainterPath, QColor
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
-from BSTrade.Data.Models import CandleModel
+from BSTrade.Lib.BSChart.Model.PlotModel import CandleModel
 
 
 class Line(QGraphicsItem):

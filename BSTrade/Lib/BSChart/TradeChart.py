@@ -1,14 +1,16 @@
+from typing import TYPE_CHECKING
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
-from BSTrade.Data.Models import Store
-from BSTrade.Lib.BSChart.Layouts import LayoutManager
-from BSTrade.Widgets import Main
 from BSTrade.util.fn import attach_timer
-from BSTrade.Data.bitmex.reader import DataReader
+from .Layouts import LayoutManager
+
+if TYPE_CHECKING:
+    from BSTrade.Data.Models import Store
 
 
-class BSChart(QWidget):
-    def __init__(self, options=None, parent: Main = None):
+class TradeChart(QWidget):
+    def __init__(self, options=None, parent: QWidget = None):
         QWidget.__init__(self, parent)
 
         if options is None:
@@ -18,7 +20,7 @@ class BSChart(QWidget):
             }
 
         self.options = options
-        self.store: Store = parent.store
+        self.store: 'Store' = parent.store
 
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -44,4 +46,4 @@ class BSChart(QWidget):
         self.vbox.addWidget(self.layout_mng.get_time())
 
 
-attach_timer(BSChart)
+attach_timer(TradeChart)

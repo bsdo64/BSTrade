@@ -5,10 +5,9 @@ from PyQt5.QtCore import pyqtSignal, Qt, QRectF, QSize
 from PyQt5.QtGui import QColor, QTransform
 from PyQt5.QtWidgets import QGraphicsView, QFrame, QGraphicsScene
 
-from BSTrade.Data.Models import CandleModel
 from BSTrade.Opt.math import nb_max_min, cache_scale_x, cache_scale_y
 from BSTrade.util.fn import attach_timer
-from .Elements import CandleStick, Line, GridXItem, GridYItem
+from ..Item import CandleStick, Line, GridXItem, GridYItem
 
 
 class ChartView(QGraphicsView):
@@ -66,7 +65,7 @@ class ChartView(QGraphicsView):
 
         if hasattr(self, 'chart_item'):
             self.model.change_x(delta.width(), 0)
-            self.model.set_size(self.size())
+            self.model.c_model.set_size(self.size())
 
         super().resizeEvent(event)
         self.sig_chart_resize.emit(event)

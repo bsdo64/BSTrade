@@ -1,14 +1,16 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QSplitter, QWidget, QHBoxLayout
 
-from BSTrade.Lib.BSChart.Charts import ChartView
-from BSTrade.Lib.BSChart.Axis import YAxis, XAxis
+from .View import ChartView, XAxisView, YAxisView
 from BSTrade.util.fn import attach_timer
-from BSTrade.Data.Models import CandleModel, Store
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from BSTrade.Data.Models import Store
 
 
 class ChartPane:
-    def __init__(self, chart: ChartView, axis: YAxis.AxisView):
+    def __init__(self, chart: ChartView, axis: YAxisView):
         self.chart = chart
         self.axis = axis
 
@@ -24,7 +26,7 @@ class ChartPane:
 
 
 class ChartTimePane:
-    def __init__(self, axis: XAxis.TimeAxis):
+    def __init__(self, axis: XAxisView):
         self.axis = axis
         self.empty_view = QWidget()
         self.empty_view.setFixedSize(56, 20)
@@ -42,7 +44,7 @@ class ChartTimePane:
 
 
 class LayoutManager:
-    def __init__(self, data_manager: Store, parent=None, ):
+    def __init__(self, data_manager: 'Store', parent=None, ):
         self.parent = parent
         self.data_mng = data_manager
         self.chart_model = self.data_mng.create_chart_model(
@@ -55,11 +57,12 @@ class LayoutManager:
 
         chart_pane = ChartPane(
             ChartView(candle_model),
-            YAxis.AxisView(candle_model)
+            YAxisView(candle_model)
         )
         # Create default main BSChart pane
         self._chart_panes = [chart_pane]
-        self._time_pane = ChartTimePane(XAxis.TimeAxis(time_model, parent))
+        self._time_pane = ChartTimePane(
+            XAxisView(time_model, parent))
         self.connect_wheel(chart_pane)
 
         # Create BSChart pane container
@@ -113,7 +116,7 @@ class LayoutManager:
         line_model.set_chart('indi', indi)
 
         pane = ChartPane(
-            ChartView(line_model), YAxis.AxisView(line_model)
+            ChartView(line_model), YAxisView(line_model)
         )
 
         self.connect_wheel(pane)

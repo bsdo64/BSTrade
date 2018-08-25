@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPen, QPainterPath, QColor, QKeyEvent
 from PyQt5.QtWidgets import QGraphicsItem, QWidget, QStyleOptionGraphicsItem, \
     QGraphicsSceneWheelEvent
 
-from BSTrade.Data.Models import CandleModel
+from ..Model.PlotModel import CandleModel
 from BSTrade.util.fn import attach_timer
 from BSTrade.util.thread import Thread
 
@@ -43,7 +43,7 @@ class CandleStick(QGraphicsItem):
         QGraphicsItem.__init__(self, parent)
         self.model = model
         self.view = view
-        self.data_x_range = self.model.current_x_range()  # 2 <
+        self.data_x_range = self.model.x_axis.current_x_range()  # 2 <
         self.init_draw = False
         self.init_len = 0
 
@@ -66,13 +66,13 @@ class CandleStick(QGraphicsItem):
         # Set level of detail
         # print(option.levelOfDetailFromTransform(painter.worldTransform()))
 
-        r = self.model.current_x_range()
-        p = self.model.current_x_pos()
+        r = self.model.x_axis.current_x_range()
+        p = self.model.x_axis.current_x_pos()
 
         if self.init_len > 0:
 
             path_len = len(self.plus_bar_path)
-            prev = self.model.x_range_prev
+            prev = self.model.x_axis.x_range_prev
 
             s = (p - self.init_len) // prev + 1 if p > self.init_len else 0
             e = (r - self.init_len) // prev + 2

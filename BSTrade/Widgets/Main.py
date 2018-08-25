@@ -5,10 +5,9 @@ from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
     QTabWidget, QTabBar, QToolBar
 
-from BSTrade.Data.Models import Store
 from BSTrade.util.fn import attach_timer
-
-from BSTrade.Lib.BSChart import Chart
+from BSTrade.Data.Models import Store
+from BSTrade.Lib.BSChart import TradeChart
 from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, RecentTradeTableModel
 from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
@@ -90,14 +89,14 @@ class Main(QMainWindow):
         indicator_act.triggered.connect(self.slt_open_indicator)
 
     def slt_add_chart(self, checked):
-        bschart: Chart = self.tabs.widget(0)
+        bschart: TradeChart = self.tabs.widget(0)
 
         if bschart.is_ready():
             layout_manager = bschart.get_manager()
             layout_manager.add_pane()
 
     def slt_del_chart(self, checked):
-        bschart: Chart = self.tabs.widget(0)
+        bschart: TradeChart = self.tabs.widget(0)
 
         if bschart.is_ready():
             layout_manager = bschart.get_manager()
@@ -110,7 +109,7 @@ class Main(QMainWindow):
         self.indi_dialog.show()
 
     def slt_add_indicator(self, indi):
-        bschart: Chart = self.tabs.widget(0)
+        bschart: TradeChart = self.tabs.widget(0)
 
         if bschart.is_ready():
             layout_manager = bschart.get_manager()
@@ -173,7 +172,7 @@ class Main(QMainWindow):
         """)
 
         self.tabs.tabCloseRequested.connect(self.close_tab)
-        self.tabs.addTab(Chart(parent=self), 'Bitmex:XBTUSD')
+        self.tabs.addTab(TradeChart(parent=self), 'Bitmex:XBTUSD')
 
         # self.tabs.addTab(QTextEdit(), 'text{}'.format(i))
 
