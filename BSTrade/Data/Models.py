@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 from BSTrade.Api.auth.bitmex import api_keys
 from BSTrade.Api import BitmexWsClient
-from BSTrade.Data.bitmex.reader import DataReader
+from BSTrade.Data.reader import DataReader
 from BSTrade.Lib.BSChart.Model import ChartModel
 
 
@@ -12,29 +12,34 @@ class Store(QObject):
     sig_init = pyqtSignal()
 
     def __init__(self, config, parent=None):
-        QObject.__init__(self, parent)
+        super().__init__(parent)
 
         self.config = config
-        self.master_data = {}
+        self.cache = {}
         self.chart_models = []
         self.data_len = 100000
-        self.reader = DataReader(config['provider'],
-                                 config['symbol'],
-                                 self.data_len)
+        self.reader = DataReader()
+        self.writer = DataWriter()
         self.ws: BitmexWsClient = None
 
         self.setup_ws(config)
 
-    def get_data(self, *args):
+    def get_data(self, provider, *args):
 
-        d = self.master_data.get(args[0], {})
-        for i in args[1:]:
+        d = self.cache.get(provider, {})
+        for i in args:
             d = d.get(i, {})
 
         return d
 
     def request_initial_data(self):
-        self.reader.start()
+        self.reader.request({
+            'provider': 'bitmex',
+            'endpoint': ['get', 'trade', 'bucketed'],
+            'params': {'bin_size': '1m', 'symbol': 'XBTUSD', 'count': 500},
+            'symbol': 'XBTUSD',
+            'option': {}
+        })
         self.reader.sig_finished.connect(self.slt_finish_init_data)
 
     def slt_finish_init_data(self, data: dict):
@@ -59,7 +64,7 @@ class Store(QObject):
 
         np_data = {key: df[key].values for key in df.keys()}
 
-        self.master_data[provider] = {
+        self.cache[provider] = {
             'price': {
                 symbol: {
                     data_type: np_data
@@ -97,12 +102,12 @@ class Store(QObject):
     def get_model(self, option):
         provider = option['provider']
         symbol = option['symbol']
-        return self.master_data[provider]['price'][symbol]
+        return self.cache[provider]['price'][symbol]
 
     def create_chart_model(self, idx: str, data_type: str):
         provider, symbol = idx.split(':')
         try:
-            data = self.master_data[provider]['price'][symbol][data_type]
+            data = self.cache[provider]['price'][symbol][data_type]
         except KeyError:
             data = {}
 

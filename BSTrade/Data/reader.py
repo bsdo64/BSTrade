@@ -135,18 +135,17 @@ class Request(QObject):
 class DataReader(QObject):
     sig_finished = pyqtSignal(object)
 
-    def __init__(self, provider, instrument, data_len=300000, parent=None):
+    def __init__(self, parent=None):
         QObject.__init__(self)
         self.parent = parent
-        self.provider = provider
-        self.instrument = instrument
-        inst = DATA[provider][instrument]
-        self.r = Request(inst=inst, data=self.read_store_data(data_len))
+        self.r = {
+            'bitmex': Request()
+        }
 
         self.r.sig_finish.connect(self.slt_finish)
 
-    def start(self):
-        self.r.request_data()
+    def request(self, option):
+        self.r[option['provider']].request_data()
 
     def read_store_data(self, length):
 
@@ -187,11 +186,3 @@ class DataReader(QObject):
 
 attach_timer(Request, limit=10)
 attach_timer(DataReader, limit=10)
-
-if __name__ == '__main__':
-    app = QCoreApplication([])
-
-    handler = DataReader('bitmex', 'XBTUSD')
-    handler.start()
-
-    app.exec()
