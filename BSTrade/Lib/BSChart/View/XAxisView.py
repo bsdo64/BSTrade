@@ -7,13 +7,12 @@ from BSTrade.util.fn import attach_timer
 
 
 class XAxisView(QGraphicsView):
-    def __init__(self, model, parent=None):
+    def __init__(self, item, parent=None):
         super().__init__(parent)
 
         # ------ Init Data
-        self.model = model
         self.rect = QRectF(0, 0, 0, 0)
-        self.item = TimeItem(model, self)
+        self.item = item
         self.need_update = False
         self.timer = QTimer()
 
@@ -21,6 +20,7 @@ class XAxisView(QGraphicsView):
         self.setup_ui()
 
         # ------ Init setup
+        self.item.set_view(self)
         self.init_signals()
 
     def setup_ui(self):

@@ -1,16 +1,21 @@
 from typing import TYPE_CHECKING
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSplitter
 
 from BSTrade.util.fn import attach_timer
 from .ChartCreator import TimeSeriesChartCreator as ChartCreator
+from .Layouts import LayoutManager
+from .Model import ChartModel
 
 if TYPE_CHECKING:
     from BSTrade.Data.Models import Store
 
 
 class TradeChart(QWidget):
-    def __init__(self, options=None, parent: QWidget = None):
+    sig_init_gui = pyqtSignal()
+
+    def __init__(self, model: ChartModel, options=None, parent: QWidget = None):
         super().__init__(parent)
 
         if options is None:
@@ -21,8 +26,10 @@ class TradeChart(QWidget):
 
         # ------ Init Data
         self.options = options
+        self.model = model
         self.store: 'Store' = parent.store
-        self.chart_creator = ChartCreator(self.store, parent=self)
+        self.chart_creator = ChartCreator(self.model)
+        self.tc_layout = LayoutManager(self)
 
         # ------ Init UI Components
         self.vbox = QVBoxLayout(self)
@@ -37,7 +44,8 @@ class TradeChart(QWidget):
         self.vbox.setSpacing(1)
         self.vbox.setContentsMargins(0, 0, 0, 0)
 
-        chart_cont, x_axis_pane = self.chart_creator.init_layout()
+        x_axis_view = self.chart_creator.create_x_time_view()
+        chart_cont, x_axis_pane = self.tc_layout.init_layout(x_axis_view)
         self.vbox.addWidget(chart_cont)
         self.vbox.addWidget(x_axis_pane)
 
@@ -48,8 +56,20 @@ class TradeChart(QWidget):
         self.store.request_initial_data()
 
     def slt_finish_read_data(self):
-        chart_cont = self.vbox.itemAt(0).widget()
-        x_axis_pane = self.vbox.itemAt(1).widget()
+        option = self.options
+        option['chart_type'] = 'candle'
+        self.add_chart(option)
+
+    def add_chart(self, option):
+        chart_view, y_axis = self.chart_creator.create_chart_view(option)
+        chart_pane = self.tc_layout.create_chart_pane(chart_view, y_axis)
+        self.tc_layout.add_pane(chart_pane)
+
+    def set_symbol(self):
+        pass
+
+    def add_plot(self, chart_pane_idx):
+        pass
 
 
 attach_timer(TradeChart)

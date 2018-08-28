@@ -15,17 +15,23 @@ from . import ChartModel, TimeAxisModel
 class BaseChart(QObject):
     INT_MAX = sys.maxsize // 10 ** 11 * 10
 
-    def __init__(self, c_model: 'ChartModel', axis_model: 'TimeAxisModel'):
+    def __init__(self, _c_model: 'ChartModel', axis_model: 'TimeAxisModel'):
         super().__init__()
 
-        self.c_model = c_model
-        self.series = c_model.get_data()
-        self.store = c_model.get_store()
+        self._c_model = _c_model
+        self.series = _c_model.get_data()
+        self.store = _c_model.get_store()
 
         self.x_axis = axis_model
 
     def change_x(self, pos, rng):
         self.x_axis.change_axis(pos, rng)
+
+    def x_model(self):
+        return self.x_axis
+
+    def c_model(self):
+        return self._c_model
 
 
 class LineModel(BaseChart):
@@ -49,7 +55,7 @@ class CandleModel(BaseChart):
         super().__init__(c_model, axis_model)
 
         self.y_range = 100
-        self.y_ratio = self.c_model.view_height / self.y_range  # 480 / 100 = 4.8
+        self.y_ratio = self.c_model().view_height / self.y_range  # 480 / 100 = 4.8
         self.y_val_pos = 9876540
         self.y_gap_pos = 2
         self.y_gaps = [2, 2, 2.5]
@@ -63,15 +69,16 @@ class CandleModel(BaseChart):
 
     def init_printing_data(self):
         for i in ['close', 'open', 'low', 'high']:
-            self.print_data['r_' + i] = vec.sub(self.INT_MAX, self.series[i])
+            self.print_data['r_' + i] = vec.sub(self.INT_MAX,
+                                                self.series.get(i, np.array([])))
 
         return self.current_data()
 
     def current_data(self, indi=None):
-        chart = self.c_model
+        chart = self.c_model()
         x_axis = self.x_axis
 
-        if not indi:
+        if chart.data_len:
             s = -x_axis.current_x_range()
             p = x_axis.current_x_pos()
             e = -p if 0 < p else None
@@ -80,7 +87,7 @@ class CandleModel(BaseChart):
                 self.c_data = self._create_data(s, e)
 
             # if e - s > 0:
-            x_axis.calc_marker(self.c_data['time_axis'])
+            x_axis.calc_marker()
 
             rh = self.print_data['r_high']
             rl = self.print_data['r_low']
@@ -88,8 +95,10 @@ class CandleModel(BaseChart):
             remain = self.Y_VAL % self.y_val_gap  # 9875421 % 50
             self.y_val_pos = (self.Y_VAL - remain)  # first y grid
             self.y_range = np.max(rl) - self.Y_VAL  # min value
-            self.y_ratio = self.c_model.view_height / self.y_range
+            self.y_ratio = chart.view_height / self.y_range
             self.set_y_gap(self.y_val_gap * self.y_ratio)  # y gap 50 * 4.8
+        else:
+            self.c_data = {}
 
         return self.c_data
 
@@ -107,14 +116,15 @@ class CandleModel(BaseChart):
         return self._create_data(s, e)
 
     def _create_data(self, start, end):
+        data = self.c_model().get_data()
 
         return {
-            'time_axis_scaled': self.series['time_axis_scaled'][start: end],
-            'time_axis': self.series['time_axis'][start: end],
-            'high': self.series['high'][start: end],
-            'low': self.series['low'][start: end],
-            'close': self.series['close'][start: end],
-            'open': self.series['open'][start: end],
+            'time_axis_scaled': data['time_axis_scaled'][start: end],
+            'time_axis': data['time_axis'][start: end],
+            'high': data['high'][start: end],
+            'low': data['low'][start: end],
+            'close': data['close'][start: end],
+            'open': data['open'][start: end],
             'r_high': self.print_data['r_high'][start: end],
             'r_low': self.print_data['r_low'][start: end],
             'r_close': self.print_data['r_close'][start: end],

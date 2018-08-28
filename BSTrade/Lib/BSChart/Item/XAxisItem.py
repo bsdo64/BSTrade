@@ -10,13 +10,15 @@ from ..Model import TimeAxisModel
 
 
 class TimeItem(QGraphicsItem):
-    def __init__(self, model, view, parent=None):
+    def __init__(self, model, parent=None):
         QGraphicsItem.__init__(self, parent)
         self.model: TimeAxisModel = model
-        self.view = view
-
+        self.view = None
         self.time_arr = []
         self.line_path = QPainterPath()
+
+    def set_view(self, view):
+        self.view = view
 
     def paint(self,
               painter: QPainter,
@@ -77,7 +79,10 @@ class TimeItem(QGraphicsItem):
         self.line_path = line_path
 
     def boundingRect(self):
-        return self.view.rect
+        if self.view:
+            return self.view.rect
+        else:
+            return QRectF()
 
 
 attach_timer(TimeItem, limit=1)

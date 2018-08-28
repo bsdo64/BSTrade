@@ -16,7 +16,7 @@ class ChartView(QGraphicsView):
     sig_chart_mouse_move = pyqtSignal(object)
     sig_chart_key_press = pyqtSignal(object)
 
-    def __init__(self, model, parent=None):
+    def __init__(self, item, parent=None):
         super().__init__(parent)
         self.setFrameStyle(QFrame.NoFrame)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -24,21 +24,17 @@ class ChartView(QGraphicsView):
         self.setViewportMargins(0, 0, 0, 0)
         self.setBackgroundBrush(QColor('#1B1D27'))
 
-        self.model = model
+        self.chart_item = item
         self.open_file_finished = False
         self.rect = QRectF(0, 0, 0, 0)
-
-        if model.CHART_TYPE == 'candle':
-            self.chart_item = CandleStick(self.model, self)
-        elif model.CHART_TYPE == 'indicator':
-            self.chart_item = Line(self.model, self)
 
         self.set_scene()
 
     def set_scene(self):
         scene = QGraphicsScene()
-        scene.addItem(GridXItem(self.model, self))
-        scene.addItem(GridYItem(self.model, self))
+        item_model = self.chart_item.plot_model()
+        scene.addItem(GridXItem(item_model.x_model(), self))
+        scene.addItem(GridYItem(item_model, self))
         scene.addItem(self.chart_item)
 
         self.setScene(scene)
@@ -50,7 +46,7 @@ class ChartView(QGraphicsView):
 
         x = int(x) - int(x) % 50
 
-        d = self.model.c_data
+        d = self.chart_item.plot_model().c_data
         ts = d['time_axis_scaled']
         close = d['close']
         idx = np.where(ts == x)[0]
@@ -64,8 +60,8 @@ class ChartView(QGraphicsView):
         delta: QSize = (event.size() - event.oldSize())
 
         if hasattr(self, 'chart_item'):
-            self.model.change_x(delta.width(), 0)
-            self.model.c_model.set_size(self.size())
+            self.chart_item.plot_model().change_x(delta.width(), 0)
+            self.chart_item.c_model().set_size(self.size())
 
         super().resizeEvent(event)
         self.sig_chart_resize.emit(event)
@@ -88,7 +84,7 @@ class ChartView(QGraphicsView):
             delta_x = event.angleDelta().x()
             delta_y = event.angleDelta().y()
 
-            self.model.change_x(delta_x, -delta_y)
+            self.chart_item.plot_model().change_x(delta_x, -delta_y)
             self.fit_view()
 
         super().wheelEvent(event)
@@ -96,33 +92,33 @@ class ChartView(QGraphicsView):
 
     def make_scene_rect(self, data):
         self.rect = QRectF(
-            self.model.rect_x(),
+            self.chart_item.plot_model().rect_x(),
             np.min(data['r_high']),
-            self.model.x_range,
+            self.chart_item.plot_model().x_range,
             nb_max_min(data['high'], data['low'])
         )
 
         return self.rect
 
     def fit_view(self):
-        data = self.model.current_data()
+        data = self.chart_item.plot_model().current_data()
 
-        if data['len'] > 0:
+        # Scale view after change xrange to fit view
+        trans = QTransform()
+        sc = (cache_scale_x(self.width(),
+                            self.chart_item.x_model().x_range),
+              cache_scale_y(self.height(),
+                            data['high'],
+                            data['low']))
+        trans.scale(*sc)
+        self.setTransform(trans)
 
-            # Scale view after change xrange to fit view
-            trans = QTransform()
-            sc = (cache_scale_x(self.width(),
-                                self.model.x_range),
-                  cache_scale_y(self.height(),
-                                data['high'],
-                                data['low']))
-            trans.scale(*sc)
-            self.setTransform(trans)
+        # Change scene rect to fit view
+        scene = self.scene()
+        # update scene rect
+        scene.setSceneRect(self.make_scene_rect(data))
 
-            # Change scene rect to fit view
-            scene = self.scene()
-            # update scene rect
-            scene.setSceneRect(self.make_scene_rect(data))
+
 
 
 attach_timer(ChartView)

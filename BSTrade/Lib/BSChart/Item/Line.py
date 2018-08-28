@@ -2,14 +2,14 @@ import numpy as np
 from PyQt5.QtGui import QPainter, QPen, QPainterPath, QColor
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
-from BSTrade.Lib.BSChart.Model.PlotModel import CandleModel
+from BSTrade.Lib.BSChart.Model import LineModel
 
 
 class Line(QGraphicsItem):
-    def __init__(self, model, view, indi, parent=None):
+    def __init__(self, model, indi, parent=None):
         QGraphicsItem.__init__(self, parent)
-        self.model:CandleModel = model
-        self.view = view
+        self.model: LineModel = model
+        self.view = None
         self.indi = indi
         self.data_x_range = self.model.current_x_range()  # 2 <
         self.init_draw = False
@@ -18,6 +18,9 @@ class Line(QGraphicsItem):
         self.line_path = []
 
         self.make_path()
+
+    def set_view(self, view):
+        self.view = view
 
     def paint(self,
               painter: QPainter,

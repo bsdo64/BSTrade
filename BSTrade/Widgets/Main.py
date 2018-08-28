@@ -26,7 +26,7 @@ class TabBar(QTabBar):
 
 class Main(QMainWindow):
     def __init__(self, parent=None):
-        QMainWindow.__init__(self, parent)
+        super().__init__(parent)
 
         self.config = {
             'provider': 'bitmex',
@@ -169,7 +169,15 @@ class Main(QMainWindow):
         """)
 
         self.tabs.tabCloseRequested.connect(self.close_tab)
-        self.tabs.addTab(TradeChart(parent=self), 'Bitmex:XBTUSD')
+        chart_model = self.store.create_chart_model(
+            'bitmex:XBTUSD',
+            'tradebin1m'
+        )
+        chart = TradeChart(
+            model=chart_model, parent=self
+        )
+        self.tabs.addTab(chart, 'Bitmex:XBTUSD')
+        chart.request_data()
 
         # self.tabs.addTab(QTextEdit(), 'text{}'.format(i))
 

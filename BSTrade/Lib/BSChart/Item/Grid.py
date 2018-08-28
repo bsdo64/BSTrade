@@ -4,11 +4,13 @@ from PyQt5.QtCore import QRectF
 from PyQt5.QtGui import QPainter, QPen, QPainterPath, QColor
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 
+from BSTrade.Lib.BSChart.Model import TimeAxisModel
+
 
 class GridXItem(QGraphicsItem):
-    def __init__(self, model, view, parent=None):
-        QGraphicsItem.__init__(self, parent)
-        self.model = model
+    def __init__(self, model: TimeAxisModel, view, parent=None):
+        super().__init__(parent)
+        self.x_model = model
         self.view = view
 
     def paint(self,
@@ -24,15 +26,15 @@ class GridXItem(QGraphicsItem):
         # painter.setRenderHint(painter.Antialiasing)
 
         # first time position (min * gap(50)) ex) 1277958000
-        first_time_pos = self.model.x_axis.x_time_pos
+        first_time_pos = self.x_model.x_time_pos
         # first time position ex) 1277958000 - 1277961034.0
         first = first_time_pos
         # time position gap
-        gap = self.model.x_axis.x_time_gap
+        gap = self.x_model.x_time_gap
 
         line_path = QPainterPath()
         r: QRectF = self.view.rect
-        for v in np.arange(first, first + self.model.x_axis.x_range, gap):
+        for v in np.arange(first, first + self.x_model.x_range, gap):
             line_path.moveTo(v, r.y())
             line_path.lineTo(v, r.y() + r.height())
 

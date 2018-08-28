@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QRectF, QTimer
 from PyQt5.QtGui import QColor, QWheelEvent
 from PyQt5.QtWidgets import QGraphicsView, QFrame, QGraphicsScene
 
-from ..Item.YAxisItem import Item
+from ..Item.YAxisItem import YItem
 from BSTrade.util.fn import attach_timer
 
 
@@ -13,7 +13,7 @@ class YAxisView(QGraphicsView):
         # ------ Init Data
         self.model = model
         self.rect = QRectF(0, 0, 0, 0)
-        self.item = Item(model, self)
+        self.item = YItem(model, self)
         self.need_update = False
         self.timer = QTimer()
 

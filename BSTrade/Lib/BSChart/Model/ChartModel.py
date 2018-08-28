@@ -7,14 +7,17 @@ from BSTrade.Api.wsclient import WsClient
 from .PlotModel import LineModel, CandleModel
 from .TimeAxisModel import TimeAxisModel
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from BSTrade.Data.Models import Store
+
 
 class ChartModel(QObject):
-    def __init__(self, data, data_len, idx, store, ws):
+    def __init__(self, idx, store, ws, data_len=0):
         super().__init__()
-        self.provider, self.symbol = idx.split(':')
-        self.data = data
+        self.provider, self.symbol = idx.split(':')  # bitmex, XBTUSD
         self.data_len = data_len  # 100,000
-        self.store = store
+        self.store: Store = store
         self.ws: WsClient = ws
 
         self.view_width = 640
@@ -23,8 +26,12 @@ class ChartModel(QObject):
         self.chart_models = []
         self.time_axis_model = TimeAxisModel(self)
 
+        self.state = {}
+
     def get_data(self):
-        return self.data
+        return self.store.get_data(self.provider,
+                                   'price',
+                                   self.symbol, 'tradebin1m')
 
     def get_store(self):
         return self.store
@@ -36,24 +43,24 @@ class ChartModel(QObject):
     def create_model(self, md_type):
         if md_type == 'candle':
             model = CandleModel(self, self.time_axis_model)
-            self.chart_models.append(model)
-            return model
         elif md_type == 'line':
             model = LineModel(self, self.time_axis_model)
-            self.chart_models.append(model)
-            return model
+        else:
+            model = CandleModel(self, self.time_axis_model)
 
-    def create_time(self):
-        return self.time_axis_model
+        self.chart_models.append(model)
+
+        return model
 
     def slt_ws_message(self, msg):
         j = self.ws.json()
 
         if j.get('table') == 'trade':
             items = j.get('data')
+            trade_data = self.get_data()
 
             for data in items:
-                if self.data['close'][-1] == data['price']:
+                if trade_data['close'][-1] == data['price']:
                     return
 
                 t = ciso8601.parse_datetime(data['timestamp'])
@@ -82,9 +89,9 @@ class ChartModel(QObject):
                     """
 
                     close = data['price']
-                    opn = self.data['open'][-1]  # 6410
-                    low = self.data['low'][-1]  # 6400
-                    high = self.data['high'][-1]  # 6460
+                    opn = trade_data['open'][-1]  # 6410
+                    low = trade_data['low'][-1]  # 6400
+                    high = trade_data['high'][-1]  # 6460
 
                     low = low if close > low else close
                     high = close if close > high else high
@@ -130,11 +137,13 @@ class ChartModel(QObject):
                     self.update_X_TIME()
 
     def is_same_time(self, t_axis):
-        last = int(self.data['time_axis'][-1])
+        trade_data = self.get_data()
+        last = int(trade_data['time_axis'][-1])
         return 0 if int(t_axis) == last else 1 if int(t_axis) >= last else -1
 
     def update_data(self, data):
+        trade_data = self.get_data()
         for i in ['close', 'open', 'low', 'high']:
-            self.data[i][-1] = data[i]
+            trade_data[i][-1] = data[i]
 
         self.sig_update_point.emit(data)

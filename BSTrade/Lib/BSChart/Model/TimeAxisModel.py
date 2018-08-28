@@ -14,11 +14,13 @@ class TimeAxisModel(QObject):
     X_TIME = (time.time() // 60) * 50  # (sec // 60s) * marker_gap -> scaled min
 
     def __init__(self, c_model: ChartModel):
-        QObject.__init__(self)
+        super().__init__()
 
         self.c_model = c_model
         self.series = c_model.get_data()
-        self.store = c_model.get_store()
+        self.printing_data = {
+            'time_axis_scaled': np.array([])
+        }
 
         self.x_pos = 0
         self.x_range = self.DEFAULT_X_RANGE
@@ -44,10 +46,11 @@ class TimeAxisModel(QObject):
         self.init_axis_data()
 
     def init_axis_data(self):
-        ts = self.series['timestamp'].astype(np.int64)
-        self.series['time_axis'] = vec.ts_to_axis(ts, 60)
-        self.series['time_axis_scaled'] = vec.mult(self.series['time_axis'],
-                                                   self.marker_gap)
+        if 'timestamp' in self.series:
+            ts = self.series['timestamp'].astype(np.int64)
+            self.series['time_axis'] = vec.ts_to_axis(ts, 60)
+            self.series['time_axis_scaled'] = vec.mult(self.series['time_axis'],
+                                                       self.marker_gap)
 
     def change_axis(self, pos, rng):
         chart = self.c_model
@@ -77,8 +80,8 @@ class TimeAxisModel(QObject):
     def current_x_pos(self) -> int:
         return cache_x_pos(self.x_pos, self.marker_gap)  # num1 // num2
 
-    def calc_marker(self, axis_data):
-        start = axis_data[0]  # min
+    def calc_marker(self):
+        start = self.series['timestamp'][0] or 10  # min
         remain = start % self.minutes[self.minute_pos]
         self.x_time_pos = (start - remain) * self.marker_gap
         self.x_time_gap = self.minutes[self.minute_pos] * self.marker_gap

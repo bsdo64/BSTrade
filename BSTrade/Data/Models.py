@@ -25,6 +25,14 @@ class Store(QObject):
 
         self.setup_ws(config)
 
+    def get_data(self, *args):
+
+        d = self.master_data.get(args[0], {})
+        for i in args[1:]:
+            d = d.get(i, {})
+
+        return d
+
     def request_initial_data(self):
         self.reader.start()
         self.reader.sig_finished.connect(self.slt_finish_init_data)
@@ -58,7 +66,7 @@ class Store(QObject):
                 },
             }
         }
-
+        self.data_len = len(data['data'])
         self.sig_init.emit()
 
     def setup_ws(self, config):
@@ -86,10 +94,6 @@ class Store(QObject):
                           'tradeBin1m:XBTUSD',
                           'orderBookL2:XBTUSD')
 
-    def is_same_time(self, t_axis):
-        last = int(self.series['time_axis'][-1])
-        return 0 if int(t_axis) == last else 1 if int(t_axis) >= last else -1
-
     def get_model(self, option):
         provider = option['provider']
         symbol = option['symbol']
@@ -97,10 +101,11 @@ class Store(QObject):
 
     def create_chart_model(self, idx: str, data_type: str):
         provider, symbol = idx.split(':')
-        data = self.master_data[provider]['price'][symbol][data_type]
-        model = ChartModel(data, data_len=self.data_len,
-                           idx=idx, store=self, ws=self.ws)
-        self.chart_models.append(model)
-        self.ws.sig_message.connect(model.slt_ws_message)
-        return model
+        try:
+            data = self.master_data[provider]['price'][symbol][data_type]
+        except KeyError:
+            data = {}
 
+        model = ChartModel(idx=idx, store=self, ws=self.ws)
+        self.chart_models.append(model)
+        return model

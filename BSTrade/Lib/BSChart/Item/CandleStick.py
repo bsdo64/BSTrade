@@ -39,10 +39,10 @@ def draw_rect(data, p_list: list):
 
 
 class CandleStick(QGraphicsItem):
-    def __init__(self, model: CandleModel, view, parent=None):
+    def __init__(self, model: CandleModel, parent=None):
         QGraphicsItem.__init__(self, parent)
         self.model = model
-        self.view = view
+        self.view = None
         self.data_x_range = self.model.x_axis.current_x_range()  # 2 <
         self.init_draw = False
         self.init_len = 0
@@ -57,6 +57,21 @@ class CandleStick(QGraphicsItem):
 
         self.model.sig_add_point.connect(self.slt_add_point)
         self.model.sig_update_point.connect(self.slt_update_point)
+
+    def plot_model(self) -> CandleModel:
+        return self.model
+
+    def x_model(self):
+        return self.model.x_model()
+
+    def c_model(self):
+        return self.model.c_model()
+
+    def set_view(self, view):
+        self.view = view
+
+    def set_model(self, model):
+        self.model = model
 
     def paint(self,
               painter: QtGui.QPainter,
@@ -329,7 +344,10 @@ class CandleStick(QGraphicsItem):
         line.moveTo(data['time_axis_scaled'], data['r_high'])
 
     def boundingRect(self):
-        return self.view.rect
+        if self.view:
+            return self.view.rect
+        else:
+            return QRectF()
 
 
 attach_timer(CandleStick, limit=10)

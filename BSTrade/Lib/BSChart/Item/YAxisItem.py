@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 from BSTrade.util.fn import attach_timer
 
 
-class Item(QGraphicsItem):
+class YItem(QGraphicsItem):
     def __init__(self, model, view, parent=None):
         QGraphicsItem.__init__(self, parent)
         self.model = model
@@ -64,4 +64,4 @@ class Item(QGraphicsItem):
         return self.view.rect
 
 
-attach_timer(Item)
+attach_timer(YItem)
