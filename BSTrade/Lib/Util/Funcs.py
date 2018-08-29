@@ -7,7 +7,7 @@ uid_chars = (
 )
 
 
-def short_uid(length=4):
+def short_uid(length=4) -> str:
     count = len(uid_chars) - 1
     c = ''
     for i in range(0, length):

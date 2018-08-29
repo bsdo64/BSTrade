@@ -4,6 +4,7 @@ import numpy as np
 from PyQt5.QtCore import QObject, QSize
 
 from BSTrade.Api.wsclient import WsClient
+from BSTrade.Lib.Util import Funcs
 from .PlotModel import LineModel, CandleModel
 from .TimeAxisModel import TimeAxisModel
 
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 class ChartModel(QObject):
     def __init__(self, idx, store, ws, data_len=0):
         super().__init__()
+        self.ID = Funcs.short_uid(8)
         self.provider, self.symbol = idx.split(':')  # bitmex, XBTUSD
         self.data_len = data_len  # 100,000
         self.store: Store = store

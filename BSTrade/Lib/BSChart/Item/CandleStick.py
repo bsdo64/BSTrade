@@ -40,7 +40,7 @@ def draw_rect(data, p_list: list):
 
 class CandleStick(QGraphicsItem):
     def __init__(self, model: CandleModel, parent=None):
-        QGraphicsItem.__init__(self, parent)
+        super().__init__(parent)
         self.model = model
         self.view = None
         self.data_x_range = self.model.x_axis.current_x_range()  # 2 <

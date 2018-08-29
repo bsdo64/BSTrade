@@ -47,6 +47,9 @@ class HttpClient(QObject):
     def headers(self):
         return self._headers
 
+    def header(self, key):
+        return self._headers.get(key, None)
+
     def content_type(self):
         content_type = self._headers['content-type']
         if 'text/html' in content_type:

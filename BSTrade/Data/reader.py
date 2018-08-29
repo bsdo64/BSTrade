@@ -2,30 +2,30 @@ import datetime as dt
 import os
 import sqlite3
 
-import numpy as np
 import pandas as pd
 import ciso8601
 
-from PyQt5.QtCore import QTimer, QCoreApplication, pyqtSignal, QObject
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject
 
-from BSTrade.Data.bitmex import sqls as q
-from BSTrade.Api.bitmexhttpclient import BitmexHttpClient
-from BSTrade.Api.auth import bitmex as bm_auth
 from BSTrade.util.fn import attach_timer
-from BSTrade.Data.bitmex.instruments import inst as bm_inst
-
+from BSTrade.Api.auth import bitmex as bm_auth
+from BSTrade.Api.auth.bitmex import api_keys
+from BSTrade.Api import BitmexHttpClient, BitmexWsClient
+from .const import Provider
+from .bitmex import sqls as q
+from BSTrade.Data.instruments import inst as bm_inst
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 DATA = {
-    'bitmex': bm_inst
+    Provider.BITMEX: bm_inst
 }
 
 
-class Request(QObject):
+class BitmexRequest(QObject):
     sig_finish = pyqtSignal()
 
     def __init__(self, until=None, inst=None, data=pd.DataFrame()):
-        QObject.__init__(self)
+        super().__init__()
 
         self.until = until
         self.inst = inst
@@ -58,7 +58,7 @@ class Request(QObject):
         self.now_to_min = (self.now - self.year_first).total_seconds() // 60
         # 880000 - (525600 + 100000)
 
-        self.client.sig_ended.connect(self.get_data)
+        self.client.sig_ended.connect(self.slt_get_data)
 
         self.timer = QTimer()
 
@@ -77,35 +77,28 @@ class Request(QObject):
         return str_time.isoformat(timespec='milliseconds') \
                        .replace('+00:00', 'Z')
 
-    def request_data(self):
+    def request(self, option):
+        params = option['params']
 
-        self.client.Trade.get_bucketed(
-            '1m',
-            symbol=self.inst['symbol'],
-            count=self.count,
-            start_time=self.last_time
-        )
+        self.client.Trade.get_bucketed(**params)
+
+    def request_loop(self, option):
+        params = option['params']
+
+        self.client.Trade.get_bucketed(**params)
 
         self.last_time = self.add_min(self.last_time, 500)
         self.requested += 1
 
-    def get_data(self, ended: bool):
-        print('get data')
+    def slt_get_data(self, ended: bool):
         j = self.client.json()
-        self.rate_limit = self.client.headers()['x-ratelimit-remaining']
-        current = (len(j) + len(self.df))  # 100000
-
-        print('now: {}, current: {}, percent: {:.2f}%, rate_limit: {}'.format(
-            self.now_to_min,
-            current,
-            current/self.now_to_min * 100,
-            self.rate_limit
-        ))
+        self.rate_limit = self.client.header('x-ratelimit-remaining')
+        print('Get data, rate-limit : ', self.rate_limit)
 
         if len(j) > 0:
             new_df = pd.DataFrame(j)
             self.df = self.df.append(new_df, ignore_index=True, sort=False)
-            self.timer.singleShot(1000, self.request_data)
+            self.timer.singleShot(1000, self.request_loop)
 
         elif (self.count < len(j)) or \
                 (len(j) == 0) or \
@@ -133,21 +126,57 @@ class Request(QObject):
 
 
 class DataReader(QObject):
-    sig_finished = pyqtSignal(object)
+    sig_http_finish = pyqtSignal(object)
 
     def __init__(self, parent=None):
-        QObject.__init__(self)
+        super().__init__(parent)
         self.parent = parent
         self.r = {
-            'bitmex': Request()
+            Provider.BITMEX: BitmexRequest(),
+            Provider.UPBIT: None,
+        }
+        self.ws = {
+            Provider.BITMEX: BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']),
+            Provider.UPBIT: None,
         }
 
         self.r.sig_finish.connect(self.slt_finish)
 
     def request(self, option):
-        self.r[option['provider']].request_data()
+        self.r[option['provider']].request(option)
 
-    def read_store_data(self, length):
+    def request_loop(self, option):
+        self.r[option['provider']].request_loop(option)
+
+    def setup_ws(self, config):
+        provider = config.get('provider')
+        if provider == Provider.BITMEX:
+            self.ws = BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']
+            )
+        else:
+            # default provider == Provider.BITMEX
+            self.ws = BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']
+            )
+
+        self.ws.sig_auth_success.connect(self.slt_ws_subscribe)
+        self.ws.start()
+
+    def slt_ws_subscribe(self):
+        # web socket client connected with auth
+        self.ws.subscribe('trade:XBTUSD',
+                          'tradeBin1m:XBTUSD',
+                          'orderBookL2:XBTUSD')
+
+    def read_sql(self, length):
 
         with sqlite3.connect(PATH + '/bitmex.db') as conn:
             c = conn.cursor()
@@ -176,7 +205,7 @@ class DataReader(QObject):
         cursor.execute(query)
 
     def slt_finish(self):
-        self.sig_finished.emit({
+        self.sig_http_finish.emit({
             'provider': self.provider,
             'symbol': self.instrument,
             'data_type': 'tradebin1m',
@@ -184,5 +213,5 @@ class DataReader(QObject):
         })
 
 
-attach_timer(Request, limit=10)
+attach_timer(BitmexRequest, limit=10)
 attach_timer(DataReader, limit=10)

@@ -2,10 +2,82 @@ import pandas as pd
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from BSTrade.Api.auth.bitmex import api_keys
-from BSTrade.Api import BitmexWsClient
-from BSTrade.Data.reader import DataReader
+from BSTrade.Data.instruments import markets
 from BSTrade.Lib.BSChart.Model import ChartModel
+from .const import Provider
+from .reader import DataReader
+
+
+class BaseApi:
+    def
+
+
+class Trade:
+    def __init__(self, store):
+        self.store = store
+
+
+class Candle:
+    def __init__(self, store: 'Store'):
+        self.store = store
+        self.cache = store.cache
+        self.reader = store.reader
+
+    def request(self, provider, symbol, bin_size):
+        self.reader.request({
+            'provider': provider,
+            'symbol': symbol,
+            'data_type': 'candle',
+            'params': {'bin_size': bin_size, 'symbol': symbol, 'count': 500},
+        })
+
+    def sync_api(self, provider, symbol, bin_size):
+        self.reader.request({
+            'provider': provider,
+            'symbol': symbol,
+            'data_type': 'candle',
+            'params': {'bin_size': bin_size, 'symbol': symbol, 'count': 500},
+        })
+
+    def set_cache(self, data):
+        provider = data['provider']
+        symbol = data['symbol']
+        bin_size = data['bin_size']
+
+        self.cache[provider]['symbol'][symbol]['candle'][bin_size] = data
+
+    def get_cache(self, provider, symbol, bin_size):
+        return self.cache[provider]['symbol'][symbol]['candle'][bin_size]
+
+    def update_last(self, provider, symbol, bin_size, ohlc):
+        candle = self.cache[provider]['symbol'][symbol]['candle']
+        for i in ['open', 'close', 'low', 'high']:
+            candle[bin_size][i][-1] = ohlc[i]
+
+
+class Api:
+    def __init__(self, parent):
+        self._store = Store(parent)
+
+        # Public
+        self.Candle = Candle(self._store)
+        self.Trade = Trade(self._store)
+        self.Symbol = Symbol(self._store)
+        self.OrderBook = OrderBook(self._store)
+        self.Stats = Stats(self._store)
+
+        # Private
+        self.User = User(self._store)
+        self.Order = Order(self._store)
+        self.Account = Account(self._store)
+        self.Wallet = Wallet(self._store)
+
+        # System
+        self.App = App(self._store)
+
+    @property
+    def store(self):
+        return self._store
 
 
 class Store(QObject):
@@ -15,16 +87,48 @@ class Store(QObject):
         super().__init__(parent)
 
         self.config = config
-        self.cache = {}
-        self.chart_models = []
-        self.data_len = 100000
+        self.cache = {
+            Provider.BITMEX: {
+                'symbol': {
+                    symbol: {
+                        'candle': {
+                            '1m': {},
+                            '5m': {},
+                            '15m': {},
+                            '30m': {},
+                        }
+                    } for symbol in markets[Provider.BITMEX]
+                }
+            },
+            Provider.UPBIT: {
+                'symbol': {
+                    symbol: {
+                        'candle': {
+                            '1m': {},
+                            '5m': {},
+                            '15m': {},
+                            '30m': {},
+                        }
+                    } for symbol in markets[Provider.UPBIT]
+                }
+            }
+        },
+
+        self.chart_models = {}
         self.reader = DataReader()
         self.writer = DataWriter()
-        self.ws: BitmexWsClient = None
 
-        self.setup_ws(config)
+        self.reader.sig_http_finish.connect(self.slt_http_finish)
+        self.reader.sig_ws_finish.connect(self.slt_ws_finish)
 
-    def get_data(self, provider, *args):
+    def app_data(self, *args):
+        d = self.cache
+        for i in args:
+            d = d.get(i, {})
+
+        return d
+
+    def provider_data(self, provider, *args):
 
         d = self.cache.get(provider, {})
         for i in args:
@@ -32,17 +136,31 @@ class Store(QObject):
 
         return d
 
-    def request_initial_data(self):
+    def trade_data(self, option):
+        provider = option['provider']
+        symbol = option['symbol']
+        bin_size = option['bin_size']
+        return self.cache[provider]['symbol'][symbol]['candle'][bin_size]
+
+    def do_request_http(self):
         self.reader.request({
-            'provider': 'bitmex',
+            'provider': Provider.BITMEX,
+            'client': 'http',
             'endpoint': ['get', 'trade', 'bucketed'],
             'params': {'bin_size': '1m', 'symbol': 'XBTUSD', 'count': 500},
             'symbol': 'XBTUSD',
             'option': {}
         })
-        self.reader.sig_finished.connect(self.slt_finish_init_data)
 
-    def slt_finish_init_data(self, data: dict):
+    def do_request_ws(self):
+        self.reader.request_ws({
+            'client': Provider.BITMEX,
+            'subscribe': ['trade:XBTUSD',
+                          'tradeBin1m:XBTUSD',
+                          'orderBookL2:XBTUSD']
+        })
+
+    def slt_http_finish(self, data: dict):
         df: pd.DataFrame = data['data']
         provider = data['provider']
         symbol = data['symbol']
@@ -65,7 +183,7 @@ class Store(QObject):
         np_data = {key: df[key].values for key in df.keys()}
 
         self.cache[provider] = {
-            'price': {
+            'symbol': {
                 symbol: {
                     data_type: np_data
                 },
@@ -74,43 +192,16 @@ class Store(QObject):
         self.data_len = len(data['data'])
         self.sig_init.emit()
 
-    def setup_ws(self, config):
-        provider = config.get('provider')
-        if provider == 'bitmex':
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-        else:
-            # default provider == 'bitmex'
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-
-        self.ws.sig_auth_success.connect(self.slt_ws_subscribe)
-        self.ws.start()
-
-    def slt_ws_subscribe(self):
-        # web socket client connected with auth
-        self.ws.subscribe('trade:XBTUSD',
-                          'tradeBin1m:XBTUSD',
-                          'orderBookL2:XBTUSD')
-
-    def get_model(self, option):
-        provider = option['provider']
-        symbol = option['symbol']
-        return self.cache[provider]['price'][symbol]
+    def slt_ws_finish(self, data):
+        pass
 
     def create_chart_model(self, idx: str, data_type: str):
         provider, symbol = idx.split(':')
         try:
-            data = self.cache[provider]['price'][symbol][data_type]
+            data = self.cache[provider]['symbol'][symbol][data_type]
         except KeyError:
             data = {}
 
         model = ChartModel(idx=idx, store=self, ws=self.ws)
-        self.chart_models.append(model)
+        self.chart_models[model.ID] = model
         return model
