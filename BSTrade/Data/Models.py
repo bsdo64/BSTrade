@@ -1,3 +1,5 @@
+import numpy
+
 import pandas as pd
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -6,10 +8,6 @@ from BSTrade.Data.instruments import markets
 from BSTrade.Lib.BSChart.Model import ChartModel
 from .const import Provider
 from .reader import DataReader
-
-
-class BaseApi:
-    def
 
 
 class Trade:
@@ -22,6 +20,18 @@ class Candle:
         self.store = store
         self.cache = store.cache
         self.reader = store.reader
+
+    def init_data(self):
+        for prov in Provider:
+            for symbol in self.cache[prov]['symbol']:
+                self.cache[prov]['symbol'][symbol]['candle'] = {
+                    item: {
+                        i: numpy.array([
+
+                        ]) for i in ['close', 'open', 'low', 'high',
+                                     'timestamp']
+                    } for item in ['1m', '5m', '15m', '30m']
+                }
 
     def request(self, provider, symbol, bin_size):
         self.reader.request({
@@ -75,6 +85,17 @@ class Api:
         # System
         self.App = App(self._store)
 
+        self.Candle.init_data()
+        self.Trade.init_data()
+        self.Symbol.init_data()
+        self.OrderBook.init_data()
+        self.Stats.init_data()
+        self.User.init_data()
+        self.Order.init_data()
+        self.Account.init_data()
+        self.Wallet.init_data()
+        self.App.init_data()
+
     @property
     def store(self):
         return self._store
@@ -88,31 +109,13 @@ class Store(QObject):
 
         self.config = config
         self.cache = {
-            Provider.BITMEX: {
+            prov: {
+                'provider': prov,
                 'symbol': {
-                    symbol: {
-                        'candle': {
-                            '1m': {},
-                            '5m': {},
-                            '15m': {},
-                            '30m': {},
-                        }
-                    } for symbol in markets[Provider.BITMEX]
+                    symbol: {} for symbol in markets[prov]
                 }
-            },
-            Provider.UPBIT: {
-                'symbol': {
-                    symbol: {
-                        'candle': {
-                            '1m': {},
-                            '5m': {},
-                            '15m': {},
-                            '30m': {},
-                        }
-                    } for symbol in markets[Provider.UPBIT]
-                }
-            }
-        },
+            } for prov in Provider,
+        }
 
         self.chart_models = {}
         self.reader = DataReader()
