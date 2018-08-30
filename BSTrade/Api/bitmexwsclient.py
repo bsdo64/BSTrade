@@ -52,16 +52,14 @@ class BitmexWsClient(WsClient):
     def get_subscribes(self) -> set:
         return self.subscribes
 
-    def subscribe(self, *argv):
-        list_args = list(argv)
-        self.subscribes.update(set(list_args))
-        data = {"op": "subscribe", "args": list_args}
+    def subscribe(self, *argv: str):
+        self.subscribes.update(argv)
+        data = {"op": "subscribe", "args": list(argv)}
         self.send(data)
 
-    def unsubscribe(self, *argv):
-        list_args = list(argv)
-        self.subscribes -= set(list_args)
-        data = {"op": "unsubscribe", "args": list_args}
+    def unsubscribe(self, *argv: str):
+        self.subscribes -= set(argv)
+        data = {"op": "unsubscribe", "args": list(argv)}
         self.send(data)
 
     def slot_message(self, msg: str):
