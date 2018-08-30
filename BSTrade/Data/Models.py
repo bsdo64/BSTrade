@@ -10,95 +10,146 @@ from .const import Provider
 from .reader import DataReader
 
 
-class Trade:
-    def __init__(self, store):
-        self.store = store
-
-
-class Candle:
-    def __init__(self, store: 'Store'):
-        self.store = store
-        self.cache = store.cache
-        self.reader = store.reader
-
-    def init_data(self):
-        for prov in Provider:
-            for symbol in self.cache[prov]['symbol']:
-                self.cache[prov]['symbol'][symbol]['candle'] = {
-                    item: {
-                        i: numpy.array([
-
-                        ]) for i in ['close', 'open', 'low', 'high',
-                                     'timestamp']
-                    } for item in ['1m', '5m', '15m', '30m']
-                }
-
-    def request(self, provider, symbol, bin_size):
-        self.reader.request({
-            'provider': provider,
-            'symbol': symbol,
-            'data_type': 'candle',
-            'params': {'bin_size': bin_size, 'symbol': symbol, 'count': 500},
-        })
-
-    def sync_api(self, provider, symbol, bin_size):
-        self.reader.request({
-            'provider': provider,
-            'symbol': symbol,
-            'data_type': 'candle',
-            'params': {'bin_size': bin_size, 'symbol': symbol, 'count': 500},
-        })
-
-    def set_cache(self, data):
-        provider = data['provider']
-        symbol = data['symbol']
-        bin_size = data['bin_size']
-
-        self.cache[provider]['symbol'][symbol]['candle'][bin_size] = data
-
-    def get_cache(self, provider, symbol, bin_size):
-        return self.cache[provider]['symbol'][symbol]['candle'][bin_size]
-
-    def update_last(self, provider, symbol, bin_size, ohlc):
-        candle = self.cache[provider]['symbol'][symbol]['candle']
-        for i in ['open', 'close', 'low', 'high']:
-            candle[bin_size][i][-1] = ohlc[i]
-
-
 class Api:
     def __init__(self, parent):
         self._store = Store(parent)
 
         # Public
-        self.Candle = Candle(self._store)
-        self.Trade = Trade(self._store)
-        self.Symbol = Symbol(self._store)
-        self.OrderBook = OrderBook(self._store)
-        self.Stats = Stats(self._store)
-
-        # Private
-        self.User = User(self._store)
-        self.Order = Order(self._store)
-        self.Account = Account(self._store)
-        self.Wallet = Wallet(self._store)
-
-        # System
-        self.App = App(self._store)
-
-        self.Candle.init_data()
-        self.Trade.init_data()
-        self.Symbol.init_data()
-        self.OrderBook.init_data()
-        self.Stats.init_data()
-        self.User.init_data()
-        self.Order.init_data()
-        self.Account.init_data()
-        self.Wallet.init_data()
-        self.App.init_data()
+        # self.Candle = Candle(self._store)
+        # self.Trade = Trade(self._store)
+        # self.Symbol = Symbol(self._store)
+        # self.OrderBook = OrderBook(self._store)
+        # self.Stats = Stats(self._store)
+        #
+        # # Private
+        # self.User = User(self._store)
+        # self.Order = Order(self._store)
+        # self.Account = Account(self._store)
+        # self.Wallet = Wallet(self._store)
+        #
+        # # System
+        # self.App = App(self._store)
+        #
+        # self.Candle.init_data()
+        # self.Trade.init_data()
+        # self.Symbol.init_data()
+        # self.OrderBook.init_data()
+        # self.Stats.init_data()
+        # self.User.init_data()
+        # self.Order.init_data()
+        # self.Account.init_data()
+        # self.Wallet.init_data()
+        # self.App.init_data()
 
     @property
     def store(self):
         return self._store
+
+
+class OrderBook:
+    def __init__(self, symbol):
+        self.symbol = symbol
+        self.timestamp = None
+        self.book = []
+
+
+class Trade:
+    def __init__(self, symbol):
+        self.symbol = symbol
+        self.trades = []
+
+
+class Candle(object):
+    def __init__(self, reader):
+        self.model = 'candle'
+        self.reader = reader
+        """
+        {
+            'open': float, 
+            'close': float, 
+            'high': float, 
+            'low': float,
+            'timestamp': datetime
+        }
+        """
+        self.data = {
+            '1m': [],
+            '5m': [],
+            '10m': []
+        }
+
+    def ohlc(self, bin_size):
+        return self.data[bin_size]
+
+    def new(self, bin_size, data):
+        self.data[bin_size] = data
+
+    def add(self, bin_size, data):
+        self.data[bin_size].append(data)
+
+    def update_last(self, data):
+        bin_size = data['bin_size']
+
+        for i in ['open', 'close', 'low', 'high']:
+            self.data[bin_size][-1][i] = data[i]
+
+
+class SymbolSig(QObject):
+    new_candle = pyqtSignal(object)
+
+
+class Symbol(object):
+    sig = SymbolSig()
+    """
+    Symbol Info : bitmex-XBTUSD, upbit-KRW-BTC, ....
+    """
+    def __init__(self, symbol: str, reader: DataReader):
+        self.name = symbol
+        self.reader = reader
+        self.symbol = symbol
+        self.code = symbol
+
+        self.Candle = Candle(reader)
+        self.Trade = Trade(reader)
+        self.Orderbook = OrderBook(reader)
+        # self.Stat = Stat(reader)
+        # self.Indicators = Indicators(reader)
+
+    def new_candle(self, bin_size):
+        self.reader.r.request({
+            'symbol': self.symbol,
+            'model': 'candle',
+            'params': {
+                'bin_size': bin_size,
+                'symbol': self.symbol,
+                'count': 500
+            },
+        })
+
+        self.sig.new_candle.emit()
+
+
+class StockMarket(object):
+    """
+    Market Info : KOSPI, KOSDAQ, NASDAQ
+    """
+    pass
+
+
+class CryptoMarket(object):
+    """
+    Market Info : Bitmex, Upbit, Binance
+    """
+    def __init__(self, provider):
+        self.market_type = 'crypto'
+        self.provider = provider
+        self.reader = DataReader(provider)
+        self.symbols = {
+            symb: Symbol(symb, self.reader) for symb in markets[provider]
+        }
+
+    def symbol(self, symbol: str):
+        return self.symbols[symbol]
 
 
 class Store(QObject):
@@ -108,60 +159,14 @@ class Store(QObject):
         super().__init__(parent)
 
         self.config = config
-        self.cache = {
-            prov: {
-                'provider': prov,
-                'symbol': {
-                    symbol: {} for symbol in markets[prov]
-                }
-            } for prov in Provider,
+        self.markets = {
+            Provider.BITMEX: CryptoMarket(Provider.BITMEX),
+            Provider.UPBIT: CryptoMarket(Provider.UPBIT)
         }
-
         self.chart_models = {}
-        self.reader = DataReader()
-        self.writer = DataWriter()
 
-        self.reader.sig_http_finish.connect(self.slt_http_finish)
-        self.reader.sig_ws_finish.connect(self.slt_ws_finish)
-
-    def app_data(self, *args):
-        d = self.cache
-        for i in args:
-            d = d.get(i, {})
-
-        return d
-
-    def provider_data(self, provider, *args):
-
-        d = self.cache.get(provider, {})
-        for i in args:
-            d = d.get(i, {})
-
-        return d
-
-    def trade_data(self, option):
-        provider = option['provider']
-        symbol = option['symbol']
-        bin_size = option['bin_size']
-        return self.cache[provider]['symbol'][symbol]['candle'][bin_size]
-
-    def do_request_http(self):
-        self.reader.request({
-            'provider': Provider.BITMEX,
-            'client': 'http',
-            'endpoint': ['get', 'trade', 'bucketed'],
-            'params': {'bin_size': '1m', 'symbol': 'XBTUSD', 'count': 500},
-            'symbol': 'XBTUSD',
-            'option': {}
-        })
-
-    def do_request_ws(self):
-        self.reader.request_ws({
-            'client': Provider.BITMEX,
-            'subscribe': ['trade:XBTUSD',
-                          'tradeBin1m:XBTUSD',
-                          'orderBookL2:XBTUSD']
-        })
+    def market(self, provider):
+        return self.markets[provider]
 
     def slt_http_finish(self, data: dict):
         df: pd.DataFrame = data['data']
@@ -185,7 +190,7 @@ class Store(QObject):
 
         np_data = {key: df[key].values for key in df.keys()}
 
-        self.cache[provider] = {
+        self.markets[provider] = {
             'symbol': {
                 symbol: {
                     data_type: np_data
@@ -201,7 +206,7 @@ class Store(QObject):
     def create_chart_model(self, idx: str, data_type: str):
         provider, symbol = idx.split(':')
         try:
-            data = self.cache[provider]['symbol'][symbol][data_type]
+            data = self.markets[provider]['symbol'][symbol][data_type]
         except KeyError:
             data = {}
 

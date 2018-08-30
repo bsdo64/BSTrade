@@ -1,11 +1,8 @@
-from typing import Union
-
 from PyQt5.QtCore import Qt, QSize, QRect
 from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QDockWidget, QAction, \
-    QTabWidget, QTabBar, QToolBar
+from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
+    QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget
 
-from BSTrade.Data.const import Provider
 from BSTrade.util.fn import attach_timer
 from BSTrade.Data.Models import Store, Api
 from BSTrade.Lib.BSChart import TradeChart
@@ -25,29 +22,30 @@ class TabBar(QTabBar):
         return QSize(w + 30, size.height())
 
 
+class CentralWidget(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+
 class Main(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.config = {
-            'provider': Provider.BITMEX,
-        }
         self.tabs = QTabWidget()
         self.api = Api(self)
         self.indi_dialog = IndicatorDialog(self)
         self.setup_ui()
-        self.setup_data()
 
     def setup_ui(self):
         self.resize(1024, 768)
         self.setObjectName("MainWindow")
         self.setWindowTitle("BSTrade")
 
-        self.setCentralWidget(QTextEdit())
+        self.setCentralWidget(CentralWidget(self))
         self.setup_menus()
         self.setup_toolbar()
-        self.setup_docks()
-        self.setup_indicators(self.indi_dialog)
+        # self.setup_docks()
+        # self.setup_indicators(self.indi_dialog)
 
     def setup_data(self):
         self.api.Candle.request(self.config['provider'], 'XBTUSD', '1m')

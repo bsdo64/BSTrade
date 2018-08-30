@@ -13,15 +13,11 @@ from BSTrade.Api.auth.bitmex import api_keys
 from BSTrade.Api import BitmexHttpClient, BitmexWsClient
 from .const import Provider
 from .bitmex import sqls as q
-from BSTrade.Data.instruments import inst as bm_inst
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-DATA = {
-    Provider.BITMEX: bm_inst
-}
 
 
-class BitmexRequest(QObject):
+class BitmexRequester(QObject):
     sig_finish = pyqtSignal()
 
     def __init__(self, until=None, inst=None, data=pd.DataFrame()):
@@ -109,73 +105,6 @@ class BitmexRequest(QObject):
             print("Last index : {}".format(self.df.shape[0]))
             self.sig_finish.emit()
 
-    def save_to_sql(self):
-        conn = sqlite3.connect(PATH + '/bitmex.db')
-        c = conn.cursor()
-
-        new_data = self.df[self.start_length:]
-        new_rows = [tuple(s) for s in new_data.values]
-
-        c.executemany(
-            q.ignore_insert('tradebin1m', list(self.df.keys())),
-            new_rows
-        )
-
-        conn.commit()
-        conn.close()
-
-
-class DataReader(QObject):
-    sig_http_finish = pyqtSignal(object)
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.parent = parent
-        self.r = {
-            Provider.BITMEX: BitmexRequest(),
-            Provider.UPBIT: None,
-        }
-        self.ws = {
-            Provider.BITMEX: BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']),
-            Provider.UPBIT: None,
-        }
-
-        self.r.sig_finish.connect(self.slt_finish)
-
-    def request(self, option):
-        self.r[option['provider']].request(option)
-
-    def request_loop(self, option):
-        self.r[option['provider']].request_loop(option)
-
-    def setup_ws(self, config):
-        provider = config.get('provider')
-        if provider == Provider.BITMEX:
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-        else:
-            # default provider == Provider.BITMEX
-            self.ws = BitmexWsClient(
-                test=False,
-                api_key=api_keys['real']['order']['key'],
-                api_secret=api_keys['real']['order']['secret']
-            )
-
-        self.ws.sig_auth_success.connect(self.slt_ws_subscribe)
-        self.ws.start()
-
-    def slt_ws_subscribe(self):
-        # web socket client connected with auth
-        self.ws.subscribe('trade:XBTUSD',
-                          'tradeBin1m:XBTUSD',
-                          'orderBookL2:XBTUSD')
-
     def read_sql(self, length):
 
         with sqlite3.connect(PATH + '/bitmex.db') as conn:
@@ -204,7 +133,66 @@ class DataReader(QObject):
         query = q.create_index('tradebin1m', 'id', uniq=True)
         cursor.execute(query)
 
-    def slt_finish(self):
+
+    def save_to_sql(self):
+        conn = sqlite3.connect(PATH + '/bitmex.db')
+        c = conn.cursor()
+
+        new_data = self.df[self.start_length:]
+        new_rows = [tuple(s) for s in new_data.values]
+
+        c.executemany(
+            q.ignore_insert('tradebin1m', list(self.df.keys())),
+            new_rows
+        )
+
+        conn.commit()
+        conn.close()
+
+
+http_client = {
+    Provider.BITMEX: BitmexRequester(),
+    Provider.UPBIT: BitmexRequester(),
+}
+
+ws_client = {
+    Provider.BITMEX: BitmexWsClient(
+        test=False,
+        api_key=api_keys['real']['order']['key'],
+        api_secret=api_keys['real']['order']['secret']
+    ),
+    Provider.UPBIT: BitmexWsClient(
+        test=False,
+        api_key=api_keys['real']['order']['key'],
+        api_secret=api_keys['real']['order']['secret']
+    ),
+}
+
+
+class DataReader(QObject):
+    sig_http_finish = pyqtSignal(object)
+
+    def __init__(self, provider: Provider):
+        super().__init__()
+        self.provider = provider
+        self.r = http_client[provider]
+        self.ws = ws_client[provider]
+
+        self.setup_signals()
+
+    def setup_signals(self):
+        self.r.sig_finish.connect(self.slt_finish)
+        self.ws.sig_auth_success.connect(self.slt_ws_subscribe)
+
+        self.ws.start()
+
+    def slt_ws_subscribe(self):
+        # web socket client connected with auth
+        self.ws.subscribe('trade:XBTUSD',
+                          'tradeBin1m:XBTUSD',
+                          'orderBookL2:XBTUSD')
+
+    def slt_finish(self, data):
         self.sig_http_finish.emit({
             'provider': self.provider,
             'symbol': self.instrument,
@@ -213,5 +201,5 @@ class DataReader(QObject):
         })
 
 
-attach_timer(BitmexRequest, limit=10)
+attach_timer(BitmexRequester, limit=10)
 attach_timer(DataReader, limit=10)

@@ -7,9 +7,10 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QWidget, QVBoxLayout, \
     QLabel
 
 from BSTrade.Api import BitmexWsClient
+from BSTrade.Data.const import Provider
 from BSTrade.util.fn import attach_timer
 from BSTrade.Opt.math import id_from_price
-from BSTrade.Data.instruments import inst
+from BSTrade.Data.instruments import markets
 
 
 class OrderBookWidget(QWidget):
@@ -38,7 +39,7 @@ class OrderBookWidget(QWidget):
         self.buy_view.setModel(OrderBookTableModel(self))
         self.buy_view.set_col_width()
 
-        self.model = OrderBookModel(ws, inst['XBTUSD'],
+        self.model = OrderBookModel(ws,
                                     self.sell_view,
                                     self.current,
                                     self.buy_view,
@@ -91,19 +92,19 @@ attach_timer(OrderBookView, limit=5)
 
 class OrderBookModel(QObject):
     def __init__(self,
-                 ws: BitmexWsClient, item,
+                 ws: BitmexWsClient,
                  sell_view: OrderBookView,
                  current: QLabel,
                  buy_view: OrderBookView,
                  parent=None):
         QObject.__init__(self, parent)
 
-        self.inst = item
         self.ws = ws
         self.ws.sig_message.connect(self.slt_ws_message)
 
         self.price = 1000.
-        self.price_idx = id_from_price(self.inst['idx'], self.price, 0.01)
+        self.idx = markets[Provider.BITMEX].index('XBTUSD')
+        self.price_idx = id_from_price(self.idx, self.price, 0.01)
         self.book_ids = []
         self.book = []
 
@@ -185,7 +186,7 @@ class OrderBookModel(QObject):
 
     def set_current_text(self, items):
         self.price = items[-1]['price']
-        self.price_idx = id_from_price(self.inst['idx'], self.price, 0.01)
+        self.price_idx = id_from_price(self.idx, self.price, 0.01)
         self.current_view.setText(str(self.price))
 
 
