@@ -5,14 +5,14 @@ import sqlite3
 import pandas as pd
 import ciso8601
 
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject, QCoreApplication
 
 from BSTrade.util.fn import attach_timer
 from BSTrade.Api.auth import bitmex as bm_auth
 from BSTrade.Api.auth.bitmex import api_keys
 from BSTrade.Api import BitmexHttpClient, BitmexWsClient
-from .const import Provider
-from .bitmex import sqls as q
+from BSTrade.Data.const import Provider
+from BSTrade.Data.bitmex import sqls as q
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,20 +20,11 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class BitmexRequester(QObject):
     sig_finish = pyqtSignal()
 
-    def __init__(self, until=None, inst=None, data=pd.DataFrame()):
+    def __init__(self, until=None, inst=None):
         super().__init__()
 
         self.until = until
         self.inst = inst
-        self.df = data
-        self.start_length = len(self.df)
-
-        if self.start_length > 0:
-            self.start_time = self.add_min(data['timestamp'].iloc[-1], 1)
-        else:
-            self.start_time = "2017-01-01T00:00:00.000Z"
-
-        self.last_time = self.start_time
 
         self.now = dt.datetime.now(tz=dt.timezone.utc)
 
@@ -78,12 +69,15 @@ class BitmexRequester(QObject):
 
         self.client.Trade.get_bucketed(**params)
 
-    def request_loop(self, option):
-        params = option['params']
+    def request_loop(self, params=None):
+        if params is None:
+            params = self.params
+        else:
+            self.params = params
 
         self.client.Trade.get_bucketed(**params)
 
-        self.last_time = self.add_min(self.last_time, 500)
+        self.params['start_time'] = self.add_min(self.params['start_time'], 500)
         self.requested += 1
 
     def slt_get_data(self, ended: bool):
@@ -107,7 +101,7 @@ class BitmexRequester(QObject):
 
     def read_sql(self, length):
 
-        with sqlite3.connect(PATH + '/bitmex.db') as conn:
+        with sqlite3.connect(PATH + '/bitmex/bitmex.db') as conn:
             c = conn.cursor()
 
             self.check_tables(c)
@@ -133,9 +127,8 @@ class BitmexRequester(QObject):
         query = q.create_index('tradebin1m', 'id', uniq=True)
         cursor.execute(query)
 
-
     def save_to_sql(self):
-        conn = sqlite3.connect(PATH + '/bitmex.db')
+        conn = sqlite3.connect(PATH + '/bitmex/bitmex.db')
         c = conn.cursor()
 
         new_data = self.df[self.start_length:]
@@ -148,6 +141,23 @@ class BitmexRequester(QObject):
 
         conn.commit()
         conn.close()
+
+    def trade_bin(self, min):
+        self.df = self.read_sql(10000)
+        self.start_length = len(self.df)
+        if self.start_length > 0:
+            self.start_time = self.add_min(self.df['timestamp'].iloc[-1], 1)
+        else:
+            self.start_time = "2017-01-01T00:00:00.000Z"
+
+        self.last_time = self.start_time
+
+        self.request_loop({
+                'bin_size': '1m',
+                'symbol': self.inst,
+                'count': 500,
+                'start_time': self.last_time
+            })
 
 
 http_client = {
@@ -203,3 +213,12 @@ class DataReader(QObject):
 
 attach_timer(BitmexRequester, limit=10)
 attach_timer(DataReader, limit=10)
+
+
+if __name__ == '__main__':
+    app = QCoreApplication([])
+
+    req = BitmexRequester(inst='XBTUSD')
+    req.trade_bin(10)
+
+    app.exec()
