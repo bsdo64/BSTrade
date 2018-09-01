@@ -1,7 +1,8 @@
 from PyQt5.QtCore import Qt, QSize, QRect
 from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
-    QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget
+    QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
+    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy
 
 from BSTrade.util.fn import attach_timer
 from BSTrade.Data.Models import Store, Api
@@ -22,9 +23,46 @@ class TabBar(QTabBar):
         return QSize(w + 30, size.height())
 
 
+class LeftMenuButton(QPushButton):
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent)
+        self.setFixedHeight(50)
+
+
+class LeftMenu(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        vbox = QVBoxLayout(self)
+        vbox.setContentsMargins(0, 0, 0, 0)
+        vbox.setSizeConstraint(vbox.SetDefaultConstraint)
+        vbox.setSpacing(0)
+
+        vbox.addWidget(LeftMenuButton('Market'))
+        vbox.addWidget(LeftMenuButton('Trade'))
+        vbox.addWidget(LeftMenuButton('Account'))
+        vbox.addWidget(LeftMenuButton('Exchange'))
+        vbox.addWidget(LeftMenuButton('Chart'))
+        vbox.addItem(QSpacerItem(60, 10,
+                                 QSizePolicy.Minimum,
+                                 QSizePolicy.Expanding))
+
+
 class CentralWidget(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        hbox = QHBoxLayout(self)
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.setSizeConstraint(hbox.SetDefaultConstraint)
+        hbox.setSpacing(0)
+
+        left_menu = LeftMenu(self)
+
+        hbox.addWidget(left_menu)
+        hbox.addWidget(QPlainTextEdit())
 
 
 class Main(QMainWindow):
@@ -40,6 +78,7 @@ class Main(QMainWindow):
         self.resize(1024, 768)
         self.setObjectName("MainWindow")
         self.setWindowTitle("BSTrade")
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.setCentralWidget(CentralWidget(self))
         self.setup_menus()

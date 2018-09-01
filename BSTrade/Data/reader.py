@@ -5,7 +5,7 @@ import sqlite3
 import pandas as pd
 import ciso8601
 
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject, QCoreApplication
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject, pyqtSlot, QCoreApplication
 
 from BSTrade.util.fn import attach_timer
 from BSTrade.Api.auth import bitmex as bm_auth
@@ -187,22 +187,22 @@ class DataReader(QObject):
         self.provider = provider
         self.r = http_client[provider]
         self.ws = ws_client[provider]
+        self.auth_success = False
 
         self.setup_signals()
 
     def setup_signals(self):
-        self.r.sig_finish.connect(self.slt_finish)
-        self.ws.sig_auth_success.connect(self.slt_ws_subscribe)
+        self.r.sig_finish.connect(self.on_finished)
+        self.ws.sig_auth_success.connect(self.on_ws_authed)
 
         self.ws.start()
 
-    def slt_ws_subscribe(self):
-        # web socket client connected with auth
-        self.ws.subscribe('trade:XBTUSD',
-                          'tradeBin1m:XBTUSD',
-                          'orderBookL2:XBTUSD')
+    @pyqtSlot()
+    def on_ws_authed(self):
+        self.auth_success = True
 
-    def slt_finish(self, data):
+    @pyqtSlot(object)
+    def on_finished(self, data):
         self.sig_http_finish.emit({
             'provider': self.provider,
             'symbol': self.instrument,
