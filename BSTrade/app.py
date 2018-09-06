@@ -1,7 +1,10 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMainWindow
+
+from BSTrade.Process import Coins
 from BSTrade.Widgets.Main import Main
+import multiprocessing as mp
 
 
 class App:
@@ -21,6 +24,11 @@ class App:
         """)
 
         self.window.show()
+
+        p = mp.Process(target=Coins.request, args=())
+        p.start()
+
+        # p.join()
 
     def start(self):
         sys.exit(self.app.exec_())

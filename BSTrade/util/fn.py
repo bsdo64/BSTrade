@@ -43,7 +43,7 @@ def perf_timer(argument, debug=DEBUG, limit=1):
 
 
 def attach_timer(cls: type, limit=20, parent=False) -> None:
-    """ Attach performance timer to class
+    """ Decorate performance timer to class
 
     Find only subclass's or override methods and
     print consumed times of the methods.
