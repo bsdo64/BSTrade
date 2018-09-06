@@ -12,17 +12,6 @@ from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 
 
-class TabBar(QTabBar):
-    def tabSizeHint(self, index):
-        size = QTabBar.tabSizeHint(self, index)
-        f = self.property('font')
-        fm = QFontMetrics(f)
-        w = fm.boundingRect(QRect(0, 0, 0, 0),
-                            Qt.AlignLeft,
-                            self.tabText(index)).width()
-        return QSize(w + 30, size.height())
-
-
 class LeftMenuButton(QPushButton):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
@@ -83,7 +72,6 @@ class Main(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.tabs = QTabWidget()
         self.api = Api(self)
         self.indi_dialog = IndicatorDialog(self)
         self.setup_ui()
@@ -144,7 +132,9 @@ class Main(QMainWindow):
         indicator_act.triggered.connect(self.slt_open_indicator)
 
     def slt_add_chart(self, checked):
-        bschart: TradeChart = self.tabs.widget(0)
+        print(self.findChild(QDockWidget, 'chart'))
+        # bschart: TradeChart = self.tabs.widget(0)
+
         pass
         # if bschart.is_ready():
         #     layout_manager = bschart.get_manager()
@@ -161,7 +151,7 @@ class Main(QMainWindow):
         self.indi_dialog.show()
 
     def slt_add_indicator(self, indi):
-        bschart: TradeChart = self.tabs.widget(0)
+        bschart: TradeChart = self.findChildren()
         pass
         # if bschart.is_ready():
         #     layout_manager = bschart.get_manager()
@@ -197,33 +187,6 @@ class Main(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, dock2)
 
     def create_chart_dock(self):
-        self.tabs.setTabBar(TabBar())
-        self.tabs.setTabsClosable(True)
-        self.tabs.setMovable(True)
-        self.tabs.setDocumentMode(True)
-        self.tabs.setUsesScrollButtons(True)
-        self.tabs.setStyleSheet("""
-            QTabBar::tab {
-                background: lightgray;
-                color: black;
-                border: 0;
-                /* min-width: 100px; */
-                max-width: 200px;
-                /* width: 150px; */
-                height: 12px;
-                padding: 5px;
-                font-size: 11px;
-                border: 1px solid #ebebeb;
-            }
-
-            QTabBar::tab:selected {
-                background: gray;
-                color: white;
-            }
-
-        """)
-
-        self.tabs.tabCloseRequested.connect(self.close_tab)
         chart_model = self.api.store.create_chart_model(
             'bitmex:XBTUSD',
             'tradebin1m'
@@ -231,24 +194,20 @@ class Main(QMainWindow):
         chart = TradeChart(
             model=chart_model, parent=self
         )
-        self.tabs.addTab(chart, 'Bitmex:XBTUSD')
+
         chart.request_data()
 
         # self.tabs.addTab(QTextEdit(), 'text{}'.format(i))
 
         dock3 = QDockWidget()
+        dock3.setObjectName('chart')
         dock3.setWindowTitle("BSChart")
         dock3.setMinimumWidth(200)
         dock3.setMinimumHeight(100)
-        dock3.setWidget(self.tabs)
+        dock3.setWidget(chart)
 
         self.addDockWidget(Qt.TopDockWidgetArea, dock3)
         self.resizeDocks([dock3], [500], Qt.Vertical)
-
-    def close_tab(self, index):
-        widget = self.tabs.widget(index)
-        widget.deleteLater()
-        self.tabs.removeTab(index)
 
 
 attach_timer(Main)
