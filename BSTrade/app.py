@@ -5,12 +5,13 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from BSTrade.Process import Coins
 from BSTrade.Widgets.Main import Main
 import multiprocessing as mp
-
+import peewee as pw
 
 class App:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        self.window = Main()
+        self.db = pw.SqliteDatabase('bstrade.db')
+        self.window = Main(self.db)
 
         self.setup_ui()
 

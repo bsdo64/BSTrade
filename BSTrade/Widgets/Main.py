@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QSize, QRect
 from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
     QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
-    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy
+    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QMenuBar
 
 from BSTrade.util.fn import attach_timer
 from BSTrade.Data.Models import Store, Api
@@ -29,6 +29,7 @@ class LeftMenu(QWidget):
         vbox.setSpacing(0)
 
         market_btn = LeftMenuButton('Market')
+        market_btn.setObjectName('market_btn')
         market_btn.setCheckable(True)
         market_btn.clicked.connect(parent.toggle_market_pane)
 
@@ -53,13 +54,12 @@ class CentralWidget(QWidget):
         self.hbox.setSpacing(0)
 
         left_menu = LeftMenu(self)
-
         self.hbox.addWidget(left_menu)
         self.hbox.addWidget(QPlainTextEdit())
 
     def toggle_market_pane(self, b):
+        print(self.hbox.itemAt(0).widget().findChild(LeftMenuButton, 'market_btn'))
         if b:
-
             self.hbox.insertWidget(1, QPushButton('market'))
         else:
             btn: QWidget = self.hbox.itemAt(1).widget()
@@ -67,16 +67,21 @@ class CentralWidget(QWidget):
             btn.deleteLater()
 
 
-
 class Main(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, database, parent=None):
         super().__init__(parent)
 
+        self.db = database
         self.api = Api(self)
         self.indi_dialog = IndicatorDialog(self)
+        self.init_data()
         self.setup_ui()
 
+    def init_data(self):
+        self.db
+
     def setup_ui(self):
+
         self.resize(1024, 768)
         self.setObjectName("MainWindow")
         self.setWindowTitle("BSTrade")
@@ -92,8 +97,6 @@ class Main(QMainWindow):
         self.api.Candle.request(self.config['provider'], 'XBTUSD', '1m')
 
     def setup_menus(self):
-        # self.statusBar().showMessage('Text in statusbar')
-
         menubar = self.menuBar()  # create menu bar
 
         file_menu = menubar.addMenu('File')  # add first menu
@@ -130,6 +133,14 @@ class Main(QMainWindow):
 
         indicator_act = chartbar.addAction('indi')
         indicator_act.triggered.connect(self.slt_open_indicator)
+
+        menubar2 = QToolBar(self)
+        menubar2.setOrientation(Qt.Vertical)
+        menubar2.addAction('Exchange')
+        menubar2.addAction('Chart')
+        menubar2.addAction('Trade')
+        menubar2.addAction('Account')
+        self.addToolBar(Qt.LeftToolBarArea, menubar2)
 
     def slt_add_chart(self, checked):
         print(self.findChild(QDockWidget, 'chart'))
