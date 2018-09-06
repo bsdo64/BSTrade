@@ -39,7 +39,11 @@ class LeftMenu(QWidget):
         vbox.setSizeConstraint(vbox.SetDefaultConstraint)
         vbox.setSpacing(0)
 
-        vbox.addWidget(LeftMenuButton('Market'))
+        market_btn = LeftMenuButton('Market')
+        market_btn.setCheckable(True)
+        market_btn.clicked.connect(parent.toggle_market_pane)
+
+        vbox.addWidget(market_btn)
         vbox.addWidget(LeftMenuButton('Trade'))
         vbox.addWidget(LeftMenuButton('Account'))
         vbox.addWidget(LeftMenuButton('Exchange'))
@@ -54,15 +58,25 @@ class CentralWidget(QWidget):
         super().__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
 
-        hbox = QHBoxLayout(self)
-        hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.setSizeConstraint(hbox.SetDefaultConstraint)
-        hbox.setSpacing(0)
+        self.hbox = QHBoxLayout(self)
+        self.hbox.setContentsMargins(0, 0, 0, 0)
+        self.hbox.setSizeConstraint(self.hbox.SetDefaultConstraint)
+        self.hbox.setSpacing(0)
 
         left_menu = LeftMenu(self)
 
-        hbox.addWidget(left_menu)
-        hbox.addWidget(QPlainTextEdit())
+        self.hbox.addWidget(left_menu)
+        self.hbox.addWidget(QPlainTextEdit())
+
+    def toggle_market_pane(self, b):
+        if b:
+
+            self.hbox.insertWidget(1, QPushButton('market'))
+        else:
+            btn: QWidget = self.hbox.itemAt(1).widget()
+            self.hbox.removeWidget(btn)
+            btn.deleteLater()
+
 
 
 class Main(QMainWindow):
