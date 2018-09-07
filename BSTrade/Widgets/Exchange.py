@@ -18,10 +18,11 @@ class ExchangeInfo(QWidget):
         self.vbox = QVBoxLayout(self)
         self.list_widget = QListWidget(self)
         self.title_label = QLabel("test", self)
+        self.title_label.setStyleSheet("background-color: black")
         font = QFont()
         font.setPointSize(20)
         self.title_label.setFont(font)
-        self.symbol_info = SymbolInfo()
+        self.symbol_info = SymbolInfo(self.main)
 
         self.setup_ui()
 
@@ -51,21 +52,12 @@ class ExchangeInfo(QWidget):
         self.list_widget.sortItems()
         self.list_widget.itemClicked.connect(self.symbol_info.symbol_selected)
 
-    def open_chart(self):
-        dock3 = QDockWidget(self)
-        dock3.setObjectName('dock3')
-        dock3.setMinimumWidth(100)
-        dock3.setMinimumHeight(100)
-        dock3.setWidget(QWidget())
-
-        self.main.addDockWidget(Qt.TopDockWidgetArea, dock3)
-        dock3.setFloating(True)
-        dock3.setAllowedAreas(Qt.NoDockWidgetArea)
-
 
 class SymbolInfo(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.main = parent
+        self.symbol = None
 
         self.vbox = QVBoxLayout(self)
         group1 = QGroupBox()
@@ -79,9 +71,12 @@ class SymbolInfo(QWidget):
 
         group2 = QGroupBox()
         group2.setTitle('Functions')
-        group2.setMaximumHeight(80)
+        group2.setMaximumHeight(70)
         hbox = QHBoxLayout()
-        hbox.addWidget(QPushButton('Chart'))
+
+        chart_btn = QPushButton('Chart')
+        chart_btn.clicked.connect(self.open_chart)
+        hbox.addWidget(chart_btn)
         hbox.addWidget(QPushButton('Trade'))
         hbox.addWidget(QPushButton('Orders'))
         group2.setLayout(hbox)
@@ -103,4 +98,16 @@ class SymbolInfo(QWidget):
 
     @pyqtSlot(QListWidgetItem)
     def symbol_selected(self, item):
+        self.symbol = item.text()
         self.symbol_name.setText(item.text())
+
+    def open_chart(self):
+        dock3 = QDockWidget(self)
+        dock3.setObjectName('dock3')
+        dock3.setMinimumWidth(640)
+        dock3.setMinimumHeight(480)
+        dock3.setWidget(QPushButton(self.symbol))
+
+        self.main.addDockWidget(Qt.TopDockWidgetArea, dock3)
+        dock3.setFloating(True)
+        dock3.setAllowedAreas(Qt.NoDockWidgetArea)
