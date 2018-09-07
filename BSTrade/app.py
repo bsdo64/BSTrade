@@ -7,6 +7,7 @@ from BSTrade.Widgets.Main import Main
 import multiprocessing as mp
 import peewee as pw
 
+
 class App:
     def __init__(self):
         self.app = QApplication(sys.argv)

@@ -12,7 +12,7 @@ from .reader import DataReader
 
 class Api:
     def __init__(self, parent):
-        self._store = Store(parent)
+        self._store: Store = Store(parent)
 
         # Public
         # self.Candle = Candle(self._store)
@@ -42,7 +42,7 @@ class Api:
         # self.App.init_data()
 
     @property
-    def store(self):
+    def store(self) -> 'Store':
         return self._store
 
 

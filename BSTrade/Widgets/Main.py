@@ -1,9 +1,11 @@
-from PyQt5.QtCore import Qt, QSize, QRect
-from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor
+from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
+from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor, QShowEvent
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
     QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
-    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QMenuBar
+    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QMenuBar, QListWidget, \
+    QListWidgetItem
 
+from BSTrade.Data.const import Provider
 from BSTrade.util.fn import attach_timer
 from BSTrade.Data.Models import Store, Api
 from BSTrade.Lib.BSChart import TradeChart
@@ -12,40 +14,20 @@ from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 
 
-class LeftMenuButton(QPushButton):
-    def __init__(self, text, parent=None):
-        super().__init__(text, parent)
-        self.setFixedHeight(50)
-
-
-class LeftMenu(QWidget):
-    def __init__(self, parent):
+class ExchangeList(QListWidget):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setMaximumWidth(100)
 
-        vbox = QVBoxLayout(self)
-        vbox.setContentsMargins(0, 0, 0, 0)
-        vbox.setSizeConstraint(vbox.SetDefaultConstraint)
-        vbox.setSpacing(0)
-
-        market_btn = LeftMenuButton('Market')
-        market_btn.setObjectName('market_btn')
-        market_btn.setCheckable(True)
-        market_btn.clicked.connect(parent.toggle_market_pane)
-
-        vbox.addWidget(market_btn)
-        vbox.addWidget(LeftMenuButton('Trade'))
-        vbox.addWidget(LeftMenuButton('Account'))
-        vbox.addWidget(LeftMenuButton('Exchange'))
-        vbox.addWidget(LeftMenuButton('Chart'))
-        vbox.addItem(QSpacerItem(60, 10,
-                                 QSizePolicy.Minimum,
-                                 QSizePolicy.Expanding))
+        for prov in Provider:
+            QListWidgetItem(prov.name, self)
 
 
 class CentralWidget(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent: 'Main'):
         super().__init__(parent)
+        self.parent = parent
         self.setContentsMargins(0, 0, 0, 0)
 
         self.hbox = QHBoxLayout(self)
@@ -53,32 +35,76 @@ class CentralWidget(QWidget):
         self.hbox.setSizeConstraint(self.hbox.SetDefaultConstraint)
         self.hbox.setSpacing(0)
 
-        left_menu = LeftMenu(self)
-        self.hbox.addWidget(left_menu)
         self.hbox.addWidget(QPlainTextEdit())
 
-    def toggle_market_pane(self, b):
-        print(self.hbox.itemAt(0).widget().findChild(LeftMenuButton, 'market_btn'))
+    def toggle_left_pane(self, b):
+        pane_at = 0
         if b:
-            self.hbox.insertWidget(1, QPushButton('market'))
+            exchange_list = ExchangeList(self)
+            exchange_list.itemClicked.connect(self.parent.select_provider)
+            self.hbox.insertWidget(pane_at, exchange_list)
         else:
-            btn: QWidget = self.hbox.itemAt(1).widget()
+            btn: QWidget = self.hbox.itemAt(pane_at).widget()
             self.hbox.removeWidget(btn)
             btn.deleteLater()
 
+
+class ExchangeInfo(QWidget):
+    def __init__(self, provider, api, parent=None):
+        super().__init__(parent)
+        self.main: 'QMainWindow' = parent
+        self.provider = provider
+        self.api = api
+
+        self.market = self.api.store.markets[provider]
+        self.vbox = QVBoxLayout(self)
+
+        self.setup_ui()
+
+    def setup_ui(self):
+        list_widget = QListWidget(self)
+
+        for k, symbol in self.market.symbols.items():
+            QListWidgetItem(symbol.name, list_widget)
+        list_widget.sortItems()
+        list_widget.itemClicked.connect(self.update_info)
+
+        self.vbox.addWidget(list_widget)
+        self.setLayout(self.vbox)
+
+    @pyqtSlot(QListWidgetItem)
+    def update_info(self, item):
+        print(item.text())
+
+    def open_chart(self):
+        dock3 = QDockWidget(self)
+        dock3.setObjectName('dock3')
+        dock3.setMinimumWidth(100)
+        dock3.setMinimumHeight(100)
+        dock3.setWidget(QWidget())
+
+        self.main.addDockWidget(Qt.TopDockWidgetArea, dock3)
+        dock3.setFloating(True)
+        dock3.setAllowedAreas(Qt.NoDockWidgetArea)
 
 class Main(QMainWindow):
     def __init__(self, database, parent=None):
         super().__init__(parent)
 
         self.db = database
-        self.api = Api(self)
         self.indi_dialog = IndicatorDialog(self)
-        self.init_data()
         self.setup_ui()
 
-    def init_data(self):
-        self.db
+    def showEvent(self, ev: QShowEvent):
+        super().showEvent(ev)
+        """
+        UI finished
+
+        init data
+        :param ev:
+        :return:
+        """
+        self.api = Api(self)
 
     def setup_ui(self):
 
@@ -136,11 +162,29 @@ class Main(QMainWindow):
 
         menubar2 = QToolBar(self)
         menubar2.setOrientation(Qt.Vertical)
-        menubar2.addAction('Exchange')
-        menubar2.addAction('Chart')
-        menubar2.addAction('Trade')
-        menubar2.addAction('Account')
+        ex_action: QAction = menubar2.addAction('Exchange')
+        ex_action.setObjectName('ex_action')
+        ex_action.setCheckable(True)
+        ex_action.triggered.connect(self.centralWidget().toggle_left_pane)
+        menubar2.addAction('Market').setCheckable(True)
+        menubar2.addAction('Chart').setCheckable(True)
+        menubar2.addAction('Trade').setCheckable(True)
+        menubar2.addAction('Account').setCheckable(True)
         self.addToolBar(Qt.LeftToolBarArea, menubar2)
+
+    def select_provider(self, item: QListWidgetItem):
+        prov = Provider[item.text()]
+        action: QAction = self.findChild(QAction, 'ex_action')
+        action.trigger()
+
+        center: CentralWidget = self.centralWidget()
+        layout_item = center.hbox.itemAt(0)
+        layout_item.widget().deleteLater()
+        center.hbox.removeItem(layout_item)
+
+        center.hbox.addWidget(ExchangeInfo(prov, self.api, self))
+
+        print(self.findChildren(ExchangeInfo))
 
     def slt_add_chart(self, checked):
         print(self.findChild(QDockWidget, 'chart'))

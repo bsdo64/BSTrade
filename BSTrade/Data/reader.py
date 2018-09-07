@@ -160,36 +160,33 @@ class BitmexRequester(QObject):
             })
 
 
-http_client = {
-    Provider.BITMEX: BitmexRequester(),
-    Provider.UPBIT: BitmexRequester(),
-}
-
-ws_client = {
-    Provider.BITMEX: BitmexWsClient(
-        test=False,
-        api_key=api_keys['real']['order']['key'],
-        api_secret=api_keys['real']['order']['secret']
-    ),
-    Provider.UPBIT: BitmexWsClient(
-        test=False,
-        api_key=api_keys['real']['order']['key'],
-        api_secret=api_keys['real']['order']['secret']
-    ),
-}
-
-
 class DataReader(QObject):
     sig_http_finish = pyqtSignal(object)
 
     def __init__(self, provider: Provider):
         super().__init__()
+        self.http_client = {
+            Provider.BITMEX: BitmexRequester(),
+            Provider.UPBIT: None,
+        }
+
+        self.ws_client = {
+            Provider.BITMEX: BitmexWsClient(
+                test=False,
+                api_key=api_keys['real']['order']['key'],
+                api_secret=api_keys['real']['order']['secret']
+            ),
+            Provider.UPBIT: None,
+        }
+
         self.provider = provider
-        self.r = http_client[provider]
-        self.ws = ws_client[provider]
+        self.r = self.http_client[provider]
+        self.ws = self.ws_client[provider]
+
         self.auth_success = False
 
-        self.setup_signals()
+        if self.r and self.ws:
+            self.setup_signals()
 
     def setup_signals(self):
         self.r.sig_finish.connect(self.on_finished)
