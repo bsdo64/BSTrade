@@ -1,17 +1,20 @@
-from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
-from PyQt5.QtGui import QIcon, QFontMetrics, QPalette, QColor, QShowEvent
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QPalette, QColor, QShowEvent
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
-    QTabWidget, QTabBar, QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
-    QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QMenuBar, QListWidget, \
+    QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
+    QListWidget, \
     QListWidgetItem
 
+from BSTrade.Data.Models import Api
 from BSTrade.Data.const import Provider
-from BSTrade.util.fn import attach_timer
-from BSTrade.Data.Models import Store, Api
-from BSTrade.Lib.BSChart import TradeChart
-from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, RecentTradeTableModel
-from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
+from BSTrade.Lib.BSChart import TradeChart
+from BSTrade.Widgets.Exchange import ExchangeInfo
+from BSTrade.Widgets.Factory import WidgetStore
+from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
+from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, \
+    RecentTradeTableModel
+from BSTrade.util.fn import attach_timer
 
 
 class ExchangeList(QListWidget):
@@ -49,44 +52,6 @@ class CentralWidget(QWidget):
             btn.deleteLater()
 
 
-class ExchangeInfo(QWidget):
-    def __init__(self, provider, api, parent=None):
-        super().__init__(parent)
-        self.main: 'QMainWindow' = parent
-        self.provider = provider
-        self.api = api
-
-        self.market = self.api.store.markets[provider]
-        self.vbox = QVBoxLayout(self)
-
-        self.setup_ui()
-
-    def setup_ui(self):
-        list_widget = QListWidget(self)
-
-        for k, symbol in self.market.symbols.items():
-            QListWidgetItem(symbol.name, list_widget)
-        list_widget.sortItems()
-        list_widget.itemClicked.connect(self.update_info)
-
-        self.vbox.addWidget(list_widget)
-        self.setLayout(self.vbox)
-
-    @pyqtSlot(QListWidgetItem)
-    def update_info(self, item):
-        print(item.text())
-
-    def open_chart(self):
-        dock3 = QDockWidget(self)
-        dock3.setObjectName('dock3')
-        dock3.setMinimumWidth(100)
-        dock3.setMinimumHeight(100)
-        dock3.setWidget(QWidget())
-
-        self.main.addDockWidget(Qt.TopDockWidgetArea, dock3)
-        dock3.setFloating(True)
-        dock3.setAllowedAreas(Qt.NoDockWidgetArea)
-
 class Main(QMainWindow):
     def __init__(self, database, parent=None):
         super().__init__(parent)
@@ -105,6 +70,7 @@ class Main(QMainWindow):
         :return:
         """
         self.api = Api(self)
+        self.widget_store = WidgetStore(self.api, self)
 
     def setup_ui(self):
 
@@ -178,13 +144,19 @@ class Main(QMainWindow):
         action.trigger()
 
         center: CentralWidget = self.centralWidget()
+        self.set_exchange(center.hbox)
+        self.widget_store.ExchangeInfo.exchange_selected(prov)
+
+    def set_exchange(self, hbox):
+        center: CentralWidget = self.centralWidget()
         layout_item = center.hbox.itemAt(0)
-        layout_item.widget().deleteLater()
-        center.hbox.removeItem(layout_item)
-
-        center.hbox.addWidget(ExchangeInfo(prov, self.api, self))
-
-        print(self.findChildren(ExchangeInfo))
+        center_widget = layout_item.widget()
+        if isinstance(center_widget, ExchangeInfo):
+            return
+        else:
+            center_widget.deleteLater()
+            center.hbox.removeItem(layout_item)
+            hbox.addWidget(self.widget_store.ExchangeInfo)
 
     def slt_add_chart(self, checked):
         print(self.findChild(QDockWidget, 'chart'))

@@ -33,7 +33,10 @@ async def fetch(client, item):
 
 
 async def check_coins(client):
-    async with client.get(coin_info_url) as resp:
+    ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36' \
+         ' (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+    async with client.get(coin_info_url,
+                          headers={'User-Agent': ua}) as resp:
         assert resp.status == 200
 
         try:
