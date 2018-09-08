@@ -108,6 +108,7 @@ class SymbolInfo(QWidget):
         dock3.setMinimumHeight(480)
         dock3.setWidget(QPushButton(self.symbol))
 
-        self.main.addDockWidget(Qt.TopDockWidgetArea, dock3)
-        dock3.setFloating(True)
-        dock3.setAllowedAreas(Qt.NoDockWidgetArea)
+        win = QMainWindow()
+        win.addDockWidget(Qt.TopDockWidgetArea, dock3)
+        self.vbox.addWidget(win)
+        win.setWindowFlags(Qt.Window)

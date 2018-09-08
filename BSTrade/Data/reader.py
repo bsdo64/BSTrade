@@ -213,9 +213,14 @@ attach_timer(DataReader, limit=10)
 
 
 if __name__ == '__main__':
+
     app = QCoreApplication([])
+
+    def finish_app():
+        app.quit()
 
     req = BitmexRequester(inst='XBTUSD')
     req.trade_bin(10)
+    req.sig_finish.connect(finish_app)
 
     app.exec()
