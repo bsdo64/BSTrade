@@ -1,4 +1,5 @@
 import json
+import time
 from typing import Dict, Any, Union
 
 from PyQt5.QtCore import QUrl, pyqtSignal, QObject
@@ -9,7 +10,7 @@ from BSTrade.util.fn import attach_timer
 
 
 class HttpClient(QObject):
-    sig_ended = pyqtSignal(bool)
+    sig_ended = pyqtSignal(object)
 
     def __init__(self):
         super().__init__()
@@ -76,7 +77,7 @@ class HttpClient(QObject):
             for k in header:
                 self.request.setRawHeader(k.encode(), header[k].encode())
 
-    def get(self, url: str, header=None):
+    def get(self, url: str, header: Dict[str, Any]=None):
         """
         Get http request
 
@@ -85,7 +86,7 @@ class HttpClient(QObject):
         """
         self.request.setUrl(QUrl(url))
         self.set_header(header)
-        self.network_manager.get(self.request)
+        return self.network_manager.get(self.request)
 
     def post(self,
              url: str,
@@ -118,18 +119,23 @@ class HttpClient(QObject):
         self._status_code = data.attribute(
             QNetworkRequest.HttpStatusCodeAttribute
         )
-        self._save_header(data.rawHeaderPairs())
 
-        if self.content_type() == 'json':
-            if len(self._string):
-                self._json = json.loads(self._string)
+        if self._status_code is None:
+            return
+
+        if self._status_code == 200:
+            self._save_header(data.rawHeaderPairs())
+
+            if self.content_type() == 'json':
+                if len(self._string):
+                    self._json = json.loads(self._string)
+            else:
+                self._json = None
+
         else:
-            self._json = None
+            print('request Fail : ', self._status_code, self._string)
 
-        if self._status_code >= 400:
-            print(self._string)
-
-        self.sig_ended.emit(True)
+        self.sig_ended.emit(data)
         data.deleteLater()
 
 

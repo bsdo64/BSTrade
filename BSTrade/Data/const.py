@@ -4,6 +4,15 @@ from enum import Enum, auto
 class Provider(Enum):
     BITMEX = auto()
     UPBIT = auto()
+    COINONE = auto()
+
+
+class HttpEndPointType(Enum):
+    exchange_status = auto()
+    candles = auto()
+    symbols = auto()
+    orderbook = auto()
+    ticker = auto()
 
 
 def find_enum(item: str, enum: Enum):

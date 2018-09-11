@@ -44,12 +44,33 @@ class CentralWidget(QWidget):
         pane_at = 0
         if b:
             exchange_list = ExchangeList(self)
-            exchange_list.itemClicked.connect(self.parent.select_provider)
+            exchange_list.itemClicked.connect(self.select_provider)
             self.hbox.insertWidget(pane_at, exchange_list)
         else:
             btn: QWidget = self.hbox.itemAt(pane_at).widget()
             self.hbox.removeWidget(btn)
             btn.deleteLater()
+
+    def select_provider(self, item: QListWidgetItem):
+        prov = Provider[item.text()]
+        action: QAction = self.parent.findChild(QAction, 'ex_action')
+        action.trigger()
+
+        self.set_exchange_view()
+        self.parent.view_store.ExchangeInfo.exchange_selected(prov)
+
+    def set_exchange_view(self):
+        layout_item = self.hbox.itemAt(0)
+        center_widget = layout_item.widget()
+        if isinstance(center_widget, ExchangeInfo):
+            return
+        else:
+            center_widget.deleteLater()
+            self.hbox.removeItem(layout_item)
+            self.hbox.addWidget(self.parent.view_store.ExchangeInfo)
+
+
+attach_timer(CentralWidget)
 
 
 class Main(QMainWindow):
@@ -134,26 +155,6 @@ class Main(QMainWindow):
         menubar2.addAction('Trade').setCheckable(True)
         menubar2.addAction('Account').setCheckable(True)
         self.addToolBar(Qt.LeftToolBarArea, menubar2)
-
-    def select_provider(self, item: QListWidgetItem):
-        prov = Provider[item.text()]
-        action: QAction = self.findChild(QAction, 'ex_action')
-        action.trigger()
-
-        center: CentralWidget = self.centralWidget()
-        self.set_exchange_view(center.hbox)
-        self.view_store.ExchangeInfo.exchange_selected(prov)
-
-    def set_exchange_view(self, hbox):
-        center: CentralWidget = self.centralWidget()
-        layout_item = center.hbox.itemAt(0)
-        center_widget = layout_item.widget()
-        if isinstance(center_widget, ExchangeInfo):
-            return
-        else:
-            center_widget.deleteLater()
-            center.hbox.removeItem(layout_item)
-            hbox.addWidget(self.view_store.ExchangeInfo)
 
     def slt_add_chart(self, checked):
         print(self.findChild(QDockWidget, 'chart'))
