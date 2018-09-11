@@ -112,30 +112,33 @@ class HttpClient(QObject):
         self.network_manager.deleteResource(self.request)
 
     def slot_reply_finished(self, data: QNetworkReply):
-
-        self._reply = data
-        self._text = data.readAll()
-        self._string = bytes(self._text).decode()
-        self._status_code = data.attribute(
-            QNetworkRequest.HttpStatusCodeAttribute
-        )
-
-        if self._status_code is None:
+        qt_error_code = data.error().real
+        if qt_error_code:
+            print('QNetworkReply::NetworkError :', data.error())
             return
 
-        if self._status_code == 200:
-            self._save_header(data.rawHeaderPairs())
-
-            if self.content_type() == 'json':
-                if len(self._string):
-                    self._json = json.loads(self._string)
-            else:
-                self._json = None
-
         else:
-            print('request Fail : ', self._status_code, self._string)
+            self._reply = data
+            self._text = data.readAll()
+            self._string = bytes(self._text).decode()
+            self._status_code = data.attribute(
+                QNetworkRequest.HttpStatusCodeAttribute
+            )
 
-        self.sig_ended.emit(data)
+            if self._status_code == 200:
+                self._save_header(data.rawHeaderPairs())
+
+                if self.content_type() == 'json':
+                    if len(self._string):
+                        self._json = json.loads(self._string)
+                else:
+                    self._json = None
+
+            else:
+                print('request Fail : ', self._status_code, self._string)
+
+            self.sig_ended.emit(data)
+
         data.deleteLater()
 
 

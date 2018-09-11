@@ -32,13 +32,13 @@ def make_params(prov, h_method, params=None, method='GET'):
     if prov == Provider.BITMEX:
         base = "https://www.bitmex.com/api/v1"
 
-        if h_method == EndPoint.exchange_status:
+        if h_method == EndPoint.get_exchange_status:
             pass
 
-        elif h_method == EndPoint.candles:
+        elif h_method == EndPoint.get_candles:
             pass
 
-        elif h_method == EndPoint.symbols:
+        elif h_method == EndPoint.get_symbols:
             url = base + '/instrument'
             q = [(
                 tup[0], xstr(params.get(tup[0]), tup[1])
@@ -62,40 +62,40 @@ def make_params(prov, h_method, params=None, method='GET'):
 
             return qurl, qs.query().encode()
 
-        elif h_method == EndPoint.orderbook:
+        elif h_method == EndPoint.get_orderbook:
             pass
 
-        elif h_method == EndPoint.ticker:
+        elif h_method == EndPoint.get_ticker:
             pass
 
     elif prov == Provider.UPBIT:
         base = "https://api.upbit.com/v1"
 
-        if h_method == EndPoint.exchange_status:
+        if h_method == EndPoint.get_exchange_status:
             pass
 
-        elif h_method == EndPoint.candles:
+        elif h_method == EndPoint.get_candles:
             pass
 
-        elif h_method == EndPoint.symbols:
+        elif h_method == EndPoint.get_symbols:
             pass
 
-        elif h_method == EndPoint.orderbook:
+        elif h_method == EndPoint.get_orderbook:
             pass
 
-        elif h_method == EndPoint.ticker:
+        elif h_method == EndPoint.get_ticker:
             pass
 
     elif prov == Provider.COINONE:
         base = 'https://api.coinone.co.kr/'
 
-        if h_method == EndPoint.exchange_status:
+        if h_method == EndPoint.get_exchange_status:
             pass
 
-        elif h_method == EndPoint.candles:
+        elif h_method == EndPoint.get_candles:
             pass
 
-        elif h_method == EndPoint.symbols:
+        elif h_method == EndPoint.get_symbols:
             url = base + '/ticker_utc'
             q = [(
                 tup[0], xstr(params.get(tup[0]), tup[1])
@@ -112,11 +112,12 @@ def make_params(prov, h_method, params=None, method='GET'):
 
             return qurl, qs.query().encode()
 
-        elif h_method == EndPoint.orderbook:
+        elif h_method == EndPoint.get_orderbook:
             pass
 
-        elif h_method == EndPoint.ticker:
+        elif h_method == EndPoint.get_ticker:
             pass
+
 
 def make_auth_header(prov, qurl, data=None, method='GET'):
     if prov == Provider.BITMEX:
@@ -160,7 +161,7 @@ class RateLimiter:
         self.rate = 300
         self.per = 300
         self.allowance = self.rate
-        self.last_check = time.time()
+        self.last_check = None
         self.reply = []
 
     def add(self, res):
@@ -182,20 +183,28 @@ class RateLimiter:
 
     def res_one(self):
         current = time.time()
+
+        if self.last_check is None:
+            self.last_check = current
+
         time_passed = current - self.last_check
         self.last_check = current
-        self.allowance += int(time_passed * (self.rate / self.per))
+        self.allowance += time_passed * (self.rate / self.per)
 
         if self.allowance > self.rate:
             self.allowance = self.rate
-        elif self.allowance < 1:
-            print('no', self.allowance)
+            print(self.provider.name,
+                  'remaining rate-limit : ', self.allowance)
+        elif self.allowance < 1.0:
+            print(self.provider.name,
+                  'request canceled. rate-limit : ', self.allowance)
         else:
-            print('ok', self.allowance)
-            self.allowance -= 1
+            self.allowance -= 1.0
+            print(self.provider.name,
+                  'remaining rate-limit : ', self.allowance)
 
 
-class BSreq:
+class BSReq:
 
     def __init__(self):
         self.provider = Provider
@@ -209,45 +218,54 @@ class BSreq:
 
         self.http.sig_ended.connect(self.res)
 
-    def exchange_status(self, prov: Provider, params=None):
+    def get_exchange_status(self, prov: Provider, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
         auth_header = make_auth_header(prov, qurl, method=method)
-        res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
-        self.set_property(res, prov, h_method, params)
 
-    def candles(self, prov: Provider, params=None):
-        method = 'GET'
-        h_method = EndPoint[inspect.currentframe().f_code.co_name]
-        qurl, _ = make_params(prov, h_method, params)
-        auth_header = make_auth_header(prov, qurl, method=method)
-        res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
-        self.set_property(res, prov, h_method, params)
-
-    def symbols(self, prov: Provider, params=None):
-        method = 'GET'
-        h_method = EndPoint[inspect.currentframe().f_code.co_name]
-        qurl, _ = make_params(prov, h_method, params)
-        auth_header = make_auth_header(prov, qurl, method=method)
         res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
         self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def orderbook(self, prov: Provider, params=None):
+    def get_candles(self, prov: Provider, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
         auth_header = make_auth_header(prov, qurl, method=method)
+
         res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
+        self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def ticker(self, prov: Provider, params=None):
+    def get_symbols(self, prov: Provider, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
         auth_header = make_auth_header(prov, qurl, method=method)
+
         res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
+        self.limiter[prov].add(res)
+        self.set_property(res, prov, h_method, params)
+
+    def get_orderbook(self, prov: Provider, params=None):
+        method = 'GET'
+        h_method = EndPoint[inspect.currentframe().f_code.co_name]
+        qurl, _ = make_params(prov, h_method, params)
+        auth_header = make_auth_header(prov, qurl, method=method)
+
+        res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
+        self.limiter[prov].add(res)
+        self.set_property(res, prov, h_method, params)
+
+    def get_ticker(self, prov: Provider, params=None):
+        method = 'GET'
+        h_method = EndPoint[inspect.currentframe().f_code.co_name]
+        qurl, _ = make_params(prov, h_method, params)
+        auth_header = make_auth_header(prov, qurl, method=method)
+
+        res = self.http.get(qurl.toString(QUrl.FullyEncoded), auth_header)
+        self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
     def set_property(self, res, prov, h_method, params):
@@ -265,21 +283,22 @@ class BSreq:
             self.limiter[prov].abort_all()
 
         elif self.http.status() == 200:
-            pprint(self.http.headers())
+            print('real rate-limit : ', self.http.header('x-ratelimit-remaining'))
+            print('result(len) : ', len(self.http.json()))
             self.limiter[prov].res_one()
             self.limiter[prov].remove_one(data)
 
+            self.get_symbols(Provider.BITMEX, {'count': 500, 'column': 'symbol'})
 
-bs_req = BSreq()
-attach_timer(BSreq)
+
+bs_req = BSReq()
+attach_timer(BSReq)
 
 if __name__ == '__main__':
 
     app = QApplication([])
 
-    for i in range(100):
-        bs_req.symbols(Provider.BITMEX, {'count': 500, 'column': 'symbol'})
-
-    # bs_req.symbols(Provider.COINONE, {'currency': 'all'})
+    bs_req.get_symbols(Provider.BITMEX, {'count': 500, 'column': 'symbol'})
+    bs_req.get_symbols(Provider.COINONE, {'currency': 'all'})
 
     app.exec()

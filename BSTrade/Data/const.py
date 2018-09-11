@@ -8,11 +8,11 @@ class Provider(Enum):
 
 
 class HttpEndPointType(Enum):
-    exchange_status = auto()
-    candles = auto()
-    symbols = auto()
-    orderbook = auto()
-    ticker = auto()
+    get_exchange_status = auto()
+    get_candles = auto()
+    get_symbols = auto()
+    get_orderbook = auto()
+    get_ticker = auto()
 
 
 def find_enum(item: str, enum: Enum):
