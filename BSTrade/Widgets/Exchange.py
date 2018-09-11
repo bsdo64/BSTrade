@@ -16,9 +16,8 @@ class ExchangeInfo(QWidget):
 
         self.market = None  # self.api.store.markets[provider]
         self.vbox = QVBoxLayout(self)
-        self.list_widget = QListWidget(self)
-        self.title_label = QLabel("test", self)
-        self.title_label.setStyleSheet("background-color: black")
+        self.list_widget = None
+        self.title_label = QLabel("None", self)
         font = QFont()
         font.setPointSize(20)
         self.title_label.setFont(font)

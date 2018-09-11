@@ -70,7 +70,7 @@ class Main(QMainWindow):
         :return:
         """
         self.api = Api(self)
-        self.widget_store = WidgetStore(self.api, self)
+        self.view_store = WidgetStore(self.api, self)
 
     def setup_ui(self):
 
@@ -84,9 +84,6 @@ class Main(QMainWindow):
         self.setup_toolbar()
         # self.setup_docks()
         # self.setup_indicators(self.indi_dialog)
-
-    def setup_data(self):
-        self.api.Candle.request(self.config['provider'], 'XBTUSD', '1m')
 
     def setup_menus(self):
         menubar = self.menuBar()  # create menu bar
@@ -144,10 +141,10 @@ class Main(QMainWindow):
         action.trigger()
 
         center: CentralWidget = self.centralWidget()
-        self.set_exchange(center.hbox)
-        self.widget_store.ExchangeInfo.exchange_selected(prov)
+        self.set_exchange_view(center.hbox)
+        self.view_store.ExchangeInfo.exchange_selected(prov)
 
-    def set_exchange(self, hbox):
+    def set_exchange_view(self, hbox):
         center: CentralWidget = self.centralWidget()
         layout_item = center.hbox.itemAt(0)
         center_widget = layout_item.widget()
@@ -156,7 +153,7 @@ class Main(QMainWindow):
         else:
             center_widget.deleteLater()
             center.hbox.removeItem(layout_item)
-            hbox.addWidget(self.widget_store.ExchangeInfo)
+            hbox.addWidget(self.view_store.ExchangeInfo)
 
     def slt_add_chart(self, checked):
         print(self.findChild(QDockWidget, 'chart'))
