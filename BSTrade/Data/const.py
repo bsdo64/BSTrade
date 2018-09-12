@@ -5,6 +5,7 @@ class Provider(Enum):
     BITMEX = auto()
     UPBIT = auto()
     COINONE = auto()
+    BINANCE = auto()
 
 
 class HttpEndPointType(Enum):

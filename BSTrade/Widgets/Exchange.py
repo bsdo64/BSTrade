@@ -5,14 +5,14 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, \
     QMainWindow
 
 from BSTrade.Data.const import Provider
+from BSTrade.Data.controller import bs_api
 
 
 class ExchangeInfo(QWidget):
-    def __init__(self, api, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.main: 'QMainWindow' = parent
         self.provider = None
-        self.api = api
 
         self.market = None  # self.api.store.markets[provider]
         self.vbox = QVBoxLayout(self)
@@ -41,13 +41,21 @@ class ExchangeInfo(QWidget):
     @pyqtSlot(Provider)
     def exchange_selected(self, prov):
         self.provider = prov
-        self.market = self.api.store.markets[prov]
-        self.title_label.setText(prov.name)
-        self.symbol_info.clear_info()
+        market = bs_api.update_markets(prov)
+        market.sig.symbol_updated.connect(self.symbols_updated)
 
+    @pyqtSlot(Provider)
+    def symbols_updated(self, market):
+        market.sig.symbol_updated.disconnect(self.symbols_updated)
+        self.market = market
+        self.title_label.setText(self.provider.name)
+        self.symbol_info.clear_info()
         self.list_widget.clear()
+
         for k, symbol in self.market.symbols.items():
-            QListWidgetItem(symbol.name, self.list_widget)
+            if symbol.state in ['Open', 'TRADING']:
+                QListWidgetItem(symbol.name, self.list_widget)
+
         self.list_widget.sortItems()
         self.list_widget.itemClicked.connect(self.symbol_info.symbol_selected)
 
@@ -63,7 +71,7 @@ class SymbolInfo(QWidget):
 
         group1.setTitle('Overview')
         vbox1 = QVBoxLayout()
-        self.symbol_name = QLabel('XBTUSD', self)
+        self.symbol_name = QLabel(self)
         self.symbol_name.setMaximumHeight(25)
         vbox1.addWidget(self.symbol_name)
         group1.setLayout(vbox1)
@@ -75,9 +83,18 @@ class SymbolInfo(QWidget):
 
         chart_btn = QPushButton('Chart')
         chart_btn.clicked.connect(self.open_chart)
+        chart_btn.setDisabled(True)
         hbox.addWidget(chart_btn)
-        hbox.addWidget(QPushButton('Trade'))
-        hbox.addWidget(QPushButton('Orders'))
+
+        trade_btn = QPushButton('Trade')
+        trade_btn.clicked.connect(self.open_trade)
+        trade_btn.setDisabled(True)
+        hbox.addWidget(trade_btn)
+
+        order_btn = QPushButton('Order')
+        order_btn.clicked.connect(self.open_order)
+        order_btn.setDisabled(True)
+        hbox.addWidget(order_btn)
         group2.setLayout(hbox)
 
         group3 = QGroupBox()
@@ -99,7 +116,10 @@ class SymbolInfo(QWidget):
     def symbol_selected(self, item):
         self.symbol = item.text()
         self.symbol_name.setText(item.text())
+        btns = self.findChildren(QPushButton)
+        [btn.setDisabled(False) for btn in btns]
 
+    @pyqtSlot()
     def open_chart(self):
         dock3 = QDockWidget(self)
         dock3.setObjectName('dock3')
@@ -111,3 +131,11 @@ class SymbolInfo(QWidget):
         win.addDockWidget(Qt.TopDockWidgetArea, dock3)
         self.vbox.addWidget(win)
         win.setWindowFlags(Qt.Window)
+
+    @pyqtSlot()
+    def open_trade(self):
+        pass
+
+    @pyqtSlot()
+    def open_order(self):
+        pass

@@ -168,6 +168,7 @@ class DataReader(QObject):
         self.http_client = {
             Provider.BITMEX: BitmexRequester(),
             Provider.UPBIT: None,
+            Provider.COINONE: None,
         }
 
         self.ws_client = {
@@ -177,6 +178,7 @@ class DataReader(QObject):
                 api_secret=api_keys['real']['order']['secret']
             ),
             Provider.UPBIT: None,
+            Provider.COINONE: None,
         }
 
         self.provider = provider

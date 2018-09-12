@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
     QListWidget, \
     QListWidgetItem
 
-from BSTrade.Data.Models import Api
+from BSTrade.Data.controller import Api, bs_api
 from BSTrade.Data.const import Provider
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 from BSTrade.Lib.BSChart import TradeChart
@@ -90,8 +90,7 @@ class Main(QMainWindow):
         :param ev:
         :return:
         """
-        self.api = Api(self)
-        self.view_store = WidgetStore(self.api, self)
+        self.view_store = WidgetStore(self)
 
     def setup_ui(self):
 
@@ -212,7 +211,7 @@ class Main(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, dock2)
 
     def create_chart_dock(self):
-        chart_model = self.api.store.create_chart_model(
+        chart_model = bs_api.store.create_chart_model(
             'bitmex:XBTUSD',
             'tradebin1m'
         )
