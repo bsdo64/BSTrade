@@ -7,7 +7,7 @@ from BSTrade.util.fn import attach_timer
 
 
 class WsClient(QObject):
-    sig_message = pyqtSignal(str)
+    sig_message = pyqtSignal(object)
     sig_connected = pyqtSignal()
 
     def __init__(self):
@@ -15,6 +15,7 @@ class WsClient(QObject):
         self.websocket = QWebSocket()
 
         self._connected = False
+        self._auth = False
         self._data = None
 
         self.websocket.connected.connect(self.slot_connected)
@@ -62,7 +63,7 @@ class WsClient(QObject):
 
     def slot_message_received(self, message: str):
         self.set_data(message)
-        self.sig_message.emit(message)
+        self.sig_message.emit(self)
 
     def slot_error(self, error_code):
         print("error code: {}".format(error_code))
