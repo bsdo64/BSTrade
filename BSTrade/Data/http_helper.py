@@ -21,8 +21,6 @@ class ReqLooper:
 
         self.r = []
 
-        self.req.sig.finished.connect(self.req_loop)
-
     def set_prov(self, prov):
         self.prov = prov
 
@@ -40,6 +38,7 @@ class ReqLooper:
         self.calc = f
 
     def start(self):
+        self.req.sig.finished.connect(self.req_loop)
         self.req.get_candles(self.prov, self.param)
 
     def clear(self):

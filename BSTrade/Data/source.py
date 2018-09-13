@@ -17,7 +17,7 @@ from BSTrade.util.fn import attach_timer
 class BSWsSig(QObject):
     subscribed = pyqtSignal(dict)
     auth_success = pyqtSignal()
-    finish = pyqtSignal()
+    finish = pyqtSignal(object)
 
 
 class BSWs:
