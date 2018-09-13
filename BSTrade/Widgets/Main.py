@@ -1,16 +1,14 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPalette, QColor, QShowEvent
+from PyQt5.QtGui import QIcon, QPalette, QColor, QShowEvent, QResizeEvent, \
+    QMoveEvent
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
-    QToolBar, QPlainTextEdit, QWidget, QHBoxLayout, \
-    QListWidget, \
-    QListWidgetItem
+    QToolBar, QDesktopWidget
 
-from BSTrade.Data.controller import Api, bs_api
-from BSTrade.Data.const import Provider
+from BSTrade.Data.controller import bs_api
 from BSTrade.Data.source import bs_ws
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 from BSTrade.Lib.BSChart import TradeChart
-from BSTrade.Widgets.Exchange import ExchangeInfo
+from BSTrade.Widgets.CentralMain import CentralWidget
 from BSTrade.Widgets.Factory import WidgetStore
 from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, \
@@ -18,69 +16,12 @@ from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, \
 from BSTrade.util.fn import attach_timer
 
 
-class ExchangeList(QListWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setContentsMargins(0, 0, 0, 0)
-        self.setMaximumWidth(100)
-
-        for prov in Provider:
-            QListWidgetItem(prov.name, self)
-
-
-class CentralWidget(QWidget):
-    def __init__(self, parent: 'Main'):
-        super().__init__(parent)
-        self.parent = parent
-        self.setContentsMargins(0, 0, 0, 0)
-
-        self.hbox = QHBoxLayout(self)
-        self.hbox.setContentsMargins(0, 0, 0, 0)
-        self.hbox.setSizeConstraint(self.hbox.SetDefaultConstraint)
-        self.hbox.setSpacing(0)
-
-        self.hbox.addWidget(QPlainTextEdit())
-
-    def toggle_left_pane(self, b):
-        pane_at = 0
-        if b:
-            exchange_list = ExchangeList(self)
-            exchange_list.itemClicked.connect(self.select_provider)
-            self.hbox.insertWidget(pane_at, exchange_list)
-        else:
-            btn: QWidget = self.hbox.itemAt(pane_at).widget()
-            self.hbox.removeWidget(btn)
-            btn.deleteLater()
-
-    def select_provider(self, item: QListWidgetItem):
-        prov = Provider[item.text()]
-        action: QAction = self.parent.findChild(QAction, 'ex_action')
-        action.trigger()
-
-        self.set_exchange_view()
-        self.parent.view_store.ExchangeInfo.exchange_selected(prov)
-
-    def set_exchange_view(self):
-        layout_item = self.hbox.itemAt(0)
-        center_widget = layout_item.widget()
-        if isinstance(center_widget, ExchangeInfo):
-            return
-        else:
-            center_widget.deleteLater()
-            self.hbox.removeItem(layout_item)
-            self.hbox.addWidget(self.parent.view_store.ExchangeInfo)
-
-
-attach_timer(CentralWidget)
-
-
 class Main(QMainWindow):
     def __init__(self, database, parent=None):
         super().__init__(parent)
-
+        self.init_size = (1024, 768)
+        self.is_gui_init = False
         self.db = database
-        self.indi_dialog = IndicatorDialog(self)
-        self.setup_ui()
 
     def showEvent(self, ev: QShowEvent):
         super().showEvent(ev)
@@ -91,17 +32,25 @@ class Main(QMainWindow):
         :param ev:
         :return:
         """
+        if self.is_gui_init:
+            return
+
         self.view_store = WidgetStore(self)
+        self.setup_ui()
+
         bs_ws.start_all()
 
-    def setup_ui(self):
+        self.is_gui_init = True
 
-        self.resize(1024, 768)
+    def setup_ui(self):
+        self.view_store.LoadingDialog.show()
+
+        self.resize(self.init_size[0], self.init_size[1])
         self.setObjectName("MainWindow")
         self.setWindowTitle("BSTrade")
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.setCentralWidget(CentralWidget(self))
+        self.setCentralWidget(self.view_store.CentralWidget)
         self.setup_menus()
         self.setup_toolbar()
         # self.setup_docks()
@@ -119,11 +68,13 @@ class Main(QMainWindow):
 
         file_menu.addSeparator()  # add separator line between menu items
 
-        exit_icon = QIcon('BSTrade/Resource/icons/exit_icon.png')  # create icon
+        exit_icon = QIcon(
+            'BSTrade/Resource/icons/exit_icon.png')  # create icon
         exit_action = QAction(exit_icon, 'Exit', self)  # create Exit Action
         exit_action.setStatusTip('Click to exit the application')
         exit_action.triggered.connect(self.close)
-        exit_action.setShortcut('Ctrl+Q')  # keyboard shortcut, window has focus
+        exit_action.setShortcut(
+            'Ctrl+Q')  # keyboard shortcut, window has focus
         file_menu.addAction(exit_action)
 
         # ---------------------------------
@@ -161,7 +112,6 @@ class Main(QMainWindow):
         print(self.findChild(QDockWidget, 'chart'))
         # bschart: TradeChart = self.tabs.widget(0)
 
-        pass
         # if bschart.is_ready():
         #     layout_manager = bschart.get_manager()
         #     layout_manager.add_pane()
@@ -195,7 +145,8 @@ class Main(QMainWindow):
         dock1.setWindowTitle("Recent Trade")
 
         recent_trade_view = RecentTradeTableView(self, ws=self.ws)
-        recent_trade_model = RecentTradeTableModel(self, view=recent_trade_view)
+        recent_trade_model = RecentTradeTableModel(self,
+                                                   view=recent_trade_view)
         recent_trade_view.setModel(recent_trade_model)
         recent_trade_view.setup_ui()
         dock1.setWidget(recent_trade_view)

@@ -6,15 +6,17 @@ from BSTrade.Data.const import Provider, HttpEndPointType
 
 
 class OrderBook:
-    def __init__(self, symbol):
+    def __init__(self, provider, symbol):
         self.symbol = symbol
+        self.provider = provider
         self.timestamp = None
         self.book = []
 
 
 class Trade:
-    def __init__(self, symbol):
+    def __init__(self, provider, symbol):
         self.symbol = symbol
+        self.provider = provider
         self.trades = []
 
 

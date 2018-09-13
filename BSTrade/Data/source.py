@@ -49,7 +49,6 @@ class BSWs:
         self.client[prov].send('ping')
 
     def open_auth(self, prov, client):
-        print('hah')
         conf = ws.config[prov]
         auth_header = ws.make_auth_header(prov)
         req = QNetworkRequest()
