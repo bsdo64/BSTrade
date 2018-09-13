@@ -1,4 +1,5 @@
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtNetwork import QNetworkReply
 from PyQt5.QtWidgets import QApplication
 
 from BSTrade.Data.source import bs_req

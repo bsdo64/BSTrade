@@ -1,14 +1,11 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPalette, QColor, QShowEvent, QResizeEvent, \
-    QMoveEvent
+from PyQt5.QtGui import QIcon, QPalette, QColor, QShowEvent
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
-    QToolBar, QDesktopWidget
+    QToolBar
 
 from BSTrade.Data.controller import bs_api
 from BSTrade.Data.source import bs_ws
-from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 from BSTrade.Lib.BSChart import TradeChart
-from BSTrade.Widgets.CentralMain import CentralWidget
 from BSTrade.Widgets.Factory import WidgetStore
 from BSTrade.Widgets.OrderBookWidget import OrderBookWidget
 from BSTrade.Widgets.RecentTradeWidget import RecentTradeTableView, \
