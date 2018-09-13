@@ -1,9 +1,64 @@
 import time
 
-from PyQt5.QtCore import QUrl, QUrlQuery
+from PyQt5.QtCore import QUrl, QUrlQuery, QObject, pyqtSignal
 
 from BSTrade.Api.auth import bitmex
 from BSTrade.Data.const import Provider, HttpEndPointType as EndPoint
+
+
+class ReqLooperSig(QObject):
+    finished = pyqtSignal(object)
+
+
+class ReqLooper:
+    sig = ReqLooperSig()
+
+    def __init__(self, req):
+        self.req = req
+        self.prov = None
+        self.param = None
+        self.calc = None
+
+        self.r = []
+
+        self.req.sig.finished.connect(self.req_loop)
+
+    def set_prov(self, prov):
+        self.prov = prov
+
+    def set_param(self, param):
+        self.param = param
+
+    def set_calc(self, f):
+        """
+        def calc(p):
+            p['start'] += 500
+            return p, p['start'] < 500 * 20
+
+        f = calc
+        """
+        self.calc = f
+
+    def start(self):
+        self.req.get_candles(self.prov, self.param)
+
+    def clear(self):
+        self.r = []
+        self.calc = None
+        self.param = None
+        self.prov = None
+
+        self.req.sig.finished.disconnect(self.req_loop)
+
+    def req_loop(self, data):
+        self.r.append(data)
+        param, cond = self.calc(self.param)
+        self.param = param
+        if cond:
+            self.req.get_candles(self.prov, self.param)
+        else:
+            self.sig.finished.emit(self.r)
+            self.clear()
 
 
 class RateLimiter:
@@ -47,11 +102,13 @@ class RateLimiter:
 
         if self.allowance > self.rate:
             self.allowance = self.rate
+            print(self.provider.name, 'rate-limit : ', self.allowance)
         elif self.allowance < 1.0:
             print(self.provider.name,
                   'request canceled. rate-limit : ', self.allowance)
         else:
             self.allowance -= 1.0
+            print(self.provider.name, 'rate-limit : ', self.allowance)
 
 
 def xstr(obj, require=None):

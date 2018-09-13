@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, \
 
 from BSTrade.Data.controller import Api, bs_api
 from BSTrade.Data.const import Provider
+from BSTrade.Data.source import bs_ws
 from BSTrade.Dialogs.SelectIndicator import IndicatorDialog
 from BSTrade.Lib.BSChart import TradeChart
 from BSTrade.Widgets.Exchange import ExchangeInfo
@@ -91,6 +92,7 @@ class Main(QMainWindow):
         :return:
         """
         self.view_store = WidgetStore(self)
+        bs_ws.start_all()
 
     def setup_ui(self):
 

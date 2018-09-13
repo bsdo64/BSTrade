@@ -1,9 +1,9 @@
 import time
 
 from BSTrade.util.fn import attach_timer
-from .wsclient import WsClient
-from .auth.bitmex import generate_signature
-from PyQt5.QtCore import pyqtSignal
+from BSTrade.Api.wsclient import WsClient
+from BSTrade.Api.auth.bitmex import generate_signature
+from PyQt5.QtCore import pyqtSignal, QCoreApplication
 
 
 class BitmexWsClient(WsClient):
@@ -31,6 +31,9 @@ class BitmexWsClient(WsClient):
     def start(self):
         self.open(self.endpoint)
         return self
+
+    def start_ep(self, ep):
+        self.open(ep)
 
     def auth(self):
         if self.api_key:
@@ -75,3 +78,19 @@ class BitmexWsClient(WsClient):
 
 
 attach_timer(BitmexWsClient)
+
+
+if __name__ == '__main__':
+    app = QCoreApplication([])
+    ws = BitmexWsClient()
+
+    def con():
+        pass
+
+    def run(client):
+        print(client.json())
+
+    ws.sig_connected.connect(con)
+    ws.sig_message.connect(run)
+    ws.start_ep('wss://stream.binance.com:9443/stream?streams=bnbbtc@trade')
+    app.exec()

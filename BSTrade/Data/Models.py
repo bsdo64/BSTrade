@@ -1,7 +1,8 @@
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication
 
 from BSTrade.Data.source import bs_req
-from .const import Provider, HttpEndPointType
+from BSTrade.Data.const import Provider, HttpEndPointType
 
 
 class OrderBook:
@@ -40,13 +41,13 @@ class Candle(object):
     def ohlc(self, bin_size):
         return self.data[bin_size]
 
-    def new(self, bin_size, data):
+    def update(self, bin_size, data):
         self.data[bin_size] = data
 
-    def add(self, bin_size, data):
+    def add_old(self, bin_size, data):
         self.data[bin_size].append(data)
 
-    def update_last(self, data):
+    def add_new(self, data):
         bin_size = data['bin_size']
 
         for i in ['open', 'close', 'low', 'high']:
@@ -74,18 +75,28 @@ class Symbol(object):
         # self.Stat = Stat(reader)
         # self.Indicators = Indicators(reader)
 
-    def new_candle(self, bin_size):
-        # self.reader.r.request({
-        #     'symbol': self.symbol,
-        #     'model': 'candle',
-        #     'params': {
-        #         'bin_size': bin_size,
-        #         'symbol': self.symbol,
-        #         'count': 500
-        #     },
-        # })
+    def request_sync_candle(self):
+        param = {
+            'binSize': '1m',
+            'symbol': self.name,
+            'count': 500,
+            'start': 0,
+            'reverse': True
+        }
 
-        self.sig.new_candle.emit()
+        def calc(p):
+            p['start'] += 500
+            return p, p['start'] < 500 * 20
+
+        bs_req.loop.set_calc(calc)
+        bs_req.loop.set_prov(self.provider)
+        bs_req.loop.set_param(param)
+        bs_req.loop.sig.finished.connect(self.loop_finish)
+        bs_req.loop.start()
+
+    def loop_finish(self, data):
+        bs_req.loop.sig.finished.disconnect(self.loop_finish)
+        print(len(data))
 
 
 class StockMarket(object):
@@ -187,3 +198,17 @@ class Store(QObject):
     #     model = ChartModel(idx=idx, store=self, ws=self.ws)
     #     self.chart_models[model.ID] = model
     #     return model
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    s = Symbol({'symbol': 'XBTUSD', 'state': 'Open'}, Provider.BITMEX)
+    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    s.request_sync_candle()
+    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+
+
+    app.exec()

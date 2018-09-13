@@ -34,8 +34,8 @@ if __name__ == '__main__':
     api = Api(parent=None)
     print(api.store)
 
-    market = api.markets(Provider.BITMEX)
-    print(market)
+    mrk = api.markets(Provider.BITMEX)
+    print(mrk)
 
     def print_markets():
         print(api.markets(Provider.BITMEX).symbol('XBTUSD'))
