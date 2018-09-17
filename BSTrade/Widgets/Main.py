@@ -49,7 +49,7 @@ class Main(QMainWindow):
 
         self.setCentralWidget(self.view_store.CentralWidget)
         self.setup_menus()
-        self.setup_toolbar()
+        self.setupToolbar()
         # self.setup_docks()
         # self.setup_indicators(self.indi_dialog)
 
@@ -77,7 +77,7 @@ class Main(QMainWindow):
         # ---------------------------------
         edit_menu = menubar.addMenu('Edit')  # add a second menu
 
-    def setup_toolbar(self):
+    def setupToolbar(self):
         palette = QPalette()
         palette.setColor(QPalette.Text, QColor('#ffffff'))
 
