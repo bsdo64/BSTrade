@@ -21,9 +21,23 @@
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>Bitmex</string>
+       <string>Exchange</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="exchangeNameLb">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <kerning>true</kerning>
+          </font>
+         </property>
+         <property name="text">
+          <string>Exchange Name</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <layout class="QFormLayout" name="formLayout_3">
          <property name="formAlignment">
@@ -43,7 +57,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLineEdit" name="rateLimitLb">
+          <widget class="QLineEdit" name="rateLimitTbox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -55,6 +69,9 @@
              <width>100</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -147,7 +164,7 @@
     </item>
     <item>
      <widget class="QWidget" name="symbol" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="symbol_layout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -163,27 +180,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item>
-        <widget class="QGroupBox" name="symListBox">
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Symbol List</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QLineEdit" name="lineEdit"/>
-          </item>
-          <item>
-           <widget class="QListWidget" name="listWidget"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item>
         <widget class="QGroupBox" name="symGrpBox">
          <property name="title">
@@ -216,27 +212,6 @@
             <property name="verticalSpacing">
              <number>5</number>
             </property>
-            <item row="11" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>24h Vol</string>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="0">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>24h CHG</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Price</string>
-              </property>
-             </widget>
-            </item>
             <item row="5" column="0">
              <widget class="QLabel" name="label_2">
               <property name="text">
@@ -247,26 +222,47 @@
             <item row="5" column="1">
              <widget class="QLineEdit" name="volumeTbox"/>
             </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Price</string>
+              </property>
+             </widget>
+            </item>
             <item row="7" column="1">
              <widget class="QLineEdit" name="priceTbox"/>
             </item>
-            <item row="10" column="1">
-             <widget class="QLineEdit" name="chgTbox"/>
-            </item>
-            <item row="11" column="1">
-             <widget class="QLineEdit" name="vol24Tbox">
-              <property name="frame">
-               <bool>true</bool>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>24h CHG%</string>
               </property>
              </widget>
             </item>
             <item row="9" column="1">
              <widget class="QLineEdit" name="chgPerTbox"/>
             </item>
-            <item row="9" column="0">
-             <widget class="QLabel" name="label_4">
+            <item row="10" column="0">
+             <widget class="QLabel" name="label_6">
               <property name="text">
-               <string>24h CHG%</string>
+               <string>24h CHG</string>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="1">
+             <widget class="QLineEdit" name="chgTbox"/>
+            </item>
+            <item row="11" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>24h Vol</string>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="1">
+             <widget class="QLineEdit" name="vol24Tbox">
+              <property name="frame">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
