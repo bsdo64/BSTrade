@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 
 from BSTrade.Data.Models import Store
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 
 
 class Api:
@@ -34,13 +34,13 @@ if __name__ == '__main__':
     api = Api(parent=None)
     print(api.store)
 
-    mrk = api.markets(Provider.BITMEX)
+    mrk = api.markets(Exchange.BITMEX)
     print(mrk)
 
     def print_markets():
-        print(api.markets(Provider.BITMEX).symbol('XBTUSD'))
+        print(api.markets(Exchange.BITMEX).symbol('XBTUSD'))
 
-    markets = api.update_markets(Provider.BITMEX)
+    markets = api.update_markets(Exchange.BITMEX)
     markets.sig.symbol_updated.connect(print_markets)
 
     app.exec()

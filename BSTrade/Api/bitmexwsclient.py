@@ -92,5 +92,5 @@ if __name__ == '__main__':
 
     ws.sig_connected.connect(con)
     ws.sig_message.connect(run)
-    ws.start_ep('wss://stream.binance.com:9443/stream?streams=bnbbtc@trade')
+    ws.start('wss://stream.binance.com:9443/stream?streams=bnbbtc@trade')
     app.exec()

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QTableView, QHeaderView, QWidget, QVBoxLayout, \
     QLabel
 
 from BSTrade.Api import BitmexWsClient
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 from BSTrade.util.fn import attach_timer
 from BSTrade.Opt.math import id_from_price
 from BSTrade.Data.instruments import markets
@@ -103,7 +103,7 @@ class OrderBookModel(QObject):
         self.ws.sig_message.connect(self.slt_ws_message)
 
         self.price = 1000.
-        self.idx = markets[Provider.BITMEX].index('XBTUSD')
+        self.idx = markets[Exchange.BITMEX].index('XBTUSD')
         self.price_idx = id_from_price(self.idx, self.price, 0.01)
         self.book_ids = []
         self.book = []

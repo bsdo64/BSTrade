@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 
 from BSTrade.Api import HttpClient
 from BSTrade.Api.wsclient import WsClient
-from BSTrade.Data.const import Provider, HttpEndPointType as EndPoint
+from BSTrade.Data.const import Exchange, HttpEndPointType as EndPoint
 from BSTrade.Data.http_helper import RateLimiter, make_params, \
     make_auth_header, serialize_result, ReqLooper
 import BSTrade.Data.ws_helper as ws
@@ -24,7 +24,7 @@ class BSWs:
     sig = BSWsSig()
 
     def __init__(self):
-        self.client: Dict[Provider, WsClient] = {}
+        self.client: Dict[Exchange, WsClient] = {}
         self._subscribe = {}
 
     def start_all(self):
@@ -80,7 +80,7 @@ class BSWs:
     def on_message(self, client):
         data = client.json()
 
-        if client.provider == Provider.BITMEX:
+        if client.provider == Exchange.BITMEX:
             data['provider'] = client.provider
 
         self.sig.finish.emit(data)
@@ -95,15 +95,15 @@ class BSReq:
 
     def __init__(self):
         self.loop = ReqLooper(self)
-        self.provider = Provider
+        self.provider = Exchange
         self.http = HttpClient()
-        self.limiter: Dict[Provider, RateLimiter] = {
-            prov: RateLimiter(prov) for prov in Provider
+        self.limiter: Dict[Exchange, RateLimiter] = {
+            prov: RateLimiter(prov) for prov in Exchange
         }
 
         self.http.sig_ended.connect(self.res)
 
-    def get_exchange_status(self, prov: Provider, params=None):
+    def get_exchange_status(self, prov: Exchange, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
@@ -113,7 +113,7 @@ class BSReq:
         self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def get_candles(self, prov: Provider, params=None):
+    def get_candles(self, prov: Exchange, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
@@ -123,7 +123,7 @@ class BSReq:
         self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def get_symbols(self, prov: Provider, params=None):
+    def get_symbols(self, prov: Exchange, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
@@ -133,7 +133,7 @@ class BSReq:
         self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def get_orderbook(self, prov: Provider, params=None):
+    def get_orderbook(self, prov: Exchange, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
@@ -143,7 +143,7 @@ class BSReq:
         self.limiter[prov].add(res)
         self.set_property(res, prov, h_method, params)
 
-    def get_ticker(self, prov: Provider, params=None):
+    def get_ticker(self, prov: Exchange, params=None):
         method = 'GET'
         h_method = EndPoint[inspect.currentframe().f_code.co_name]
         qurl, _ = make_params(prov, h_method, params)
@@ -184,8 +184,18 @@ attach_timer(BSReq)
 if __name__ == '__main__':
 
     app = QApplication([])
+    param = {
+        'count': 500,
+        'start': 0,
+        'binSize': '1m',
+        'symbol': 'XBTUSD',
+        'reverse': True
+    }
+    import pandas as pd
+    d = []
 
     def result(res):
+        global df
         """
         res = {
             'provider': prov,
@@ -196,18 +206,18 @@ if __name__ == '__main__':
         :param res:
         :return:
         """
-        print(bs_req.limiter[Provider.BITMEX].current())
-        print(len(res))
-        # bs_req.get_candles(Provider.BITMEX, {'count': 500, 'binSize': '1m'})
+        rate_limit = bs_req.limiter[Exchange.BITMEX].current()
+        print(rate_limit)
+        param['start'] += param['count']
+        if rate_limit > 2:
+            d.extend(res['data'])
+            bs_req.get_candles(Exchange.BITMEX, param)
+        else:
+            df.to_pickle('bimex_1m.pkl')
 
 
     bs_req.sig.finished.connect(result)
-    bs_req.get_candles(Provider.BITMEX, {
-        'count': 500,
-        'binSize': '1m',
-        'reverse': True,
-        'symbol': 'XBTUSD'
-    })
+    bs_req.get_candles(Exchange.BITMEX, param)
     # bs_req.get_symbols(Provider.COINONE, {'currency': 'all'})
 
     app.exec()

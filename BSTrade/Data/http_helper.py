@@ -3,7 +3,7 @@ import time
 from PyQt5.QtCore import QUrl, QUrlQuery, QObject, pyqtSignal
 
 from BSTrade.Api.auth import bitmex
-from BSTrade.Data.const import Provider, HttpEndPointType as EndPoint
+from BSTrade.Data.const import Exchange, HttpEndPointType as EndPoint
 
 
 class ReqLooperSig(QObject):
@@ -137,7 +137,7 @@ def make_params(prov, h_method, params=None, method='GET'):
     if params is None:
         params = {}
 
-    if prov == Provider.BITMEX:
+    if prov == Exchange.BITMEX:
         base = "https://www.bitmex.com/api/v1"
 
         if h_method == EndPoint.get_exchange_status:
@@ -184,7 +184,7 @@ def make_params(prov, h_method, params=None, method='GET'):
         elif h_method == EndPoint.get_ticker:
             pass
 
-    elif prov == Provider.UPBIT:
+    elif prov == Exchange.UPBIT:
         base = "https://api.upbit.com/v1"
 
         if h_method == EndPoint.get_exchange_status:
@@ -202,7 +202,7 @@ def make_params(prov, h_method, params=None, method='GET'):
         elif h_method == EndPoint.get_ticker:
             pass
 
-    elif prov == Provider.COINONE:
+    elif prov == Exchange.COINONE:
         base = 'https://api.coinone.co.kr/'
 
         if h_method == EndPoint.get_exchange_status:
@@ -234,7 +234,7 @@ def make_params(prov, h_method, params=None, method='GET'):
         elif h_method == EndPoint.get_ticker:
             pass
 
-    elif prov == Provider.BINANCE:
+    elif prov == Exchange.BINANCE:
         base = 'https://api.binance.com/api/v1'
 
         if h_method == EndPoint.get_exchange_status:
@@ -264,7 +264,7 @@ def make_params(prov, h_method, params=None, method='GET'):
 
 
 def make_auth_header(prov, qurl, data=None, method='GET'):
-    if prov == Provider.BITMEX:
+    if prov == Exchange.BITMEX:
         api_key = bitmex.api_keys['real']['order']['key']
         api_secret = bitmex.api_keys['real']['order']['secret']
         expires = int(round(time.time()) + 5)
@@ -292,10 +292,10 @@ def make_auth_header(prov, qurl, data=None, method='GET'):
         })
         return header
 
-    elif prov == Provider.UPBIT:
+    elif prov == Exchange.UPBIT:
         pass
 
-    elif prov == Provider.COINONE:
+    elif prov == Exchange.COINONE:
         pass
 
 
@@ -306,7 +306,7 @@ def serialize_result(prov, h_method, params, result):
         'params': params
     }
 
-    if prov == Provider.BITMEX:
+    if prov == Exchange.BITMEX:
         if h_method == EndPoint.get_candles:
             """
             [
@@ -345,126 +345,129 @@ def serialize_result(prov, h_method, params, result):
         elif h_method == EndPoint.get_symbols:
             """
             [
-                {
-                    "symbol": "string",
-                    "rootSymbol": "string",
-                    "state": "string",
-                    "typ": "string",
-                    "listing": "2018-09-11T14:55:46.798Z",
-                    "front": "2018-09-11T14:55:46.798Z",
-                    "expiry": "2018-09-11T14:55:46.798Z",
-                    "settle": "2018-09-11T14:55:46.798Z",
-                    "relistInterval": "2018-09-11T14:55:46.798Z",
-                    "inverseLeg": "string",
-                    "sellLeg": "string",
-                    "buyLeg": "string",
-                    "optionStrikePcnt": 0,
-                    "optionStrikeRound": 0,
-                    "optionStrikePrice": 0,
-                    "optionMultiplier": 0,
-                    "positionCurrency": "string",
-                    "underlying": "string",
-                    "quoteCurrency": "string",
-                    "underlyingSymbol": "string",
-                    "reference": "string",
-                    "referenceSymbol": "string",
-                    "calcInterval": "2018-09-11T14:55:46.799Z",
-                    "publishInterval": "2018-09-11T14:55:46.799Z",
-                    "publishTime": "2018-09-11T14:55:46.799Z",
-                    "maxOrderQty": 0,
-                    "maxPrice": 0,
-                    "lotSize": 0,
-                    "tickSize": 0,
-                    "multiplier": 0,
-                    "settlCurrency": "string",
-                    "underlyingToPositionMultiplier": 0,
-                    "underlyingToSettleMultiplier": 0,
-                    "quoteToSettleMultiplier": 0,
-                    "isQuanto": true,
+                  {
+                    "symbol": "XBTUSD",
+                    "rootSymbol": "XBT",
+                    "state": "Open",
+                    "typ": "FFWCSX",
+                    "listing": "2016-05-13T12:00:00.000Z",
+                    "front": "2016-05-13T12:00:00.000Z",
+                    "positionCurrency": "USD",
+                    "underlying": "XBT",
+                    "quoteCurrency": "USD",
+                    "underlyingSymbol": "XBT=",
+                    "reference": "BMEX",
+                    "referenceSymbol": ".BXBT",
+                    "calcInterval": null,
+                    "publishInterval": null,
+                    "publishTime": null,
+                    "maxOrderQty": 10000000,
+                    "maxPrice": 1000000,
+                    "lotSize": 1,
+                    "tickSize": 0.5,
+                    "multiplier": -100000000,
+                    "settlCurrency": "XBt",
+                    "underlyingToPositionMultiplier": null,
+                    "underlyingToSettleMultiplier": -100000000,
+                    "quoteToSettleMultiplier": null,
+                    "isQuanto": false,
                     "isInverse": true,
-                    "initMargin": 0,
-                    "maintMargin": 0,
-                    "riskLimit": 0,
-                    "riskStep": 0,
-                    "limit": 0,
-                    "capped": true,
+                    "initMargin": 0.01,
+                    "maintMargin": 0.005,
+                    "riskLimit": 20000000000,
+                    "riskStep": 10000000000,
+                    "limit": null,
+                    "capped": false,
                     "taxed": true,
                     "deleverage": true,
-                    "makerFee": 0,
-                    "takerFee": 0,
-                    "settlementFee": 0,
-                    "insuranceFee": 0,
-                    "fundingBaseSymbol": "string",
-                    "fundingQuoteSymbol": "string",
-                    "fundingPremiumSymbol": "string",
-                    "fundingTimestamp": "2018-09-11T14:55:46.800Z",
-                    "fundingInterval": "2018-09-11T14:55:46.800Z",
-                    "fundingRate": 0,
-                    "indicativeFundingRate": 0,
-                    "rebalanceTimestamp": "2018-09-11T14:55:46.800Z",
-                    "rebalanceInterval": "2018-09-11T14:55:46.800Z",
-                    "openingTimestamp": "2018-09-11T14:55:46.800Z",
-                    "closingTimestamp": "2018-09-11T14:55:46.800Z",
-                    "sessionInterval": "2018-09-11T14:55:46.800Z",
-                    "prevClosePrice": 0,
-                    "limitDownPrice": 0,
-                    "limitUpPrice": 0,
-                    "bankruptLimitDownPrice": 0,
-                    "bankruptLimitUpPrice": 0,
-                    "prevTotalVolume": 0,
-                    "totalVolume": 0,
-                    "volume": 0,
-                    "volume24h": 0,
-                    "prevTotalTurnover": 0,
-                    "totalTurnover": 0,
-                    "turnover": 0,
-                    "turnover24h": 0,
-                    "homeNotional24h": 0,
-                    "foreignNotional24h": 0,
-                    "prevPrice24h": 0,
-                    "vwap": 0,
-                    "highPrice": 0,
-                    "lowPrice": 0,
-                    "lastPrice": 0,
-                    "lastPriceProtected": 0,
-                    "lastTickDirection": "string",
-                    "lastChangePcnt": 0,
-                    "bidPrice": 0,
-                    "midPrice": 0,
-                    "askPrice": 0,
-                    "impactBidPrice": 0,
-                    "impactMidPrice": 0,
-                    "impactAskPrice": 0,
+                    "makerFee": -0.00025,
+                    "takerFee": 0.00075,
+                    "fundingBaseSymbol": ".XBTBON8H",
+                    "fundingQuoteSymbol": ".USDBON8H",
+                    "fundingPremiumSymbol": ".XBTUSDPI8H",
+                    "fundingTimestamp": "2018-09-18T04:00:00.000Z",
+                    "fundingInterval": "2000-01-01T08:00:00.000Z",
+                    "fundingRate": 0.000003,
+                    "indicativeFundingRate": -0.000048,
+                    "openingTimestamp": "2018-09-18T00:00:00.000Z",
+                    "closingTimestamp": "2018-09-18T02:00:00.000Z",
+                    "sessionInterval": "2000-01-01T02:00:00.000Z",
+                    "prevClosePrice": 6471.83,
+                    "prevTotalVolume": 813753649323,
+                    "totalVolume": 813824946364,
+                    "volume": 71297041,
+                    "volume24h": 2569320995,
+                    "prevTotalTurnover": 11042062528776500,
+                    "totalTurnover": 11043204886146680,
+                    "turnover": 1142357370181,
+                    "turnover24h": 40483916962693,
+                    "homeNotional24h": 404839.1696269308,
+                    "foreignNotional24h": 2569320995,
+                    "prevPrice24h": 6514.5,
+                    "vwap": 6346.7885,
+                    "highPrice": 6515,
+                    "lowPrice": 6201,
+                    "lastPrice": 6246.5,
+                    "lastPriceProtected": 6246.5,
+                    "lastTickDirection": "ZeroMinusTick",
+                    "lastChangePcnt": -0.0411,
+                    "bidPrice": 6246.5,
+                    "midPrice": 6246.75,
+                    "askPrice": 6247,
+                    "impactBidPrice": 6246.4864,
+                    "impactMidPrice": 6246.75,
+                    "impactAskPrice": 6246.8766,
                     "hasLiquidity": true,
-                    "openInterest": 0,
-                    "openValue": 0,
-                    "fairMethod": "string",
-                    "fairBasisRate": 0,
+                    "openInterest": 748483419,
+                    "openValue": 11976483187419,
+                    "fairMethod": "FundingRate",
+                    "fairBasisRate": 0.003285,
                     "fairBasis": 0,
-                    "fairPrice": 0,
-                    "markMethod": "string",
-                    "markPrice": 0,
-                    "indicativeTaxRate": 0,
-                    "indicativeSettlePrice": 0,
-                    "optionUnderlyingPrice": 0,
-                    "settledPrice": 0,
-                    "timestamp": "2018-09-11T14:55:46.801Z"
+                    "fairPrice": 6249.58,
+                    "markMethod": "FairPrice",
+                    "markPrice": 6249.58,
+                    "indicativeSettlePrice": 6249.58,
+                    "timestamp": "2018-09-18T01:59:30.000Z"
                 }
+
             ]
+            
+            {
+                'symbol',
+                'totalVolume',
+                'volume',
+                'totalTurnover',
+                'turnover',
+                'openInterest',
+                'openValue',
+                'timestamp',
+                'indicativeSettlePrice',
+                'fairPrice',
+                'markPrice',
+                'lastPrice',
+                'lastTickDirection',
+                'lastChangePcnt',
+                'lastPriceProtected',
+                'prevPrice24h',
+                'volume24h',
+                'turnover24h',
+                'homeNotional24h',
+                'foreignNotional24h',
+                'indicativeFundingRate',
+                'bidPrice',
+                'midPrice',
+                'askPrice',
+                'impactBidPrice',
+                'impactMidPrice',
+                'impactAskPrice',
+                'vwap' 
+            }
             """
-            res['data'] = [{
-                'symbol': item['symbol'],
-                'state': item['state'],
-                'pair': item['quoteCurrency'],
-                'tickSize': item['tickSize'],
-                'makerFee': item['makerFee'],
-                'takerFee': item['takerFee'],
-                'timestamp': item['timestamp'],
-            } for item in result]
+            res['data'] = result
 
         elif h_method == EndPoint.get_ticker:
             pass
-    elif prov == Provider.UPBIT:
+    elif prov == Exchange.UPBIT:
         if h_method == EndPoint.get_candles:
             pass
         elif h_method == EndPoint.get_exchange_status:
@@ -475,7 +478,7 @@ def serialize_result(prov, h_method, params, result):
             pass
         elif h_method == EndPoint.get_ticker:
             pass
-    elif prov == Provider.COINONE:
+    elif prov == Exchange.COINONE:
         if h_method == EndPoint.get_candles:
             pass
         elif h_method == EndPoint.get_exchange_status:
@@ -511,7 +514,7 @@ def serialize_result(prov, h_method, params, result):
         elif h_method == EndPoint.get_ticker:
             pass
 
-    elif prov == Provider.BINANCE:
+    elif prov == Exchange.BINANCE:
         if h_method == EndPoint.get_candles:
             pass
         elif h_method == EndPoint.get_exchange_status:

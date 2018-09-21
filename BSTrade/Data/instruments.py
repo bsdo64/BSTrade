@@ -1,8 +1,8 @@
 # 2018.08.13
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 
 markets = {
-    Provider.BITMEX: [],
-    Provider.UPBIT: [],
-    Provider.COINONE: []
+    Exchange.BITMEX: [],
+    Exchange.UPBIT: [],
+    Exchange.COINONE: []
 }

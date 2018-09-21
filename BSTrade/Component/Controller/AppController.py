@@ -1,31 +1,30 @@
 from PyQt5.QtWidgets import QApplication, QWidget
 
-from BSTrade.Component.Model.App import AppModel
+from BSTrade.Component.Controller import MainController
 from BSTrade.Component.View.App import StartDialogView
-from BSTrade.Component.View.MainWindow import MainWindowView
+from BSTrade.Component.ViewModel.StartDialog import StartDialogViewModel
 
 
 class AppController:
     def __init__(self):
-
-        self.view = StartDialogView()
-        self.model = AppModel()
-        self.view.set_model(self.model)
+        self.model = StartDialogViewModel()
+        self.view = StartDialogView(self.model)
 
         self.view.exchangeList.itemClicked.connect(self.select_exchange)
-        self.view.exchangeList.itemEntered.connect(self.select_exchange)
+        self.view.exchangeList.itemSelectionChanged.connect(self.select_exchange)
         self.view.openBtn.clicked.connect(self.open_main)
 
     def open(self):
         self.view.show()
 
-    def select_exchange(self, item):
-        self.model.selected_exchange = self.model.exchanges[item.text()]
-        self.view.exchangeTitle.setText(item.text())
+    def select_exchange(self):
+        idx = self.view.exchangeList.selectedIndexes()[0]
+        ex = self.model.select_exchange(idx.row())
+        self.view.exchangeTitle.setText(ex.name)
 
     def open_main(self):
-        self.w = MainWindowView(self.model)
-        self.w.show()
+        self.main_c = MainController(self.model.selected)
+        self.main_c.open()
         self.view.close()
 
 

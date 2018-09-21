@@ -1,29 +1,34 @@
-from PyQt5.QtWidgets import QApplication, QWidget
-
-from BSTrade.Component.Model.App import AppModel
-from BSTrade.Component.View.App import StartDialogView
-from BSTrade.Component.View.MainWindow import MainWindowView
+from BSTrade.Component.View import MainWindowView
+from BSTrade.Component.ViewModel.MainWindow import MainWindowViewModel
+from BSTrade.Data.source import bs_ws, bs_req
 
 
 class MainController:
-    def __init__(self):
+    def __init__(self, exchange):
+        self.view_model = MainWindowViewModel(exchange)
+        self.view = MainWindowView(self.view_model)
 
-        self.view = StartDialogView()
-        self.model = AppModel()
-        self.view.set_model(self.model)
-
-        self.view.exchangeList.itemClicked.connect(self.select_exchange)
-        self.view.exchangeList.itemEntered.connect(self.select_exchange)
-        self.view.openBtn.clicked.connect(self.open_main)
+        self.view.screenBtn.clicked.connect(self.add_symbols)
 
     def open(self):
         self.view.show()
 
-    def select_exchange(self, item):
-        self.model.selected_exchange = self.model.exchanges[item.text()]
-        self.view.exchangeTitle.setText(item.text())
+        print('init data')
+        self.init_data()
 
-    def open_main(self):
-        self.w = MainWindowView(self.model)
-        self.w.show()
-        self.view.close()
+    def init_data(self):
+        print('request data')
+        bs_req.get_symbols(self.view_model.exchange.provider, {
+            'count': 500
+        })
+
+        bs_req.sig.finished.connect(self.receive_data)
+        # bs_ws.start_all()
+        # bs_ws.open_auth()
+
+    def receive_data(self, data):
+        print(data)
+
+    def add_symbols(self):
+        self.view_model.append_smb('test')
+        print(self.view_model.exchange.symbols)

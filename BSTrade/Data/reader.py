@@ -11,7 +11,7 @@ from BSTrade.util.fn import attach_timer
 from BSTrade.Api.auth import bitmex as bm_auth
 from BSTrade.Api.auth.bitmex import api_keys
 from BSTrade.Api import BitmexHttpClient, BitmexWsClient
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 from BSTrade.Data.bitmex import sqls as q
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -163,22 +163,22 @@ class BitmexRequester(QObject):
 class DataReader(QObject):
     sig_http_finish = pyqtSignal(object)
 
-    def __init__(self, provider: Provider):
+    def __init__(self, provider: Exchange):
         super().__init__()
         self.http_client = {
-            Provider.BITMEX: BitmexRequester(),
-            Provider.UPBIT: None,
-            Provider.COINONE: None,
+            Exchange.BITMEX: BitmexRequester(),
+            Exchange.UPBIT: None,
+            Exchange.COINONE: None,
         }
 
         self.ws_client = {
-            Provider.BITMEX: BitmexWsClient(
+            Exchange.BITMEX: BitmexWsClient(
                 test=False,
                 api_key=api_keys['real']['order']['key'],
                 api_secret=api_keys['real']['order']['secret']
             ),
-            Provider.UPBIT: None,
-            Provider.COINONE: None,
+            Exchange.UPBIT: None,
+            Exchange.COINONE: None,
         }
 
         self.provider = provider

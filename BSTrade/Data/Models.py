@@ -3,7 +3,7 @@ from PyQt5.QtNetwork import QNetworkReply
 from PyQt5.QtWidgets import QApplication
 
 from BSTrade.Data.source import bs_req
-from BSTrade.Data.const import Provider, HttpEndPointType
+from BSTrade.Data.const import Exchange, HttpEndPointType
 
 
 class OrderBook:
@@ -150,7 +150,7 @@ class Store(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.markets = {prov: CryptoMarket(prov) for prov in Provider}
+        self.markets = {prov: CryptoMarket(prov) for prov in Exchange}
         self.chart_models = {}
 
     def market(self, provider) -> CryptoMarket:
@@ -205,13 +205,13 @@ class Store(QObject):
 
 if __name__ == '__main__':
     app = QApplication([])
-    s = Symbol({'symbol': 'XBTUSD', 'state': 'Open'}, Provider.BITMEX)
-    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    s = Symbol({'symbol': 'XBTUSD', 'state': 'Open'}, Exchange.BITMEX)
+    bs_req.get_candles(Exchange.BITMEX, {'binSize': '1m'})
     s.request_sync_candle()
-    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
-    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
-    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
-    bs_req.get_candles(Provider.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Exchange.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Exchange.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Exchange.BITMEX, {'binSize': '1m'})
+    bs_req.get_candles(Exchange.BITMEX, {'binSize': '1m'})
 
 
     app.exec()

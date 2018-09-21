@@ -11,7 +11,7 @@ class WsClient(QObject):
     sig_message = pyqtSignal(object)
     sig_connected = pyqtSignal(object)
 
-    def __init__(self, provider):
+    def __init__(self, provider=None):
         QObject.__init__(self)
         self.provider = provider
         self.websocket = QWebSocket()

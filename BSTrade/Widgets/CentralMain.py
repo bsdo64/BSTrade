@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QWidget, QHBoxLayout, \
     QPlainTextEdit, QAction
 
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 from BSTrade.Widgets.Exchange import ExchangeInfo
 from BSTrade.util.fn import attach_timer
 
@@ -12,7 +12,7 @@ class ExchangeList(QListWidget):
         self.setContentsMargins(0, 0, 0, 0)
         self.setMaximumWidth(100)
 
-        for prov in Provider:
+        for prov in Exchange:
             QListWidgetItem(prov.name, self)
 
 
@@ -41,7 +41,7 @@ class CentralWidget(QWidget):
             btn.deleteLater()
 
     def select_provider(self, item: QListWidgetItem):
-        prov = Provider[item.text()]
+        prov = Exchange[item.text()]
         action: QAction = self.parent.findChild(QAction, 'ex_action')
         action.trigger()
 

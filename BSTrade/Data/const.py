@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class Provider(Enum):
+class Exchange(Enum):
     BITMEX = auto()
     UPBIT = auto()
     COINONE = auto()

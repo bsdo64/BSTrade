@@ -1,10 +1,10 @@
 import time
 
 from BSTrade.Api.auth import bitmex
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 
 config = {
-    Provider.BITMEX: {
+    Exchange.BITMEX: {
         'api_keys': {
             'order': {
                 'key': 'FET28WgQOItvUlOqfgOEBGIG',
@@ -24,7 +24,7 @@ config = {
 
 
 def make_auth_header(prov):
-    if prov == Provider.BITMEX:
+    if prov == Exchange.BITMEX:
         method = 'GET'
         api_key = config[prov]['api_keys']['order']['key']
         api_secret = config[prov]['api_keys']['order']['secret']

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, \
     QLabel, QListWidget, QListWidgetItem, QDockWidget, QGroupBox, QPushButton, \
     QMainWindow
 
-from BSTrade.Data.const import Provider
+from BSTrade.Data.const import Exchange
 from BSTrade.Data.controller import bs_api
 
 
@@ -38,13 +38,13 @@ class ExchangeInfo(QWidget):
         self.vbox.addLayout(hbox)
         self.setLayout(self.vbox)
 
-    @pyqtSlot(Provider)
+    @pyqtSlot(Exchange)
     def exchange_selected(self, prov):
         self.provider = prov
         market = bs_api.update_markets(prov)
         market.sig.symbol_updated.connect(self.symbols_updated)
 
-    @pyqtSlot(Provider)
+    @pyqtSlot(Exchange)
     def symbols_updated(self, market):
         market.sig.symbol_updated.disconnect(self.symbols_updated)
         self.market = market
